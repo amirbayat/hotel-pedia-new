@@ -1,0 +1,97 @@
+@use '../../styles/colors' as *;
+
+// Base — matches Figma "Buttons Assets" (node 148:1005)
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'Yekan Bakh', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Icon-only: square, no label — matches the "title=No" Figma variant.
+.iconOnly {
+  width: 48px;
+  padding: 12px;
+}
+
+// --- Primary --------------------------------------------------------------
+
+.primary {
+  background: $color-brand-cta;
+  color: $color-text-inverse;
+  font-weight: 600; // Button Heavy
+
+  &:hover:not(:disabled) {
+    background: $color-primary-300;
+  }
+
+  &:focus-visible {
+    background: $color-primary-300;
+    outline: 2px solid $color-primary-100;
+    outline-offset: 1px;
+  }
+
+  &:active:not(:disabled) {
+    background: $color-primary-400;
+  }
+
+  &:disabled {
+    background: $color-neutral-800;
+    color: $color-text-inverse;
+  }
+}
+
+// --- Secondary --------------------------------------------------------------
+
+.secondary {
+  background: $color-surface;
+  border-color: $color-primary-600;
+  color: $color-text-link;
+  font-weight: 400; // Button Normal
+
+  &:hover:not(:disabled) {
+    background: $color-primary-900;
+  }
+
+  &:focus-visible {
+    background: $color-primary-900;
+    outline: 2px solid $color-primary-600;
+    outline-offset: 1px;
+  }
+
+  &:active:not(:disabled) {
+    background: $color-primary-700;
+  }
+
+  &:disabled {
+    background: $color-surface;
+    border-color: $color-border-subtle;
+    color: $color-border-subtle;
+  }
+}

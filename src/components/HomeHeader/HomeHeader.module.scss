@@ -1,0 +1,57 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.section {
+  width: 100%;
+  background: $color-surface-muted;
+  // Extra bottom padding leaves room for SearchCard's negative margin to pull
+  // it up into this section without covering the title/subtitle.
+  padding: 48px 0 140px;
+}
+
+.inner {
+  @include layout.page-container(1408px);
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+
+.imageWrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  background: linear-gradient(135deg, $color-neutral-800, $color-neutral-700);
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: $color-text-primary;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: $color-text-primary;
+}

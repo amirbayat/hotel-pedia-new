@@ -1,0 +1,14 @@
+// -----------------------------------------------------------------------------
+// Shared layout helpers
+// Homepage sections come in two content widths (per Figma): 1408px for the
+// header + hero, 1200px for everything else. Both are centered with auto
+// margins. Desktop/tablet only — no mobile breakpoints yet.
+// -----------------------------------------------------------------------------
+
+@mixin page-container($max-width: 1200px) {
+  width: 100%;
+  max-width: #{$max-width};
+  margin-inline: auto;
+  padding-inline: 16px;
+  box-sizing: border-box;
+}

@@ -1,0 +1,124 @@
+@use '../../styles/colors' as *;
+
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  z-index: 10;
+  min-width: 300px;
+  padding: 16px;
+  background: $color-surface;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  font-family: 'Yekan Bakh', sans-serif;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.divider {
+  height: 1px;
+  background: $color-border-subtle;
+}
+
+.rowLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.rowTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.rowHint {
+  font-size: 12px;
+  font-weight: 400;
+  color: $color-text-muted;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stepperButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid $color-border-subtle;
+  background: $color-surface;
+  color: $color-text-primary;
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: $color-border-hover;
+  }
+
+  &:disabled {
+    color: $color-text-muted;
+    border-color: $color-border-subtle;
+    cursor: not-allowed;
+  }
+}
+
+.stepperValue {
+  min-width: 16px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.ageSelectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ageSelectChevron {
+  position: absolute;
+  left: 8px;
+  color: $color-text-muted;
+  pointer-events: none;
+}
+
+.ageSelect {
+  appearance: none;
+  height: 32px;
+  min-width: 56px;
+  padding: 0 8px 0 28px;
+  border-radius: 8px;
+  border: 1px solid $color-border-subtle;
+  background: $color-surface;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+  text-align: right;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-border-hover;
+  }
+}

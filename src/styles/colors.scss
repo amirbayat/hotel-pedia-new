@@ -1,0 +1,76 @@
+// -----------------------------------------------------------------------------
+// Design tokens — colors
+// Source: Figma "Hotelpedia" file, bound variables read via get_variable_defs
+// on the login/register/home screens (2026-07-28). Keep in sync with colors.ts.
+// -----------------------------------------------------------------------------
+
+// --- Raw scale (as named in Figma) ------------------------------------------
+
+// Primary (blue) scale
+$color-primary-100: #0046a0;
+$color-primary-200: #0080ff;
+$color-primary-300: #ff771f; // button hover/focus
+$color-primary-400: #ff8b40; // button pressed
+$color-primary-500: #80bfff;
+$color-primary-600: #99ccff;
+$color-primary-700: #b2d9ff;
+$color-primary-800: #cce6ff;
+$color-primary-900: #e5f2ff; // secondary button hover/focus background
+
+// Neutral (gray) scale
+$color-neutral-200: #323232;
+$color-neutral-400: #5f5f5f;
+$color-neutral-500: #7d7d7d;
+$color-neutral-600: #9b9b9b;
+$color-neutral-700: #b9b9b9;
+$color-neutral-800: #d7d7d7;
+$color-neutral-900: #f5f5f5;
+
+// Error (red) scale — only one step seen so far
+$color-error-200: #b40000;
+
+$color-white: #ffffff;
+$color-overlay-black: rgba(0, 0, 0, 0.5); // Figma "W-500"
+
+// Seen on primary CTA buttons (e.g. "جستجو", "ورود") in the design, but not
+// bound to a Figma variable in any of the screens inspected — verify with
+// design before treating this as a stable token.
+$color-cta-orange: #ff6400;
+
+// Calendar day-price tiers (booking date-range picker) — not sourced from a
+// Figma variable, picked to match the "ارزان/میانه/گران قیمت" legend colors
+// seen in the design export. Verify with design before treating as stable.
+$color-price-cheap: #1a9c5c;
+
+// --- Semantic aliases — use these in components ------------------------------
+
+// Text
+$color-text-primary: $color-neutral-200; // headings, body text
+$color-text-muted: $color-neutral-600; // placeholders, secondary text
+$color-text-link: $color-primary-200; // links, "ورود - ثبت نام" style text
+$color-text-inverse: $color-white; // text on dark/colored backgrounds
+
+// Surfaces
+$color-surface: $color-white; // page/card background
+$color-surface-muted: $color-neutral-900; // subtle section background
+$color-overlay-scrim: $color-overlay-black; // modal/dialog backdrop
+
+// Borders
+$color-border-default: $color-neutral-700; // input borders
+$color-border-subtle: $color-neutral-800; // dividers, secondary button border
+$color-border-hover: $color-neutral-400; // input border on hover
+$color-border-focus: $color-neutral-600; // input border on focus (2px)
+$color-border-error: $color-error-200;
+
+// Feedback
+$color-text-error: $color-error-200;
+
+// Brand
+$color-brand-primary: $color-primary-200; // primary brand blue
+$color-brand-primary-dark: $color-primary-100; // hover/active state
+$color-brand-cta: $color-cta-orange; // primary CTA button background
+
+// Calendar price tiers
+$color-price-tier-cheap: $color-price-cheap;
+$color-price-tier-medium: $color-primary-200;
+$color-price-tier-expensive: $color-error-200;

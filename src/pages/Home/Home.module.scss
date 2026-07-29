@@ -1,0 +1,15 @@
+@use '../../styles/colors' as *;
+
+.page {
+  width: 100%;
+  min-width: 1024px; // desktop/tablet only — no mobile layout
+  background: $color-surface;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 32px;
+  padding-bottom: 64px;
+}

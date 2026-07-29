@@ -1,0 +1,80 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.card {
+  @include layout.page-container(1200px);
+  // Pulls the card up so its top half sits on HomeHeader's background and
+  // the bottom half sits on the section below it.
+  margin-top: -110px;
+  position: relative;
+  z-index: 1;
+
+  background: $color-surface;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tabs {
+  display: flex;
+  gap: 16px;
+}
+
+.tabActive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: $color-brand-cta;
+}
+
+.tabIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid $color-brand-cta;
+}
+
+.tabLabel {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fields {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.searchButton {
+  flex-shrink: 0;
+  width: 176px;
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+}
+
+.dateField {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.calendarPopover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 10;
+}

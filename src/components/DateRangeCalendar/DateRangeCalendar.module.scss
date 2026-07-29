@@ -1,0 +1,187 @@
+@use '../../styles/colors' as *;
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: fit-content;
+  padding: 16px;
+  background: $color-surface;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-family: 'Yekan Bakh', sans-serif;
+}
+
+.months {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin-top: 4px;
+  border-radius: 50%;
+  border: 1px solid $color-border-subtle;
+  background: $color-surface;
+  color: $color-text-primary;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-border-hover;
+  }
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
+}
+
+.monthTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-text-primary;
+  text-align: center;
+}
+
+.weekdays,
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  // The week is built Saturday-first (index 0 = Saturday ... 6 = Friday);
+  // this app doesn't set a page-level dir="rtl", so without this the grid
+  // would place Saturday on the left. Scoped to just these two grids so it
+  // flips column order without affecting the two-month left/right layout.
+  direction: rtl;
+}
+
+.weekday {
+  font-size: 12px;
+  font-weight: 600;
+  color: $color-text-muted;
+  text-align: center;
+
+  &.friday {
+    color: $color-text-error;
+  }
+}
+
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: $color-text-primary;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &.friday {
+    color: $color-text-error;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $color-border-hover;
+  }
+
+  &:disabled {
+    color: $color-text-muted;
+    cursor: not-allowed;
+  }
+
+  &.tierCheap {
+    border-color: $color-price-tier-cheap;
+    color: $color-price-tier-cheap;
+  }
+
+  &.tierMedium {
+    border-color: $color-price-tier-medium;
+    color: $color-price-tier-medium;
+  }
+
+  &.tierExpensive {
+    border-color: $color-price-tier-expensive;
+    color: $color-price-tier-expensive;
+  }
+
+  &.today {
+    border-width: 2px;
+    border-color: $color-brand-cta;
+  }
+
+  // In-range / selected override the tier and weekday colors — the range
+  // takes visual priority once a day is part of it.
+  &.inRange {
+    background: $color-primary-400;
+    border-color: transparent;
+    color: $color-text-inverse;
+  }
+
+  &.previewEnd {
+    border-style: dashed;
+    border-color: $color-brand-cta;
+    background: rgba(255, 100, 0, 0.12);
+  }
+
+  &.selected {
+    background: $color-primary-300;
+    border-color: transparent;
+    color: $color-text-inverse;
+    font-weight: 700;
+  }
+}
+
+.emptyCell {
+  aspect-ratio: 1;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 12px;
+  border-top: 1px solid $color-border-subtle;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.legendSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  border: 1.5px solid transparent;
+
+  &.tierCheap {
+    border-color: $color-price-tier-cheap;
+  }
+
+  &.tierMedium {
+    border-color: $color-price-tier-medium;
+  }
+
+  &.tierExpensive {
+    border-color: $color-price-tier-expensive;
+  }
+}

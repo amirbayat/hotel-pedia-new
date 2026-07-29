@@ -1,0 +1,63 @@
+@use '../../styles/colors' as *;
+
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  z-index: 10;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  background: $color-surface;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  text-align: right;
+  font-family: inherit;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.itemCountry {
+  font-size: 12px;
+  font-weight: 400;
+  color: $color-text-muted;
+}
+
+.pin,
+.chevron {
+  flex-shrink: 0;
+  color: $color-text-muted;
+}

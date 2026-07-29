@@ -1,0 +1,73 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.wrapper {
+  @include layout.page-container(1200px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.slide {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1200 / 300;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, $color-primary-100, $color-primary-500);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.title {
+  position: absolute;
+  bottom: 24px;
+  right: 32px;
+  left: 32px;
+  margin: 0;
+  text-align: right;
+  color: $color-text-inverse;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot,
+.dotActive {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.dot {
+  background: $color-border-subtle;
+}
+
+.dotActive {
+  background: $color-brand-cta;
+}

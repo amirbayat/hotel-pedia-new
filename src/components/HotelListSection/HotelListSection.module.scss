@@ -1,0 +1,44 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.section {
+  @include layout.page-container(1200px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.showAll {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px 8px 8px;
+  border-radius: 30px;
+  border: 1px solid $color-border-subtle;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: $color-text-primary;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.list {
+  display: flex;
+  gap: 16px;
+}

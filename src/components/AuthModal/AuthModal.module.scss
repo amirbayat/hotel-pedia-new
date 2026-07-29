@@ -1,0 +1,123 @@
+@use '../../styles/colors' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: $color-overlay-scrim;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  border-radius: 16px;
+  background: $color-surface;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  font-family: 'Yekan Bakh', sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+.titleWithBack {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconButton {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: $color-text-primary;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 8px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-text-muted;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    border-color: $color-border-hover;
+  }
+}
+
+.tabActive {
+  border-color: $color-brand-primary;
+  background: $color-primary-900;
+  color: $color-text-link;
+
+  &:hover {
+    border-color: $color-brand-primary;
+  }
+}
+
+.description {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: $color-text-muted;
+  text-align: right;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.verifyActions {
+  display: flex;
+  gap: 12px;
+}
+
+.verifyActionButton {
+  flex: 1;
+}

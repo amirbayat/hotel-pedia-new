@@ -1,0 +1,82 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.section {
+  @include layout.page-container(1200px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  text-align: right;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.list {
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.item {
+  border-bottom: 1px solid $color-border-subtle;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: $color-text-muted;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.questionGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: $color-surface-muted;
+  color: $color-text-muted;
+}
+
+.question {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+.answer {
+  margin: 0;
+  padding: 0 24px 20px;
+  text-align: right;
+  font-size: 13px;
+  line-height: 1.9;
+  color: $color-text-muted;
+}

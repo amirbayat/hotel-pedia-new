@@ -1,0 +1,120 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.footer {
+  width: 100%;
+  background: $color-surface-muted;
+}
+
+.about {
+  @include layout.page-container(1200px);
+  padding-top: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid $color-border-subtle;
+  text-align: right;
+}
+
+.aboutTitle {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.aboutText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 2;
+  color: $color-text-primary;
+}
+
+.bottom {
+  @include layout.page-container(1200px);
+  padding-top: 32px;
+  padding-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: right;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.logoAccent {
+  color: $color-brand-cta;
+}
+
+.address,
+.phone {
+  margin: 0;
+  font-size: 13px;
+  color: $color-text-primary;
+}
+
+.social {
+  display: flex;
+  gap: 8px;
+}
+
+.socialIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid $color-border-subtle;
+  color: $color-text-primary;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+}
+
+.badgePlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 8px;
+  border: 1px solid $color-border-subtle;
+  background: $color-surface;
+  font-size: 11px;
+  color: $color-text-muted;
+  text-align: center;
+}
+
+.column {
+  text-align: right;
+}
+
+.columnTitle {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.columnList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  color: $color-text-primary;
+}

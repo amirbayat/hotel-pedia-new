@@ -1,0 +1,30 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.section {
+  @include layout.page-container(1200px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.box {
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.9;
+  color: $color-text-primary;
+}

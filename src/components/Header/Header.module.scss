@@ -1,0 +1,28 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.header {
+  width: 100%;
+  background: $color-surface;
+}
+
+.inner {
+  @include layout.page-container(1408px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-brand-cta;
+  white-space: nowrap;
+}

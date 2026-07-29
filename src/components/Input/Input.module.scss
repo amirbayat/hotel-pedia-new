@@ -1,0 +1,116 @@
+@use '../../styles/colors' as *;
+
+// Matches Figma "Text field" (node 151:831 / 151:906)
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  font-family: 'Yekan Bakh', sans-serif;
+}
+
+.label {
+  padding: 0 16px 8px;
+  font-size: 12px;
+  font-weight: 700; // Body 3
+  line-height: 1.5;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid $color-border-default;
+  background: $color-surface;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: $color-border-hover;
+  }
+
+  &:focus-within {
+    border-width: 2px;
+    border-color: $color-border-focus;
+    padding: 0 15px; // compensate for the extra 1px border so content doesn't shift
+  }
+
+  // Error and disabled override hover/focus — kept last for cascade order.
+  &.error {
+    border-width: 2px;
+    border-color: $color-border-error;
+    padding: 0 15px;
+  }
+
+  &.disabled {
+    background: $color-surface-muted;
+    border-color: $color-border-subtle;
+  }
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 27px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700; // Body Heading 5 / input text
+  line-height: 1.5;
+  color: $color-text-primary;
+  text-align: right;
+
+  &::placeholder {
+    color: $color-border-default;
+  }
+
+  &:disabled {
+    color: $color-text-muted;
+    cursor: not-allowed;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  color: $color-text-muted;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: $color-text-muted;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.hint {
+  padding: 4px 16px 0;
+  font-size: 12px;
+  font-weight: 400; // Body 4
+  line-height: 1.5;
+  color: $color-text-muted;
+  text-align: right;
+}
+
+.hintError {
+  color: $color-text-error;
+}

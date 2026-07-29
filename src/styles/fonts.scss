@@ -1,0 +1,70 @@
+// -----------------------------------------------------------------------------
+// Yekan Bakh (FaNum) — local font files added under src/assets/font/.
+// Using the "with-weight" folder, whose file names already map to the
+// correct numeric font-weight (as provided in the export), so `font-weight`
+// in component CSS just works without extra mapping.
+// -----------------------------------------------------------------------------
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/200-YekanBakh-Thin.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/300-YekanBakh-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/400-YekanBakh-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/500-YekanBakh-SemiBold.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/600-YekanBakh-Bold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/700-YekanBakh-ExtraBold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/800-YekanBakh-Black.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Yekan Bakh';
+  src: url('../assets/font/YekanBakh - FaNum/with-weight/900-YekanBakh-ExtraBlack.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
