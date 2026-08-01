@@ -36,10 +36,10 @@ export function Faq({ title = 'پاسخ به برخی سوالات', items, defa
               >
                 {isOpen ? <IconArrowUp width={20} height={20} /> : <IconArrowDown width={20} height={20} />}
                 <span className={styles.questionGroup}>
+                  <span className={styles.question}>{item.question}</span>
                   <span className={styles.iconBox}>
                     <IconHelp width={16} height={16} />
                   </span>
-                  <span className={styles.question}>{item.question}</span>
                 </span>
               </button>
               {isOpen && <p className={styles.answer}>{item.answer}</p>}

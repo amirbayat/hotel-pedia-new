@@ -1,0 +1,257 @@
+@use '../../styles/colors' as *;
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 220px;
+  padding: 16px 8px 16px 16px;
+  border-radius: 8px;
+  background: $color-surface;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
+}
+
+// --- Actions column (favorite / stay info / price / CTA) --------------------
+
+.actions {
+  flex-shrink: 0;
+  width: 210px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.favoriteButton {
+  display: flex;
+  padding: 12px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: $color-text-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.favoriteActive {
+  color: $color-error-200;
+}
+
+.stayInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: $color-text-muted;
+  white-space: nowrap;
+}
+
+.priceBlock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.discountBadge {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: $color-badge-discount;
+  color: $color-text-inverse;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.priceStack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: right;
+  direction: rtl;
+}
+
+.originalPrice {
+  font-size: 12px;
+  color: $color-text-muted;
+  text-decoration: line-through;
+}
+
+.priceValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+
+  span {
+    font-size: 12px;
+    font-weight: 400;
+    color: $color-text-muted;
+  }
+}
+
+.reserveButton {
+  width: 100%;
+}
+
+.soldOut {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-error;
+}
+
+// --- Divider ------------------------------------------------------------
+
+.divider {
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 1px;
+  background: $color-border-subtle;
+}
+
+// --- Info column (name / rating / tags / address) -----------------------
+
+.body {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  text-align: right;
+  direction: rtl;
+}
+
+.name {
+  width: 100%;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.starsValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.starsLabel {
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+}
+
+.starFilled {
+  color: $color-brand-cta;
+}
+
+.userRate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userRateText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.ratingLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.reviewCount {
+  font-size: 12px;
+  color: $color-text-muted;
+}
+
+.scoreBadge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: $color-brand-primary-dark;
+  color: $color-text-inverse;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag {
+  padding: 0 8px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
+  background: $color-surface-muted;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.address {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: $color-text-primary;
+}
+
+.addressIcon {
+  flex-shrink: 0;
+  color: $color-text-primary;
+}
+
+// --- Image ----------------------------------------------------------------
+
+.imageWrapper {
+  flex-shrink: 0;
+  align-self: center;
+  width: 204px;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, $color-neutral-700, $color-neutral-500);
+}

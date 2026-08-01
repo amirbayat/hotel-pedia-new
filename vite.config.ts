@@ -4,6 +4,12 @@ import svgr from 'vite-plugin-svgr'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // The Hotelpedia API's CORS allowlist only includes http://localhost:3000 in
+  // dev, not Vite's default 5173 — pinning the port here lets fetches to
+  // panel.hotelpedia.ir succeed locally instead of failing CORS silently.
+  server: {
+    port: 3000,
+  },
   plugins: [
     react(),
     svgr({

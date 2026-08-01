@@ -1,0 +1,209 @@
+@use '../../styles/colors' as *;
+
+.sidebar {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.section {
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+}
+
+.sectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px 4px 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: $color-text-primary;
+  font-family: inherit;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px 16px;
+}
+
+// --- Discount switch ---------------------------------------------------
+
+.switchRow {
+  // Switch pinned to the left, label filling the rest — override the
+  // inherited RTL so the DOM order (switch, then label) isn't mirrored.
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.switchLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+// --- Star checkboxes -----------------------------------------------------
+
+.starList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.starRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.starRowLabel {
+  font-size: 14px;
+  color: $color-text-muted;
+}
+
+.starRowRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.starIcons {
+  display: flex;
+  align-items: center;
+}
+
+.starFilled {
+  color: $color-brand-cta;
+}
+
+.checkboxInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.checkboxBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid $color-border-default;
+  color: $color-text-inverse;
+}
+
+.checkboxChecked {
+  background: $color-brand-primary;
+  border-color: $color-brand-primary;
+}
+
+// --- Price range ---------------------------------------------------------
+
+.priceInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.priceInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.priceInputLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.sliderWrapper {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.sliderTrack {
+  position: absolute;
+  inset-inline: 0;
+  height: 4px;
+  border-radius: 8px;
+  background: $color-surface-muted;
+}
+
+.sliderRange {
+  position: absolute;
+  height: 4px;
+  border-radius: 8px;
+  background: $color-brand-primary;
+}
+
+.rangeInput {
+  // Explicit (on top of the inherited RTL) so min renders on the right and
+  // max on the left, matching the "از"/"تا" legend below the track.
+  direction: rtl;
+  position: absolute;
+  inset-inline: 0;
+  width: 100%;
+  margin: 0;
+  appearance: none;
+  background: none;
+  pointer-events: none;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    pointer-events: auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: $color-surface;
+    border: 2px solid $color-brand-primary;
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    pointer-events: auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: $color-surface;
+    border: 2px solid $color-brand-primary;
+    cursor: pointer;
+  }
+
+  &::-webkit-slider-runnable-track {
+    background: none;
+  }
+}
+
+.sliderLegend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 8px;
+  font-size: 12px;
+  color: $color-text-muted;
+}

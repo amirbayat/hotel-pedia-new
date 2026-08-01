@@ -11,9 +11,11 @@
     "icons": "node scripts/process-icons.mjs"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.4",
     "jalaali-js": "^2.0.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
     "@types/node": "^24.13.2",

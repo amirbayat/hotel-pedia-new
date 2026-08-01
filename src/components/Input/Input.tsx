@@ -16,6 +16,8 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   trailingIcon?: IconComponent
   /** Click handler for the trailing icon — renders it as a button instead of a static glyph. */
   onTrailingIconClick?: () => void
+  /** Puts the leading icon on the right and the trailing icon on the left, for RTL fields. */
+  reverseIcons?: boolean
 }
 
 /**
@@ -33,6 +35,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     leadingIcon: LeadingIcon,
     trailingIcon: TrailingIcon,
     onTrailingIconClick,
+    reverseIcons,
     disabled,
     className,
     id,
@@ -53,7 +56,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       )}
 
       <div
-        className={[styles.container, error && styles.error, disabled && styles.disabled]
+        className={[styles.container, error && styles.error, disabled && styles.disabled, reverseIcons && styles.reverse]
           .filter(Boolean)
           .join(' ')}
       >

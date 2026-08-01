@@ -1,4 +1,4 @@
-@use '../../styles/colors' as *;
+@use "../../styles/colors" as *;
 
 .overlay {
   position: fixed;
@@ -21,7 +21,7 @@
   border-radius: 16px;
   background: $color-surface;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  font-family: 'Yekan Bakh', sans-serif;
+  font-family: "Yekan Bakh", sans-serif;
 }
 
 .header {
@@ -65,14 +65,15 @@
 
 .tabs {
   display: flex;
-  gap: 8px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .tab {
   flex: 1;
   padding: 12px 8px;
-  border: 1px solid $color-border-subtle;
-  border-radius: 8px;
+  border: none;
   background: $color-surface;
   color: $color-text-muted;
   font-family: inherit;
@@ -81,22 +82,20 @@
   cursor: pointer;
   transition:
     background-color 0.15s ease,
-    border-color 0.15s ease,
     color 0.15s ease;
 
+  &:not(:last-child) {
+    border-left: 1px solid $color-border-subtle;
+  }
+
   &:hover {
-    border-color: $color-border-hover;
+    background: $color-surface-muted;
   }
 }
 
 .tabActive {
-  border-color: $color-brand-primary;
   background: $color-primary-900;
   color: $color-text-link;
-
-  &:hover {
-    border-color: $color-brand-primary;
-  }
 }
 
 .description {
@@ -113,6 +112,10 @@
   gap: 20px;
 }
 
+.button {
+  direction: rtl;
+}
+
 .verifyActions {
   display: flex;
   gap: 12px;
@@ -120,4 +123,30 @@
 
 .verifyActionButton {
   flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 8px 12px;
+  overflow: hidden;
+  border: 2px solid $color-text-primary;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-text-primary;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.7;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: $color-surface-muted;
+  }
+
+  &:disabled {
+    border-color: $color-border-subtle;
+    color: $color-text-muted;
+    cursor: not-allowed;
+  }
 }

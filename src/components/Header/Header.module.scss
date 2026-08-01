@@ -21,8 +21,11 @@
 }
 
 .logo {
-  font-size: 20px;
-  font-weight: 700;
-  color: $color-brand-cta;
-  white-space: nowrap;
+  height: 24px;
+  width: auto;
+}
+
+// Puts the icon on the right of the label instead of Button's default left side.
+.loginButton {
+  flex-direction: row-reverse;
 }

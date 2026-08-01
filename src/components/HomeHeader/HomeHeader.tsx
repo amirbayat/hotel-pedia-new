@@ -1,9 +1,10 @@
+import defaultHeroImage from '../../assets/homeHeader.png'
 import styles from './HomeHeader.module.scss'
 
 export interface HomeHeaderProps {
   title?: string
   subtitle?: string
-  /** Hero image shown on the left. Falls back to a placeholder until the real asset is provided. */
+  /** Hero image shown on the left. */
   imageSrc?: string
 }
 
@@ -15,14 +16,13 @@ export interface HomeHeaderProps {
 export function HomeHeader({
   title = 'از میان هزاران هتل و اقامتگاه اتاق  مورد نظرت رو انتخاب کن.',
   subtitle = 'لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ',
-  imageSrc,
+  imageSrc = defaultHeroImage,
 }: HomeHeaderProps) {
   return (
     <section className={styles.section}>
       <div className={styles.inner}>
         <div className={styles.imageWrapper}>
-          {/* TODO: swap for the real hero image once provided */}
-          {imageSrc ? <img src={imageSrc} alt="" className={styles.image} /> : <div className={styles.imagePlaceholder} />}
+          <img src={imageSrc} alt="" className={styles.image} />
         </div>
 
         <div className={styles.text}>

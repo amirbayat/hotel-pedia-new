@@ -1,0 +1,78 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.page {
+  width: 100%;
+  min-width: 1024px; // desktop/tablet only — no mobile layout
+  background: $color-surface;
+}
+
+.content {
+  @include layout.page-container(1200px);
+  padding-top: 16px;
+  padding-bottom: 64px;
+}
+
+.body {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.list {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: opacity 0.15s ease;
+}
+
+.cardsFetching {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+// 80px sticky header + 16px gap; scrolls with the page until it hits that
+// offset, then stays put — and scrolls internally since it can be taller
+// than the viewport.
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 96px;
+  max-height: calc(100vh - 112px);
+  overflow-y: auto;
+}
+
+.stateMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 0;
+  text-align: center;
+  color: $color-text-muted;
+  font-size: 14px;
+}
+
+.retryButton {
+  padding: 8px 16px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-text-primary;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-border-hover;
+  }
+}

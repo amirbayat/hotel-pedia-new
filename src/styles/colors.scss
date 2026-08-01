@@ -29,6 +29,10 @@ $color-neutral-900: #f5f5f5;
 // Error (red) scale — only one step seen so far
 $color-error-200: #b40000;
 
+// Seen on the discount badge (hotel cards), not bound to a Figma variable in
+// any of the screens inspected — verify with design before treating as stable.
+$color-discount: #dc3c3c;
+
 $color-white: #ffffff;
 $color-overlay-black: rgba(0, 0, 0, 0.5); // Figma "W-500"
 
@@ -36,6 +40,7 @@ $color-overlay-black: rgba(0, 0, 0, 0.5); // Figma "W-500"
 // bound to a Figma variable in any of the screens inspected — verify with
 // design before treating this as a stable token.
 $color-cta-orange: #ff6400;
+$color-cta-orange-light: #ffb180; // calendar in-range fill, between the start/end days
 
 // Calendar day-price tiers (booking date-range picker) — not sourced from a
 // Figma variable, picked to match the "ارزان/میانه/گران قیمت" legend colors
@@ -74,3 +79,10 @@ $color-brand-cta: $color-cta-orange; // primary CTA button background
 $color-price-tier-cheap: $color-price-cheap;
 $color-price-tier-medium: $color-primary-200;
 $color-price-tier-expensive: $color-error-200;
+
+// Calendar range selection
+$color-calendar-range-edge: $color-cta-orange; // start/end day fill
+$color-calendar-range-middle: $color-cta-orange-light; // days between start/end
+
+// Discount badge
+$color-badge-discount: $color-discount;

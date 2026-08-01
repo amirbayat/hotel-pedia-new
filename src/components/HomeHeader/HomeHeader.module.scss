@@ -1,12 +1,12 @@
-@use '../../styles/colors' as *;
-@use '../../styles/layout' as layout;
+@use "../../styles/colors" as *;
+@use "../../styles/layout" as layout;
 
 .section {
   width: 100%;
   background: $color-surface-muted;
   // Extra bottom padding leaves room for SearchCard's negative margin to pull
   // it up into this section without covering the title/subtitle.
-  padding: 48px 0 140px;
+  // padding: 48px 0 140px;
 }
 
 .inner {
@@ -14,23 +14,21 @@
   display: flex;
   align-items: center;
   gap: 64px;
+  height: 400px;
+  padding-left: 0px;
+  margin-left: 0px;
 }
 
 .imageWrapper {
-  flex: 1;
-  min-width: 0;
-}
-
-.imagePlaceholder {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 12px;
-  background: linear-gradient(135deg, $color-neutral-800, $color-neutral-700);
+  flex-shrink: 0;
+  width: 368px;
+  height: 400px;
 }
 
 .image {
-  width: 100%;
-  height: auto;
+  width: 368px;
+  height: 400px;
+  object-fit: cover;
   border-radius: 12px;
   display: block;
 }

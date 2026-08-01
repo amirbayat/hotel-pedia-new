@@ -1,87 +1,105 @@
-import { useEffect, useRef, useState } from 'react'
-import { toPersianDigits } from '../../lib/date/jalali'
-import { Input } from '../Input'
-import { IconArrowDown, IconPerson, IconPlus } from '../icons'
-import styles from './PassengersField.module.scss'
+import { useEffect, useRef, useState } from "react";
+import { toPersianDigits } from "../../lib/date/jalali";
+import { Input } from "../Input";
+import { IconArrowDown, IconPeople, IconPlus } from "../icons";
+import styles from "./PassengersField.module.scss";
 
 export interface PassengersValue {
-  adults: number
+  adults: number;
   /** One age (0-17) per child, in display order. */
-  childrenAges: number[]
-  rooms: number
+  childrenAges: number[];
+  rooms: number;
 }
 
 export interface PassengersFieldProps {
-  className?: string
-  value: PassengersValue
-  onChange: (value: PassengersValue) => void
+  className?: string;
+  value: PassengersValue;
+  onChange: (value: PassengersValue) => void;
+  /** Hides the "مسافران" title above the field, for compact/header contexts. Defaults to true. */
+  showLabel?: boolean;
 }
 
-const MIN_ADULTS = 1
-const MAX_ADULTS = 10
-const MIN_CHILDREN = 0
-const MAX_CHILDREN = 10
-const MIN_ROOMS = 1
-const MAX_ROOMS = 10
-const DEFAULT_CHILD_AGE = 0
-const AGE_OPTIONS = Array.from({ length: 18 }, (_, age) => age)
+const MIN_ADULTS = 1;
+const MAX_ADULTS = 10;
+const MIN_CHILDREN = 0;
+const MAX_CHILDREN = 10;
+const MIN_ROOMS = 1;
+const MAX_ROOMS = 10;
+const DEFAULT_CHILD_AGE = 0;
+const AGE_OPTIONS = Array.from({ length: 18 }, (_, age) => age);
 
 function formatSummary(value: PassengersValue): string {
-  const parts = [`${toPersianDigits(value.adults)} بزرگسال`]
+  const parts = [`${toPersianDigits(value.adults)} بزرگسال`];
   if (value.childrenAges.length > 0) {
-    parts.push(`${toPersianDigits(value.childrenAges.length)} کودک`)
+    parts.push(`${toPersianDigits(value.childrenAges.length)} کودک`);
   }
-  parts.push(`${toPersianDigits(value.rooms)} اتاق`)
-  return parts.join(' - ')
+  parts.push(`${toPersianDigits(value.rooms)} اتاق`);
+  return parts.join(" - ");
 }
 
 /** "مسافران" field — passenger counts (adults/children + per-child age) and room count. */
-export function PassengersField({ className, value, onChange }: PassengersFieldProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const wrapperRef = useRef<HTMLDivElement>(null)
+export function PassengersField({
+  className,
+  value,
+  onChange,
+  showLabel = true,
+}: PassengersFieldProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     function handleOutsideClick(event: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleOutsideClick)
-    return () => document.removeEventListener('mousedown', handleOutsideClick)
-  }, [isOpen])
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [isOpen]);
 
   function setAdults(adults: number) {
-    onChange({ ...value, adults })
+    onChange({ ...value, adults });
   }
 
   function setRooms(rooms: number) {
-    onChange({ ...value, rooms })
+    onChange({ ...value, rooms });
   }
 
   function setChildrenCount(count: number) {
-    const childrenAges = value.childrenAges.slice(0, count)
-    while (childrenAges.length < count) childrenAges.push(DEFAULT_CHILD_AGE)
-    onChange({ ...value, childrenAges })
+    const childrenAges = value.childrenAges.slice(0, count);
+    while (childrenAges.length < count) childrenAges.push(DEFAULT_CHILD_AGE);
+    onChange({ ...value, childrenAges });
   }
 
   function setChildAge(index: number, age: number) {
-    const childrenAges = value.childrenAges.map((existing, i) => (i === index ? age : existing))
-    onChange({ ...value, childrenAges })
+    const childrenAges = value.childrenAges.map((existing, i) =>
+      i === index ? age : existing,
+    );
+    onChange({ ...value, childrenAges });
   }
 
   return (
-    <div className={[styles.wrapper, className].filter(Boolean).join(' ')} ref={wrapperRef}>
+    <div
+      className={[styles.wrapper, className].filter(Boolean).join(" ")}
+      ref={wrapperRef}
+      onClick={() => setIsOpen(true)}
+    >
       <Input
-        label="مسافران"
+        label={showLabel ? "مسافران" : undefined}
         placeholder="تعداد مسافران"
-        leadingIcon={IconPerson}
-        trailingIcon={IconArrowDown}
+        leadingIcon={IconArrowDown}
+        trailingIcon={IconPeople}
+        reverseIcons
         value={formatSummary(value)}
         onFocus={() => setIsOpen(true)}
         readOnly
+        className={styles.input}
       />
 
       {isOpen && (
@@ -91,17 +109,23 @@ export function PassengersField({ className, value, onChange }: PassengersFieldP
               <button
                 type="button"
                 className={styles.stepperButton}
-                onClick={() => setAdults(Math.max(MIN_ADULTS, value.adults - 1))}
+                onClick={() =>
+                  setAdults(Math.max(MIN_ADULTS, value.adults - 1))
+                }
                 disabled={value.adults <= MIN_ADULTS}
                 aria-label="کاهش تعداد بزرگسال"
               >
                 −
               </button>
-              <span className={styles.stepperValue}>{toPersianDigits(value.adults)}</span>
+              <span className={styles.stepperValue}>
+                {toPersianDigits(value.adults)}
+              </span>
               <button
                 type="button"
                 className={styles.stepperButton}
-                onClick={() => setAdults(Math.min(MAX_ADULTS, value.adults + 1))}
+                onClick={() =>
+                  setAdults(Math.min(MAX_ADULTS, value.adults + 1))
+                }
                 disabled={value.adults >= MAX_ADULTS}
                 aria-label="افزایش تعداد بزرگسال"
               >
@@ -121,17 +145,27 @@ export function PassengersField({ className, value, onChange }: PassengersFieldP
               <button
                 type="button"
                 className={styles.stepperButton}
-                onClick={() => setChildrenCount(Math.max(MIN_CHILDREN, value.childrenAges.length - 1))}
+                onClick={() =>
+                  setChildrenCount(
+                    Math.max(MIN_CHILDREN, value.childrenAges.length - 1),
+                  )
+                }
                 disabled={value.childrenAges.length <= MIN_CHILDREN}
                 aria-label="کاهش تعداد کودک"
               >
                 −
               </button>
-              <span className={styles.stepperValue}>{toPersianDigits(value.childrenAges.length)}</span>
+              <span className={styles.stepperValue}>
+                {toPersianDigits(value.childrenAges.length)}
+              </span>
               <button
                 type="button"
                 className={styles.stepperButton}
-                onClick={() => setChildrenCount(Math.min(MAX_CHILDREN, value.childrenAges.length + 1))}
+                onClick={() =>
+                  setChildrenCount(
+                    Math.min(MAX_CHILDREN, value.childrenAges.length + 1),
+                  )
+                }
                 disabled={value.childrenAges.length >= MAX_CHILDREN}
                 aria-label="افزایش تعداد کودک"
               >
@@ -147,11 +181,18 @@ export function PassengersField({ className, value, onChange }: PassengersFieldP
           {value.childrenAges.map((age, index) => (
             <div className={styles.row} key={index}>
               <div className={styles.ageSelectWrapper}>
-                <IconArrowDown className={styles.ageSelectChevron} width={16} height={16} aria-hidden />
+                <IconArrowDown
+                  className={styles.ageSelectChevron}
+                  width={16}
+                  height={16}
+                  aria-hidden
+                />
                 <select
                   className={styles.ageSelect}
                   value={age}
-                  onChange={(event) => setChildAge(index, Number(event.target.value))}
+                  onChange={(event) =>
+                    setChildAge(index, Number(event.target.value))
+                  }
                   aria-label={`سن کودک ${index + 1}`}
                 >
                   {AGE_OPTIONS.map((option) => (
@@ -161,7 +202,9 @@ export function PassengersField({ className, value, onChange }: PassengersFieldP
                   ))}
                 </select>
               </div>
-              <span className={styles.rowTitle}>{`سن کودک ${toPersianDigits(index + 1)}`}</span>
+              <span
+                className={styles.rowTitle}
+              >{`سن کودک ${toPersianDigits(index + 1)}`}</span>
             </div>
           ))}
 
@@ -178,7 +221,9 @@ export function PassengersField({ className, value, onChange }: PassengersFieldP
               >
                 −
               </button>
-              <span className={styles.stepperValue}>{toPersianDigits(value.rooms)}</span>
+              <span className={styles.stepperValue}>
+                {toPersianDigits(value.rooms)}
+              </span>
               <button
                 type="button"
                 className={styles.stepperButton}
@@ -194,5 +239,5 @@ export function PassengersField({ className, value, onChange }: PassengersFieldP
         </div>
       )}
     </div>
-  )
+  );
 }

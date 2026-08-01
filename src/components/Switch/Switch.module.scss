@@ -1,0 +1,49 @@
+@use '../../styles/colors' as *;
+
+.switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.track {
+  position: absolute;
+  inset: 3px;
+  border-radius: 26px;
+  border: 2px solid $color-border-hover;
+  transition: border-color 0.15s ease;
+}
+
+.thumb {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: $color-border-hover;
+  transition:
+    left 0.15s ease,
+    background 0.15s ease;
+}
+
+.checked {
+  .track {
+    border-color: $color-brand-primary;
+  }
+
+  .thumb {
+    left: 31px;
+    background: $color-brand-primary;
+  }
+}

@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { fetchCarousel, fetchCitiesHotels, fetchHome } from '../../api/home'
+import type { CityHotel } from '../../api/home'
 import { Header } from '../../components/Header'
 import { HomeHeader } from '../../components/HomeHeader'
 import { SearchCard } from '../../components/SearchCard'
@@ -14,15 +17,15 @@ import type { FaqItem } from '../../components/Faq'
 import { Footer } from '../../components/Footer'
 import styles from './Home.module.scss'
 
-// Mock data — PromoCarousel and PopularCities are meant to be fed from the API;
-// this is just placeholder content until that's wired up.
-const promoSlides: PromoSlide[] = [
+// Fallback shown until the /api/v1/home/carousel response arrives (or if it fails).
+const fallbackPromoSlides: PromoSlide[] = [
   { id: 1, title: 'لورم ایپسوم متن ساختگی با تولید سادگی' },
   { id: 2, title: 'لورم ایپسوم متن ساختگی با تولید سادگی' },
   { id: 3, title: 'لورم ایپسوم متن ساختگی با تولید سادگی' },
 ]
 
-const popularCities: CityCard[] = [
+// Fallback shown until the /api/v1/home response arrives (or if it fails).
+const fallbackPopularCities: CityCard[] = [
   { id: 'shiraz', name: 'شهر شیراز' },
   { id: 'isfahan', name: 'شهر اصفهان' },
   { id: 'kish', name: 'جزیره کیش', tall: true },
@@ -44,8 +47,33 @@ const makeHotels = (cityPrefix: string): HotelListItem[] =>
     discountPercent: i % 2 === 0 ? 20 : undefined,
   }))
 
-const tehranHotels = makeHotels('تهران')
-const mashhadHotels = makeHotels('مشهد')
+interface CitySection {
+  id: string | number
+  city: string
+  hotels: HotelListItem[]
+}
+
+// Fallback shown until the /api/v1/home/cities/hotels response arrives (or if it fails).
+const fallbackCitySections: CitySection[] = [
+  { id: 'tehran', city: 'تهران', hotels: makeHotels('تهران') },
+  { id: 'mashhad', city: 'مشهد', hotels: makeHotels('مشهد') },
+]
+
+function mapApiHotel(hotel: CityHotel): HotelListItem {
+  const hasDiscount = hotel.discountPrice > hotel.price
+
+  return {
+    id: hotel.id,
+    name: hotel.name,
+    imageSrc: hotel.imageUrl || undefined,
+    rating: hotel.stars,
+    badges: hotel.tags,
+    address: hotel.address,
+    pricePerNight: hotel.price,
+    originalPricePerNight: hasDiscount ? hotel.discountPrice : undefined,
+    discountPercent: hasDiscount ? Math.round((1 - hotel.price / hotel.discountPrice) * 100) : undefined,
+  }
+}
 
 const advantages: AdvantageBoxItem[] = [
   {
@@ -118,6 +146,59 @@ const faqItems: FaqItem[] = [
 ]
 
 export function Home() {
+  const [popularCities, setPopularCities] = useState<CityCard[]>(fallbackPopularCities)
+  const [promoSlides, setPromoSlides] = useState<PromoSlide[]>(fallbackPromoSlides)
+  const [citySections, setCitySections] = useState<CitySection[]>(fallbackCitySections)
+  const [faqs, setFaqs] = useState<FaqItem[]>(faqItems)
+  const [seoTexts, setSeoTexts] = useState<AdvantageBoxItem[]>(advantages)
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetchHome(controller.signal)
+      .then(({ popularCities: cities, faqs: apiFaqs, seoTexts: apiSeoTexts }) => {
+        setPopularCities(
+          cities.map((city, index) => ({
+            id: `${city.name}-${index}`,
+            name: `شهر ${city.name}`,
+            imageSrc: city.imageSrc,
+            tall: index === 2 || index === 3,
+          })),
+        )
+        setFaqs(apiFaqs.map((faq) => ({ id: faq.id, question: faq.question, answer: faq.answer })))
+        setSeoTexts(apiSeoTexts.map((text) => ({ id: text.id, title: text.title, description: text.description })))
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        // Keep the fallback lists on failure — the sections still render.
+      })
+
+    fetchCarousel(controller.signal)
+      .then((slides) => {
+        setPromoSlides(slides.map((slide) => ({ id: slide.id, imageSrc: slide.imageUrl, link: slide.link })))
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        // Keep the fallback slides on failure.
+      })
+
+    fetchCitiesHotels(controller.signal)
+      .then((cities) => {
+        setCitySections(
+          cities
+            .filter((city) => city.hotels.length > 4)
+            .slice(0, 2)
+            .map((city) => ({ id: city.id, city: city.city, hotels: city.hotels.slice(0, 4).map(mapApiHotel) })),
+        )
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        // Keep the fallback city sections on failure.
+      })
+
+    return () => controller.abort()
+  }, [])
+
   return (
     <div className={styles.page}>
       <Header />
@@ -127,10 +208,11 @@ export function Home() {
       <div className={styles.content}>
         <PromoCarousel slides={promoSlides} />
         <PopularCities cities={popularCities} />
-        <HotelListSection city="تهران" hotels={tehranHotels} />
-        <HotelListSection city="مشهد" hotels={mashhadHotels} />
-        <AdvantageBoxes items={advantages} />
-        <Faq items={faqItems} defaultOpenId={2} />
+        {citySections.map((section) => (
+          <HotelListSection key={section.id} city={section.city} hotels={section.hotels} />
+        ))}
+        <AdvantageBoxes items={seoTexts} />
+        <Faq items={faqs} />
       </div>
 
       <Footer />

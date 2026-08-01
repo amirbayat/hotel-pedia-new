@@ -1,4 +1,5 @@
 import { IconAparat, IconInstagram, IconLinkedin, IconTelegram } from '../icons'
+import logo from '../../assets/logo.svg'
 import styles from './Footer.module.scss'
 
 export interface FooterColumn {
@@ -46,11 +47,7 @@ export function Footer({
 
       <div className={styles.bottom}>
         <div className={styles.brand}>
-          {/* TODO: swap for the real Hotelpedia logo SVG once provided */}
-          <div className={styles.logo}>
-            <span>Hotel</span>
-            <span className={styles.logoAccent}>Pedia</span>
-          </div>
+          <img src={logo} alt="هتل‌پدیا" className={styles.logo} />
           <p className={styles.address}>آدرس: {address}</p>
           <p className={styles.phone}>تلفن: {phone}</p>
 

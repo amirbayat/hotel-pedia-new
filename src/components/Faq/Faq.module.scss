@@ -41,6 +41,7 @@
   background: none;
   cursor: pointer;
   color: $color-text-muted;
+  font-family: inherit;
 
   &:hover {
     background: $color-surface-muted;

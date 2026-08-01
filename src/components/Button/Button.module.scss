@@ -67,6 +67,35 @@
   }
 }
 
+// --- Brand (blue) -----------------------------------------------------------
+// A second CTA fill seen on the hotel-list-card reserve button — blue
+// (colors.brandPrimary) instead of the orange marketing CTA above.
+
+.brand {
+  background: $color-brand-primary;
+  color: $color-text-inverse;
+  font-weight: 600; // Button Heavy
+
+  &:hover:not(:disabled) {
+    background: $color-brand-primary-dark;
+  }
+
+  &:focus-visible {
+    background: $color-brand-primary-dark;
+    outline: 2px solid $color-primary-600;
+    outline-offset: 1px;
+  }
+
+  &:active:not(:disabled) {
+    background: $color-brand-primary-dark;
+  }
+
+  &:disabled {
+    background: $color-neutral-800;
+    color: $color-text-inverse;
+  }
+}
+
 // --- Secondary --------------------------------------------------------------
 
 .secondary {

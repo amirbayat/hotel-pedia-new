@@ -1,8 +1,12 @@
-@use '../../styles/colors' as *;
+@use "../../styles/colors" as *;
 
 .wrapper {
   position: relative;
   width: 100%;
+}
+
+.input {
+  direction: rtl;
 }
 
 .popover {
@@ -16,7 +20,7 @@
   background: $color-surface;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
-  font-family: 'Yekan Bakh', sans-serif;
+  font-family: "Yekan Bakh", sans-serif;
 }
 
 .row {
@@ -35,6 +39,7 @@
   display: flex;
   align-items: baseline;
   gap: 4px;
+  direction: rtl;
 }
 
 .rowTitle {
@@ -53,6 +58,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 4px;
+  padding: 4px 12px;
 }
 
 .stepperButton {
@@ -60,24 +68,18 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid $color-border-subtle;
-  background: $color-surface;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
   color: $color-text-primary;
   font-family: inherit;
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
 
-  &:hover:not(:disabled) {
-    border-color: $color-border-hover;
-  }
-
   &:disabled {
     color: $color-text-muted;
-    border-color: $color-border-subtle;
     cursor: not-allowed;
   }
 }

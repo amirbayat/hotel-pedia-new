@@ -1,0 +1,50 @@
+@use '../../styles/colors' as *;
+
+.pagination {
+  direction: rtl; // first child (prev button) renders rightmost, last (next) leftmost
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 0;
+}
+
+.navButton,
+.pageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 8px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-text-primary;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover:not(:disabled) {
+    border-color: $color-border-hover;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pageButtonActive {
+  border: 2px solid $color-brand-primary;
+  color: $color-brand-primary;
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  color: $color-text-muted;
+}

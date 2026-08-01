@@ -1,24 +1,24 @@
-import { IconLocationPin, IconStar } from '../icons'
-import styles from './HotelCard.module.scss'
+import { IconLocationPin, IconStar } from "../icons";
+import styles from "./HotelCard.module.scss";
 
 export interface HotelCardProps {
-  imageSrc?: string
-  name: string
+  imageSrc?: string;
+  name: string;
   /** 0-5 */
-  rating?: number
+  rating?: number;
   /** Exactly 3 in the design, but any number works. */
-  badges?: string[]
-  address: string
-  pricePerNight: number
+  badges?: string[];
+  address: string;
+  pricePerNight: number;
   /** Pre-discount price, shown struck through next to the discount badge. */
-  originalPricePerNight?: number
-  /** e.g. 20 for "٪۲۰ تخفیف". Omit to hide the discount badge entirely. */
-  discountPercent?: number
-  currency?: string
+  originalPricePerNight?: number;
+  /** e.g. 20 for a "٪۲۰" discount badge. Omit to hide the discount badge entirely. */
+  discountPercent?: number;
+  currency?: string;
 }
 
 function formatPrice(value: number) {
-  return value.toLocaleString('en-US')
+  return value.toLocaleString("en-US");
 }
 
 /** Vertical hotel card — image, name, rating, feature badges, address, price + discount. */
@@ -31,12 +31,16 @@ export function HotelCard({
   pricePerNight,
   originalPricePerNight,
   discountPercent,
-  currency = 'تومان',
+  currency = "تومان",
 }: HotelCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.imageWrapper}>
-        {imageSrc ? <img src={imageSrc} alt="" className={styles.image} /> : <div className={styles.imagePlaceholder} />}
+        {imageSrc ? (
+          <img src={imageSrc} alt="" className={styles.image} />
+        ) : (
+          <div className={styles.imagePlaceholder} />
+        )}
       </div>
 
       <div className={styles.body}>
@@ -51,6 +55,7 @@ export function HotelCard({
               className={i < rating ? styles.starFilled : styles.starEmpty}
             />
           ))}
+          <span className={styles.ratingValue}>{rating} ستاره</span>
         </div>
 
         {badges.length > 0 && (
@@ -64,30 +69,40 @@ export function HotelCard({
         )}
 
         <div className={styles.address}>
-          <IconLocationPin width={16} height={16} className={styles.addressIcon} />
+          <IconLocationPin
+            width={16}
+            height={16}
+            className={styles.addressIcon}
+          />
           <span>{address}</span>
         </div>
 
         <div className={styles.priceRow}>
-          {discountPercent && (
-            <div className={styles.discount}>
-              <span className={styles.discountBadge}>٪{discountPercent} تخفیف</span>
-              {originalPricePerNight && (
-                <span className={styles.originalPrice}>
-                  {formatPrice(originalPricePerNight)} {currency}
-                </span>
-              )}
-            </div>
-          )}
+          <span className={styles.priceLabel}>قیمت از شبی</span>
 
-          <div className={styles.price}>
-            <span className={styles.priceLabel}>قیمت از شبی</span>
-            <span className={styles.priceValue}>
-              {formatPrice(pricePerNight)} {currency}
-            </span>
+          <div className={styles.priceInfo}>
+            {discountPercent ? (
+              <>
+                <div className={styles.priceStack}>
+                  {originalPricePerNight && (
+                    <span className={styles.originalPrice}>
+                      {formatPrice(originalPricePerNight)} {currency}
+                    </span>
+                  )}
+                  <span className={styles.priceValue}>
+                    {formatPrice(pricePerNight)} {currency}
+                  </span>
+                </div>
+                <span className={styles.discountBadge}>٪{discountPercent}</span>
+              </>
+            ) : (
+              <span className={styles.priceValue}>
+                {formatPrice(pricePerNight)} {currency}
+              </span>
+            )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

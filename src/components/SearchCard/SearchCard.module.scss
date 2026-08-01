@@ -1,11 +1,11 @@
-@use '../../styles/colors' as *;
-@use '../../styles/layout' as layout;
+@use "../../styles/colors" as *;
+@use "../../styles/layout" as layout;
 
 .card {
   @include layout.page-container(1200px);
-  // Pulls the card up so its top half sits on HomeHeader's background and
-  // the bottom half sits on the section below it.
-  margin-top: -110px;
+  // Pulls the card up so it overlaps the bottom edge of HomeHeader's image
+  // a little, with the rest of the card sitting on the section below it.
+  margin-top: -90px;
   position: relative;
   z-index: 1;
 
@@ -20,6 +20,7 @@
 
 .tabs {
   display: flex;
+  justify-content: flex-end;
   gap: 16px;
 }
 
@@ -33,6 +34,7 @@
   cursor: pointer;
   padding: 0;
   color: $color-brand-cta;
+  font-family: inherit;
 }
 
 .tabIcon {

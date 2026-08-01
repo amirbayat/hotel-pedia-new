@@ -3,8 +3,9 @@ import styles from './PromoCarousel.module.scss'
 
 export interface PromoSlide {
   id: string | number
-  title: string
+  title?: string
   imageSrc?: string
+  link?: string
 }
 
 export interface PromoCarouselProps {
@@ -28,17 +29,19 @@ export function PromoCarousel({ slides, intervalMs = 5000 }: PromoCarouselProps)
 
   const slide = slides[Math.min(index, slides.length - 1)]
 
+  const SlideWrapper = slide.link ? 'a' : 'div'
+
   return (
     <div className={styles.wrapper}>
-      <div className={styles.slide}>
+      <SlideWrapper className={styles.slide} {...(slide.link ? { href: slide.link } : {})}>
         {slide.imageSrc ? (
           <img src={slide.imageSrc} alt="" className={styles.image} />
         ) : (
           <div className={styles.placeholder} />
         )}
         <div className={styles.overlay} />
-        <p className={styles.title}>{slide.title}</p>
-      </div>
+        {slide.title && <p className={styles.title}>{slide.title}</p>}
+      </SlideWrapper>
 
       {slides.length > 1 && (
         <div className={styles.dots}>

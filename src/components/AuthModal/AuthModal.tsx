@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
-import type { FormEvent } from 'react'
-import { Button } from '../Button'
-import { Input } from '../Input'
-import { OtpInput } from '../OtpInput'
-import { IconBack, IconClose } from '../icons'
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { Button } from "../Button";
+import { Input } from "../Input";
+import { OtpInput } from "../OtpInput";
+import { IconBack, IconClose } from "../icons";
 import {
   panelLoginBusiness,
   panelLoginPassenger,
@@ -11,20 +11,25 @@ import {
   sendPassengerOtp,
   verifyBusinessOtp,
   verifyPassengerOtp,
-} from '../../api/auth'
-import styles from './AuthModal.module.scss'
+} from "../../api/auth";
+import { toEnglishDigits } from "../../lib/digits";
+import { toPersianDigits } from "../../lib/date/jalali";
+import { useAuth } from "../../context/authContextValue";
+import styles from "./AuthModal.module.scss";
 
-export type AuthTab = 'otp' | 'personnel'
-type Step = 'request' | 'verify'
+export type AuthTab = "otp" | "personnel";
+type Step = "request" | "verify";
+
+const RESEND_COOLDOWN_SECONDS = 60;
 
 export interface AuthModalProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
   /** Called with the access token once OTP verification succeeds. */
-  onSuccess?: (token: string) => void
+  onSuccess?: (token: string) => void;
 }
 
-const PHONE_RE = /^09\d{9}$/
+const PHONE_RE = /^09\d{9}$/;
 
 /**
  * Login modal — matches Figma "ورود به حساب کاربری". Two tabs, both OTP-based:
@@ -33,222 +38,279 @@ const PHONE_RE = /^09\d{9}$/
  * enter identifier -> enter the 6-digit code sent to it.
  */
 export function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
-  const [tab, setTab] = useState<AuthTab>('otp')
-  const [step, setStep] = useState<Step>('request')
-  const [identifier, setIdentifier] = useState('')
-  const [code, setCode] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const { login } = useAuth();
+  const [tab, setTab] = useState<AuthTab>("otp");
+  const [step, setStep] = useState<Step>("request");
+  const [identifier, setIdentifier] = useState("");
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   useEffect(() => {
-    if (!open) return
+    if (resendCooldown <= 0) return;
+    const timeout = setTimeout(
+      () => setResendCooldown((seconds) => seconds - 1),
+      1000,
+    );
+    return () => clearTimeout(timeout);
+  }, [resendCooldown]);
 
-    document.body.style.overflow = 'hidden'
+  useEffect(() => {
+    if (!open) return;
+
+    document.body.style.overflow = "hidden";
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKeyDown)
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.body.style.overflow = ''
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [open, onClose])
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose]);
 
-  if (!open) return null
+  if (!open) return null;
 
   const resetAll = () => {
-    setStep('request')
-    setIdentifier('')
-    setCode('')
-    setError('')
-  }
+    setStep("request");
+    setIdentifier("");
+    setCode("");
+    setError("");
+    setResendCooldown(0);
+  };
 
   const handleClose = () => {
-    resetAll()
-    onClose()
-  }
+    resetAll();
+    onClose();
+  };
 
   const handleTabChange = (nextTab: AuthTab) => {
-    if (nextTab === tab) return
-    setTab(nextTab)
-    setStep('request')
-    setIdentifier('')
-    setCode('')
-    setError('')
-  }
+    if (nextTab === tab) return;
+    setTab(nextTab);
+    setStep("request");
+    setIdentifier("");
+    setCode("");
+    setError("");
+    setResendCooldown(0);
+  };
 
   const sendOtp = async () => {
-    setError('')
+    setError("");
 
-    if (tab === 'otp' && !PHONE_RE.test(identifier)) {
-      setError('شماره تلفن همراه را به‌درستی وارد کنید.')
-      return
+    if (tab === "otp" && !PHONE_RE.test(identifier)) {
+      setError("شماره تلفن همراه را به‌درستی وارد کنید.");
+      return;
     }
-    if (tab === 'personnel' && !identifier.trim()) {
-      setError('شماره پرسنلی را وارد کنید.')
-      return
+    if (tab === "personnel" && !identifier.trim()) {
+      setError("شماره پرسنلی را وارد کنید.");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      if (tab === 'otp') {
-        await sendPassengerOtp(identifier)
+      if (tab === "otp") {
+        await sendPassengerOtp(identifier);
       } else {
-        await sendBusinessOtp(identifier)
+        await sendBusinessOtp(identifier);
       }
-      setCode('')
-      setStep('verify')
+      setCode("");
+      setStep("verify");
+      setResendCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ارسال کد با خطا مواجه شد.')
+      setError(
+        err instanceof Error ? err.message : "ارسال کد با خطا مواجه شد.",
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleRequestSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    void sendOtp()
-  }
+    e.preventDefault();
+    void sendOtp();
+  };
 
   const handleVerifySubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
 
     if (code.length !== 6) {
-      setError('کد ۶ رقمی ارسال‌شده را کامل وارد کنید.')
-      return
+      setError("کد ۶ رقمی ارسال‌شده را کامل وارد کنید.");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const token =
-        tab === 'otp' ? await verifyPassengerOtp(identifier, code) : await verifyBusinessOtp(identifier, code)
+        tab === "otp"
+          ? await verifyPassengerOtp(identifier, code)
+          : await verifyBusinessOtp(identifier, code);
 
-      if (tab === 'otp') {
-        panelLoginPassenger(token)
+      if (tab === "otp") {
+        panelLoginPassenger(token);
       } else {
-        panelLoginBusiness(token)
+        panelLoginBusiness(token);
       }
 
-      onSuccess?.(token)
-      handleClose()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'کد وارد شده صحیح نیست.')
-    } finally {
-      setLoading(false)
-    }
-  }
+      // Name/wallet balance aren't returned by the OTP-verify endpoints yet —
+      // placeholders until a real profile/wallet API is wired in.
+      login({ name: "کاربر هتل‌پدیا", phone: identifier, walletBalance: 0 });
 
-  const identifierLabel = tab === 'otp' ? 'شماره تلفن همراه' : 'شماره پرسنلی'
+      onSuccess?.(token);
+      handleClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "کد وارد شده صحیح نیست.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const identifierLabel = tab === "otp" ? "شماره تلفن همراه" : "شماره پرسنلی";
   const identifierPlaceholder =
-    tab === 'otp' ? 'شماره تلفن همراه خود را وارد کنید' : 'شماره پرسنلی خود را وارد کنید'
-  const changeIdentifierLabel = tab === 'otp' ? 'تغییر شماره همراه' : 'تغییر شماره پرسنلی'
+    tab === "otp"
+      ? "شماره تلفن همراه خود را وارد کنید"
+      : "شماره پرسنلی خود را وارد کنید";
+  const changeIdentifierLabel =
+    tab === "otp" ? "تغییر شماره همراه" : "تغییر شماره پرسنلی";
 
   return (
     <div className={styles.overlay} onMouseDown={handleClose}>
       <div className={styles.dialog} onMouseDown={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <button type="button" className={styles.iconButton} onClick={handleClose} aria-label="بستن">
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={handleClose}
+            aria-label="بستن"
+          >
             <IconClose width={20} height={20} />
           </button>
 
-          {step === 'verify' ? (
+          {step === "verify" ? (
             <div className={styles.titleWithBack}>
+              <h2 className={styles.title}>رمز یکبار مصرف</h2>
               <button
                 type="button"
                 className={styles.iconButton}
                 onClick={() => {
-                  setStep('request')
-                  setCode('')
-                  setError('')
+                  setStep("request");
+                  setCode("");
+                  setError("");
                 }}
                 aria-label="بازگشت"
               >
                 <IconBack width={20} height={20} />
               </button>
-              <h2 className={styles.title}>رمز یکبار مصرف</h2>
             </div>
           ) : (
             <h2 className={styles.title}>ورود به حساب کاربری</h2>
           )}
         </div>
 
-        {step === 'request' && (
+        {step === "request" && (
           <>
             <div className={styles.tabs}>
               <button
                 type="button"
-                className={[styles.tab, tab === 'personnel' && styles.tabActive].filter(Boolean).join(' ')}
-                onClick={() => handleTabChange('personnel')}
+                className={[styles.tab, tab === "personnel" && styles.tabActive]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => handleTabChange("personnel")}
               >
                 ورود با شماره پرسنلی
               </button>
               <button
                 type="button"
-                className={[styles.tab, tab === 'otp' && styles.tabActive].filter(Boolean).join(' ')}
-                onClick={() => handleTabChange('otp')}
+                className={[styles.tab, tab === "otp" && styles.tabActive]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => handleTabChange("otp")}
               >
                 ورود با رمز یکبار مصرف
               </button>
             </div>
 
-            <p className={styles.description}>جهت ورود، اطلاعات خود را وارد کنید.</p>
+            <p className={styles.description}>
+              جهت ورود، اطلاعات خود را وارد کنید.
+            </p>
 
             <form className={styles.form} onSubmit={handleRequestSubmit}>
               <Input
                 label={identifierLabel}
                 placeholder={identifierPlaceholder}
                 value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                onChange={(e) =>
+                  setIdentifier(
+                    tab === "otp"
+                      ? toEnglishDigits(e.target.value)
+                      : e.target.value,
+                  )
+                }
                 error={error || undefined}
                 disabled={loading}
-                inputMode={tab === 'otp' ? 'tel' : undefined}
+                inputMode={tab === "otp" ? "tel" : undefined}
               />
 
-              <Button type="submit" disabled={loading}>
-                {loading ? 'در حال ارسال...' : 'ورود'}
+              <Button
+                type="submit"
+                disabled={loading}
+                className={styles.button}
+              >
+                {loading ? "در حال ارسال..." : "ورود"}
               </Button>
             </form>
           </>
         )}
 
-        {step === 'verify' && (
+        {step === "verify" && (
           <form className={styles.form} onSubmit={handleVerifySubmit}>
-            <p className={styles.description}>{`رمز ارسال شده به شماره ${identifier} را در کادر زیر وارد کنید.`}</p>
+            <p
+              className={styles.description}
+            >{`رمز ارسال شده به شماره ${identifier} را در کادر زیر وارد کنید.`}</p>
 
-            <OtpInput value={code} onChange={setCode} error={error || undefined} disabled={loading} />
+            <OtpInput
+              value={code}
+              onChange={setCode}
+              error={error || undefined}
+              disabled={loading}
+            />
 
             <div className={styles.verifyActions}>
-              <Button
+              <button
                 type="button"
-                variant="secondary"
                 className={styles.verifyActionButton}
-                disabled={loading}
+                disabled={loading || resendCooldown > 0}
                 onClick={() => void sendOtp()}
               >
-                ارسال مجدد رمز یکبار مصرف
-              </Button>
-              <Button
+                {loading
+                  ? "در حال ارسال..."
+                  : resendCooldown > 0
+                    ? `ارسال مجدد (${toPersianDigits(resendCooldown)})`
+                    : "ارسال مجدد رمز یکبار مصرف"}
+              </button>
+              <button
                 type="button"
-                variant="secondary"
                 className={styles.verifyActionButton}
+                disabled={loading}
                 onClick={() => {
-                  setStep('request')
-                  setCode('')
-                  setError('')
+                  setStep("request");
+                  setCode("");
+                  setError("");
+                  setResendCooldown(0);
                 }}
               >
                 {changeIdentifierLabel}
-              </Button>
+              </button>
             </div>
 
             <Button type="submit" disabled={loading}>
-              {loading ? 'در حال بررسی...' : 'ورود'}
+              {loading ? "در حال بررسی..." : "ورود"}
             </Button>
           </form>
         )}
       </div>
     </div>
-  )
+  );
 }

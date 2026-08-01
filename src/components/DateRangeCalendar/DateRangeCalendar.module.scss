@@ -128,9 +128,9 @@
   // In-range / selected override the tier and weekday colors — the range
   // takes visual priority once a day is part of it.
   &.inRange {
-    background: $color-primary-400;
+    background: $color-calendar-range-middle;
     border-color: transparent;
-    color: $color-text-inverse;
+    color: $color-text-primary;
   }
 
   &.previewEnd {
@@ -140,7 +140,7 @@
   }
 
   &.selected {
-    background: $color-primary-300;
+    background: $color-calendar-range-edge;
     border-color: transparent;
     color: $color-text-inverse;
     font-weight: 700;

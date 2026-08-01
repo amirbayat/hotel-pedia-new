@@ -29,6 +29,10 @@ export const colorScale = {
   // Error (red) scale — only one step seen so far
   error200: '#b40000',
 
+  // Seen on the discount badge (hotel cards), not bound to a Figma variable
+  // in any of the screens inspected — verify with design before treating as stable.
+  discount: '#dc3c3c',
+
   white: '#ffffff',
   overlayBlack: 'rgba(0, 0, 0, 0.5)', // Figma "W-500"
 
@@ -36,6 +40,7 @@ export const colorScale = {
   // variable in any of the screens inspected — verify with design before
   // treating this as a stable token.
   ctaOrange: '#ff6400',
+  ctaOrangeLight: '#ffb180', // calendar in-range fill, between the start/end days
 
   // Calendar day-price tiers (booking date-range picker) — not sourced from a
   // Figma variable, picked to match the "ارزان/میانه/گران قیمت" legend colors
@@ -75,6 +80,13 @@ export const colors = {
   priceTierCheap: colorScale.priceCheap,
   priceTierMedium: colorScale.primary200,
   priceTierExpensive: colorScale.error200,
+
+  // Calendar range selection
+  calendarRangeEdge: colorScale.ctaOrange,
+  calendarRangeMiddle: colorScale.ctaOrangeLight,
+
+  // Discount badge
+  badgeDiscount: colorScale.discount,
 } as const
 
 export type ColorScaleToken = keyof typeof colorScale

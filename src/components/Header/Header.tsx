@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { AccountMenu } from '../AccountMenu'
 import { Button } from '../Button'
 import { AuthModal } from '../AuthModal'
-import { IconHelp, IconPerson } from '../icons'
+import { useAuth } from '../../context/authContextValue'
+import { IconCallCenter, IconLogin } from '../icons'
+import logo from '../../assets/logo.svg'
 import styles from './Header.module.scss'
 
 /**
@@ -9,20 +12,29 @@ import styles from './Header.module.scss'
  * Desktop/tablet only, 1408px content width.
  */
 export function Header() {
+  const { user, logout } = useAuth()
   const [authOpen, setAuthOpen] = useState(false)
 
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
         <div className={styles.actions}>
-          <Button variant="secondary" icon={IconPerson} onClick={() => setAuthOpen(true)}>
-            ورود - ثبت نام
-          </Button>
-          <Button variant="secondary" icon={IconHelp} aria-label="پشتیبانی" />
+          {user ? (
+            <AccountMenu user={user} onLogout={logout} />
+          ) : (
+            <Button
+              variant="secondary"
+              icon={IconLogin}
+              className={styles.loginButton}
+              onClick={() => setAuthOpen(true)}
+            >
+              ورود - ثبت نام
+            </Button>
+          )}
+          <Button variant="secondary" icon={IconCallCenter} aria-label="پشتیبانی" />
         </div>
 
-        {/* TODO: swap for the real Hotelpedia logo SVG once provided */}
-        <div className={styles.logo}>هتل‌پدیا</div>
+        <img src={logo} alt="هتل‌پدیا" className={styles.logo} />
       </div>
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
