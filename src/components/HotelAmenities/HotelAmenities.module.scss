@@ -1,0 +1,70 @@
+@use '../../styles/colors' as *;
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  direction: rtl;
+  text-align: right;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: $color-text-primary;
+
+  p {
+    margin: 0;
+
+    + p {
+      margin-top: 8px;
+    }
+  }
+}
+
+.amenitiesBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 32px;
+  padding: 32px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.cellLabel {
+  font-size: 14px;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.cellIcon {
+  flex-shrink: 0;
+  color: $color-text-primary;
+}

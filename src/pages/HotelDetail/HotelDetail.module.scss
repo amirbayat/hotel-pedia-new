@@ -1,0 +1,56 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.page {
+  width: 100%;
+  min-width: 1024px; // desktop/tablet only — no mobile layout
+  background: $color-surface;
+}
+
+.content {
+  @include layout.page-container(1200px);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 16px;
+  padding-bottom: 64px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 14px;
+  color: $color-text-muted;
+}
+
+.section {
+  scroll-margin-top: 16px;
+}
+
+.stateMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 0;
+  text-align: center;
+  color: $color-text-muted;
+  font-size: 14px;
+}
+
+.retryButton {
+  padding: 8px 16px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-text-primary;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $color-border-hover;
+  }
+}

@@ -1,0 +1,170 @@
+@use '../../styles/colors' as *;
+
+.gallery {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  height: 470px;
+}
+
+.emptyState {
+  width: 100%;
+  height: 470px;
+  border-radius: 8px;
+  background: $color-surface-muted;
+}
+
+.grid {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 227px);
+  grid-template-rows: repeat(2, 227px);
+  gap: 16px;
+}
+
+.cell {
+  position: relative;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: $color-surface-muted;
+}
+
+.cellImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.showAllOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: $color-text-inverse;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hero {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: $color-surface-muted;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+// --- Lightbox ---------------------------------------------------------------
+
+.lightboxScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-overlay-scrim;
+  padding: 32px;
+}
+
+.lightbox {
+  position: relative;
+  width: min(1000px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background: $color-surface;
+}
+
+.closeButton {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  z-index: 1;
+  display: flex;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-text-primary;
+  cursor: pointer;
+}
+
+.lightboxMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.navButton {
+  flex-shrink: 0;
+  display: flex;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: $color-surface-muted;
+  color: $color-text-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-border-subtle;
+  }
+}
+
+.lightboxImage {
+  flex: 1;
+  min-width: 0;
+  max-height: 70vh;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  background: $color-surface-muted;
+}
+
+.thumbStrip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.thumb {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.thumbActive {
+  border-color: $color-brand-primary;
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

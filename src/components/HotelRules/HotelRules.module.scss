@@ -1,0 +1,63 @@
+@use '../../styles/colors' as *;
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  direction: rtl;
+  text-align: right;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.checkTimes {
+  display: flex;
+  gap: 16px;
+}
+
+.checkTime {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.checkLabel {
+  color: $color-text-muted;
+}
+
+.checkValue {
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.ruleList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ruleItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: $color-text-primary;
+}
+
+.ruleTitle {
+  font-weight: 700;
+}

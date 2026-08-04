@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Destination } from '../../api/destinations'
 import type { HotelSortBy } from '../../api/hotelSearch'
 import { useHotelSearch } from '../../hooks/useHotelSearch'
@@ -38,6 +38,7 @@ function parseStars(raw: string | null): number[] {
 
 /** Hotel listing/search-results page — see docs/hotel-listing-plan.md. */
 export function HotelListing() {
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [filtersOpen, setFiltersOpen] = useState(true)
 
@@ -109,6 +110,10 @@ export function HotelListing() {
     updateParams({ name: null, discounted: null, stars: null, min_price: null, max_price: null, page: null })
   }
 
+  function handleViewHotel(slug: string) {
+    navigate(`/hotels/${slug}?${new URLSearchParams({ check_in: checkIn, check_out: checkOut, adults: String(adults), rooms: String(rooms) })}`)
+  }
+
   const nights = daysBetween(checkIn, checkOut)
   const occupancySummary = `${toPersianDigits(adults)} بزرگسال - ${toPersianDigits(rooms)} اتاق`
 
@@ -163,6 +168,8 @@ export function HotelListing() {
                     occupancySummary={occupancySummary}
                     isAvailable={hotel.isAvailable}
                     price={hotel.isAvailable ? hotel.minSellPrice : undefined}
+                    onReserve={() => handleViewHotel(hotel.slug)}
+                    onViewDetails={() => handleViewHotel(hotel.slug)}
                   />
                 ))}
               </div>

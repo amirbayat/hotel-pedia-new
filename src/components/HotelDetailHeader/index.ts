@@ -1,0 +1,1 @@
+export { HotelDetailHeader } from './HotelDetailHeader'

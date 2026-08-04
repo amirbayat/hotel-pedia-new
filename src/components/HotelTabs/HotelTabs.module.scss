@@ -1,0 +1,30 @@
+@use '../../styles/colors' as *;
+
+.tabs {
+  display: flex;
+  direction: rtl;
+  justify-content: center;
+  width: 100%;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.tab {
+  height: 56px;
+  padding-inline: 32px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-size: 16px;
+  color: $color-text-primary;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    color: $color-brand-primary;
+  }
+}
+
+.tabActive {
+  font-weight: 700;
+  border-bottom-color: $color-brand-primary;
+}

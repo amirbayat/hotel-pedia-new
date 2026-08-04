@@ -1,0 +1,221 @@
+@use '../../styles/colors' as *;
+
+.summary {
+  display: flex;
+  gap: 32px;
+  width: 100%;
+}
+
+// --- Map preview + "نمایش روی نقشه" overlay ---------------------------------
+
+.mapWrapper {
+  position: relative;
+  flex-shrink: 0;
+  width: 470px;
+  height: 292px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.showMapButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 256px;
+  height: 48px;
+  border: 1px solid $color-primary-600;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-primary-200;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+// --- Info (favorite/share actions + details) --------------------------------
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-block: 16px;
+}
+
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.iconButton {
+  display: flex;
+  padding: 12px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: $color-text-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.favoriteActive {
+  color: $color-error-200;
+}
+
+.details {
+  flex: 1;
+  min-width: 0;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  direction: rtl;
+  text-align: right;
+}
+
+.name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.starsValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.starsLabel {
+  font-size: 14px;
+  color: $color-text-muted;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+}
+
+.starFilled {
+  color: $color-brand-cta;
+}
+
+.userRate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userRateText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.ratingLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.reviewCount {
+  font-size: 14px;
+  color: $color-text-muted;
+}
+
+.scoreBadge {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: $color-brand-primary-dark;
+  color: $color-text-inverse;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.address {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: $color-text-primary;
+}
+
+.addressIcon {
+  flex-shrink: 0;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 30px;
+  background: $color-surface-muted;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+// --- Full map modal ----------------------------------------------------------
+
+.mapModalScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-overlay-scrim;
+  padding: 32px;
+}
+
+.mapModal {
+  width: min(900px, 100%);
+  height: min(600px, 80vh);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modalMap {
+  width: 100%;
+  height: 100%;
+}

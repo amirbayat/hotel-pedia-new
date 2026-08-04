@@ -1,0 +1,46 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.header {
+  width: 100%;
+  background: $color-surface;
+}
+
+.inner {
+  @include layout.page-container(1440px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
+
+.leftActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  height: 24px;
+  width: auto;
+}
+
+.menuButton {
+  display: flex;
+  padding: 12px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: $color-text-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
