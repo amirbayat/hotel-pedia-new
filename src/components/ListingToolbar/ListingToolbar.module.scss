@@ -1,11 +1,17 @@
 @use "../../styles/colors" as *;
+@use "../../styles/layout" as layout;
 
 .toolbar {
+  width: 100%;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.inner {
+  @include layout.page-container(1200px);
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 0 15px;
-  border-bottom: 1px solid $color-border-subtle;
+  padding-block: 16px;
 }
 
 .resultCount {

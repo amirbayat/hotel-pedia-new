@@ -41,56 +41,58 @@ export function ListingToolbar({
 }: ListingToolbarProps) {
   return (
     <div className={styles.toolbar}>
-      <span className={styles.resultCount} dir="rtl">
-        {`${toPersianDigits(resultCount)} هتل و اقامتگاه در `}
-        <bdi>{cityLabel}</bdi>
-      </span>
-      <div className={styles.sortGroup}>
-        <div className={styles.pills}>
-          {SORT_PILLS.map((pill) => (
-            <button
-              key={pill.value}
-              type="button"
-              className={[
-                styles.pill,
-                pill.value === sortBy && styles.pillActive,
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              onClick={() => onSortChange(pill.value)}
-              aria-pressed={pill.value === sortBy}
-            >
-              {pill.label}
-            </button>
-          ))}
+      <div className={styles.inner}>
+        <span className={styles.resultCount} dir="rtl">
+          {`${toPersianDigits(resultCount)} هتل و اقامتگاه در `}
+          <bdi>{cityLabel}</bdi>
+        </span>
+        <div className={styles.sortGroup}>
+          <div className={styles.pills}>
+            {SORT_PILLS.map((pill) => (
+              <button
+                key={pill.value}
+                type="button"
+                className={[
+                  styles.pill,
+                  pill.value === sortBy && styles.pillActive,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => onSortChange(pill.value)}
+                aria-pressed={pill.value === sortBy}
+              >
+                {pill.label}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.sortLabel}>
+            <span>:مرتب‌سازی</span>
+            <IconSwapDown width={24} height={24} aria-hidden />
+          </div>
         </div>
 
-        <div className={styles.sortLabel}>
-          <span>:مرتب‌سازی</span>
-          <IconSwapDown width={24} height={24} aria-hidden />
+        <div className={styles.filterActions}>
+          <button
+            type="button"
+            className={styles.clearButton}
+            onClick={onClearFilters}
+            disabled={!hasActiveFilters}
+          >
+            <span>حذف فیلتر</span>
+            <IconClose width={24} height={24} aria-hidden />
+          </button>
+
+          <button
+            type="button"
+            className={styles.filtersToggle}
+            onClick={onToggleFilters}
+            aria-pressed={filtersOpen}
+          >
+            <span>فیلترها</span>
+            <IconSwapDown width={24} height={24} aria-hidden />
+          </button>
         </div>
-      </div>
-
-      <div className={styles.filterActions}>
-        <button
-          type="button"
-          className={styles.clearButton}
-          onClick={onClearFilters}
-          disabled={!hasActiveFilters}
-        >
-          <span>حذف فیلتر</span>
-          <IconClose width={24} height={24} aria-hidden />
-        </button>
-
-        <button
-          type="button"
-          className={styles.filtersToggle}
-          onClick={onToggleFilters}
-          aria-pressed={filtersOpen}
-        >
-          <span>فیلترها</span>
-          <IconSwapDown width={24} height={24} aria-hidden />
-        </button>
       </div>
     </div>
   );
