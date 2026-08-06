@@ -28,10 +28,13 @@ export function DestinationSearchField({
   const [results, setResults] = useState<Destination[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasUserEdited, setHasUserEdited] = useState(false);
   const debouncedQuery = useDebouncedValue(query.trim(), 350);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!hasUserEdited) return;
+
     if (!debouncedQuery) {
       setResults([]);
       setIsOpen(false);
@@ -54,7 +57,7 @@ export function DestinationSearchField({
       .finally(() => setIsLoading(false));
 
     return () => controller.abort();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, hasUserEdited]);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -73,6 +76,7 @@ export function DestinationSearchField({
   function handleSelect(destination: Destination) {
     setQuery(destination.label);
     setIsOpen(false);
+    setHasUserEdited(false);
     onSelect?.(destination);
   }
 
@@ -88,8 +92,10 @@ export function DestinationSearchField({
         trailingIcon={IconLocation}
         reverseIcons={reverseIcons}
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        onFocus={() => (results.length > 0 || isLoading) && setIsOpen(true)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setHasUserEdited(true);
+        }}
         autoComplete="off"
         className={styles.input}
       />

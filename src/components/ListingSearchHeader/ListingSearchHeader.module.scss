@@ -1,5 +1,5 @@
-@use '../../styles/colors' as *;
-@use '../../styles/layout' as layout;
+@use "../../styles/colors" as *;
+@use "../../styles/layout" as layout;
 
 .header {
   width: 100%;
@@ -49,6 +49,15 @@
 .right {
   grid-column: 3;
   justify-self: end;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.left {
+  grid-column: 1;
+  justify-self: start;
   flex-shrink: 0;
   display: flex;
   align-items: center;

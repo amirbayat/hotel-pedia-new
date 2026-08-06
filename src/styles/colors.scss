@@ -41,6 +41,7 @@ $color-overlay-black: rgba(0, 0, 0, 0.5); // Figma "W-500"
 // design before treating this as a stable token.
 $color-cta-orange: #ff6400;
 $color-cta-orange-light: #ffb180; // calendar in-range fill, between the start/end days
+$color-star: #ffb400; // hotel star rating icons
 
 // Calendar day-price tiers (booking date-range picker) — not sourced from a
 // Figma variable, picked to match the "ارزان/میانه/گران قیمت" legend colors
@@ -86,3 +87,6 @@ $color-calendar-range-middle: $color-cta-orange-light; // days between start/end
 
 // Discount badge
 $color-badge-discount: $color-discount;
+
+// Star rating
+$color-rating-star: $color-star;

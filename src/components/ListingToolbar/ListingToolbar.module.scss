@@ -1,4 +1,4 @@
-@use '../../styles/colors' as *;
+@use "../../styles/colors" as *;
 
 .toolbar {
   display: flex;
@@ -9,10 +9,11 @@
 }
 
 .resultCount {
-  flex: 1;
-  min-width: 0;
+  flex-shrink: 0;
   font-size: 14px;
   color: $color-text-muted;
+  direction: rtl;
+  text-align: end;
 }
 
 .sortGroup {
@@ -20,6 +21,7 @@
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
+  margin-inline-start: auto;
 }
 
 .pills {
