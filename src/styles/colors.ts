@@ -26,8 +26,17 @@ export const colorScale = {
   neutral800: "#d7d7d7",
   neutral900: "#f5f5f5",
 
-  // Error (red) scale — only one step seen so far
+  // Error (red) scale
   error200: "#b40000",
+  // Seen on the booking-flow step indicator / failed-payment page (Figma
+  // vars "E-300"/"E-900") — a separate, lighter red scale from error200.
+  error300: "#c02929",
+  error900: "#f7e5e5",
+
+  // Green scale (Figma vars "G-100"/"G-800") — seen on the booking-flow step
+  // indicator (done state) and the successful-booking result page.
+  green100: "#697e1c",
+  green800: "#eaf0d4",
 
   // Seen on the discount badge (hotel cards), not bound to a Figma variable
   // in any of the screens inspected — verify with design before treating as stable.
@@ -71,6 +80,10 @@ export const colors = {
 
   // Feedback
   textError: colorScale.error200,
+  successText: colorScale.green100,
+  successBg: colorScale.green800,
+  errorTextStrong: colorScale.error300,
+  errorBg: colorScale.error900,
 
   // Brand
   brandPrimary: colorScale.primary200,

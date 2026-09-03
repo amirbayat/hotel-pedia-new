@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { addMonths, todayCursor, todayIso } from '../../lib/date/jalali'
+import type { JalaliCursor } from '../../lib/date/jalali'
 import { IconArrowLeft, IconArrowRight } from '../icons'
 import { MonthGrid } from './MonthGrid'
 import { pickDate } from './rangeUtils'
@@ -25,7 +26,15 @@ export interface DateRangeCalendarProps {
   minDate?: string
   /** Latest selectable ISO date. Days outside this bound are disabled. */
   maxDate?: string
+  /** Dates known to be unbookable (e.g. sold out) — disabled, and a range can't be picked across one. */
+  unavailableDates?: Set<string>
+  /** Formatted per-night price shown under the day number, e.g. "۴۵,۵۰۰". */
+  priceLabelByDate?: Partial<Record<string, string>>
   className?: string
+  /** Controlled right-hand month cursor — omit to let the calendar manage its own navigation state. */
+  cursor?: JalaliCursor
+  /** Required alongside `cursor` — called with the next cursor when the user navigates months. */
+  onCursorChange?: (cursor: JalaliCursor) => void
 }
 
 /**
@@ -33,20 +42,41 @@ export interface DateRangeCalendarProps {
  * calendar). The right-hand month is the earlier one, following RTL reading
  * order; the left arrow moves forward in time, the right arrow moves back.
  */
-export function DateRangeCalendar({ value, onChange, pricesByDate, minDate, maxDate, className }: DateRangeCalendarProps) {
-  const [cursor, setCursor] = useState(todayCursor)
+export function DateRangeCalendar({
+  value,
+  onChange,
+  pricesByDate,
+  minDate,
+  maxDate,
+  unavailableDates,
+  priceLabelByDate,
+  className,
+  cursor: controlledCursor,
+  onCursorChange,
+}: DateRangeCalendarProps) {
+  const [internalCursor, setInternalCursor] = useState(todayCursor)
+  const cursor = controlledCursor ?? internalCursor
+  const setCursor = (updater: (current: JalaliCursor) => JalaliCursor) => {
+    const next = updater(cursor)
+    if (onCursorChange) onCursorChange(next)
+    else setInternalCursor(next)
+  }
   const [hoverIso, setHoverIso] = useState<string | null>(null)
   const secondCursor = addMonths(cursor, 1)
   const today = todayIso()
   const effectiveMinDate = minDate ?? today
   const hasLegend = pricesByDate && Object.keys(pricesByDate).length > 0
+  // Per-day price captions need noticeably more room per cell than the plain
+  // search-card calendar — widen the months (instead of the fixed compact
+  // width) whenever they're actually shown, rather than adding a separate prop.
+  const hasPriceLabels = Boolean(priceLabelByDate && Object.keys(priceLabelByDate).length > 0)
 
   function handleDayClick(iso: string) {
-    onChange(pickDate(value, iso))
+    onChange(pickDate(value, iso, unavailableDates ? (day) => unavailableDates.has(day) : undefined))
   }
 
   return (
-    <div className={[styles.calendar, className].filter(Boolean).join(' ')}>
+    <div className={[styles.calendar, hasPriceLabels && styles.calendarWithPrices, className].filter(Boolean).join(' ')}>
       {/*
         DOM order matches the visual (non-RTL-flex) layout used throughout
         this app: the later month renders on the left, the earlier one on
@@ -71,6 +101,8 @@ export function DateRangeCalendar({ value, onChange, pricesByDate, minDate, maxD
           pricesByDate={pricesByDate}
           minDate={effectiveMinDate}
           maxDate={maxDate}
+          unavailableDates={unavailableDates}
+          priceLabelByDate={priceLabelByDate}
           onDayClick={handleDayClick}
           onDayHover={setHoverIso}
         />
@@ -84,6 +116,8 @@ export function DateRangeCalendar({ value, onChange, pricesByDate, minDate, maxD
           pricesByDate={pricesByDate}
           minDate={effectiveMinDate}
           maxDate={maxDate}
+          unavailableDates={unavailableDates}
+          priceLabelByDate={priceLabelByDate}
           onDayClick={handleDayClick}
           onDayHover={setHoverIso}
         />

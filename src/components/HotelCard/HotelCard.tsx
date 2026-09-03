@@ -9,7 +9,8 @@ export interface HotelCardProps {
   /** Exactly 3 in the design, but any number works. */
   badges?: string[];
   address: string;
-  pricePerNight: number;
+  /** Omit when the source data has no price (e.g. the "similar hotels" API) — the price row is hidden entirely. */
+  pricePerNight?: number;
   /** Pre-discount price, shown struck through next to the discount badge. */
   originalPricePerNight?: number;
   /** e.g. 20 for a "٪۲۰" discount badge. Omit to hide the discount badge entirely. */
@@ -77,31 +78,33 @@ export function HotelCard({
           <span>{address}</span>
         </div>
 
-        <div className={styles.priceRow}>
-          <span className={styles.priceLabel}>قیمت از شبی</span>
+        {pricePerNight !== undefined && (
+          <div className={styles.priceRow}>
+            <span className={styles.priceLabel}>قیمت از شبی</span>
 
-          <div className={styles.priceInfo}>
-            {discountPercent ? (
-              <>
-                <div className={styles.priceStack}>
-                  {originalPricePerNight && (
-                    <span className={styles.originalPrice}>
-                      {formatPrice(originalPricePerNight)} {currency}
+            <div className={styles.priceInfo}>
+              {discountPercent ? (
+                <>
+                  <div className={styles.priceStack}>
+                    {originalPricePerNight && (
+                      <span className={styles.originalPrice}>
+                        {formatPrice(originalPricePerNight)} {currency}
+                      </span>
+                    )}
+                    <span className={styles.priceValue}>
+                      {formatPrice(pricePerNight)} {currency}
                     </span>
-                  )}
-                  <span className={styles.priceValue}>
-                    {formatPrice(pricePerNight)} {currency}
-                  </span>
-                </div>
-                <span className={styles.discountBadge}>٪{discountPercent}</span>
-              </>
-            ) : (
-              <span className={styles.priceValue}>
-                {formatPrice(pricePerNight)} {currency}
-              </span>
-            )}
+                  </div>
+                  <span className={styles.discountBadge}>٪{discountPercent}</span>
+                </>
+              ) : (
+                <span className={styles.priceValue}>
+                  {formatPrice(pricePerNight)} {currency}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

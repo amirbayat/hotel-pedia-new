@@ -1,0 +1,1 @@
+export { BookingPassengers } from './BookingPassengers'

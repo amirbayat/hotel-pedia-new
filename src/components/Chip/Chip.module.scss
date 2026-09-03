@@ -1,0 +1,28 @@
+@use '../../styles/colors' as *;
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 30px;
+  background: $color-surface;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: $color-text-primary;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.active {
+  border-color: $color-brand-primary;
+  background: $color-primary-900;
+  color: $color-brand-primary;
+}

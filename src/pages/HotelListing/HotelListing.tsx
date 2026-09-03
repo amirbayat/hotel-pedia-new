@@ -133,9 +133,15 @@ export function HotelListing() {
     });
   }
 
-  function handleViewHotel(slug: string) {
+  function handleViewHotel(slug: string, hotelId: number) {
     navigate(
-      `/hotels/${slug}?${new URLSearchParams({ check_in: checkIn, check_out: checkOut, adults: String(adults), rooms: String(rooms) })}`,
+      `/hotels/${slug}?${new URLSearchParams({
+        check_in: checkIn,
+        check_out: checkOut,
+        adults: String(adults),
+        rooms: String(rooms),
+        hotel_id: String(hotelId),
+      })}`,
     );
   }
 
@@ -202,8 +208,8 @@ export function HotelListing() {
                     occupancySummary={occupancySummary}
                     isAvailable={hotel.isAvailable}
                     price={hotel.isAvailable ? hotel.minSellPrice : undefined}
-                    onReserve={() => handleViewHotel(hotel.slug)}
-                    onViewDetails={() => handleViewHotel(hotel.slug)}
+                    onReserve={() => handleViewHotel(hotel.slug, hotel.id)}
+                    onViewDetails={() => handleViewHotel(hotel.slug, hotel.id)}
                   />
                 ))}
               </div>

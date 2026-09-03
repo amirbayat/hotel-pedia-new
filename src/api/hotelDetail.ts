@@ -75,6 +75,14 @@ export interface HotelRating {
 }
 
 export interface HotelDetail {
+  /**
+   * ⚠️ hotel-show has no `id` field in any sample seen so far (only `slug`) —
+   * this is here in case the backend adds one later. Until then, callers that
+   * need the numeric hotel id (e.g. the `/hotels/{id}/similar` and
+   * `/hotels/{id}/calendars` endpoints) must get it from elsewhere, such as
+   * the `hotel_id` query param the listing page now forwards when linking here.
+   */
+  id?: number
   slug: string
   name: string
   hotelKind: string
@@ -100,8 +108,91 @@ export interface HotelDetailParams {
   endDate?: string
 }
 
-/** GET /api/v1/hotel-show/{hotel:slug} — see docs/hotel-detail-plan.md. */
+/** Deterministic pseudo-random in [0, 1) — same (seed) always yields the same value, unlike Math.random(). */
+function seededRandom(seed: string): number {
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) | 0
+  }
+  return (hash >>> 0) / 0xffffffff
+}
+
+const MOCK_HOTEL_ID = 1
+const MOCK_IMAGES = Array.from({ length: 6 }, (_, i) => `https://picsum.photos/seed/hotelpedia-hotel-${i}/1200/800`)
+
+const MOCK_ROOM_DEFS = [
+  { id: 101, roomKind: 'دو تخته برای دو نفر', personCount: 2, extraPersonCount: 1, baseFee: 3_200_000 },
+  { id: 102, roomKind: 'یک تخته برای یک نفر', personCount: 1, extraPersonCount: 0, baseFee: 2_100_000 },
+  { id: 103, roomKind: 'سوئیت خانوادگی برای چهار نفر', personCount: 4, extraPersonCount: 2, baseFee: 5_400_000 },
+] as const
+
+/** Generates ~1 year of nightly rates starting today, so any near-term date range has prices. */
+function buildMockCalendar(roomId: number, baseFee: number): HotelRoom['calendar'] {
+  const days: HotelRoom['calendar'] = []
+  const start = new Date()
+  for (let i = 0; i < 365; i++) {
+    const date = new Date(start)
+    date.setDate(date.getDate() + i)
+    const isoDate = date.toISOString().slice(0, 10)
+    const isWeekend = date.getDay() === 4 || date.getDay() === 5 // پنجشنبه/جمعه
+    const variance = 0.85 + seededRandom(`${roomId}-${isoDate}`) * 0.4
+    const fee = Math.round(((baseFee * variance * (isWeekend ? 1.25 : 1)) / 10_000)) * 10_000
+    days.push({ id: roomId * 1000 + i, date: isoDate, fee, boardPrice: Math.round(fee * 1.15), extraPersonFee: Math.round(fee * 0.3) })
+  }
+  return days
+}
+
+function buildMockHotel(slug: string): HotelDetail {
+  return {
+    id: MOCK_HOTEL_ID,
+    slug,
+    name: 'هتل پنج ستاره اسپیناس پالاس',
+    hotelKind: 'هتل',
+    address: 'تهران، بزرگراه چمران، خیابان یمن',
+    location: { lat: 35.7982, lng: 51.3891 },
+    stars: 5,
+    checkIn: '14:00',
+    checkOut: '12:00',
+    description: 'اقامتگاهی مجهز در قلب تهران با دسترسی آسان به مراکز تجاری و گردشگری شهر.',
+    images: MOCK_IMAGES.map((path, index) => ({ path, orderColumn: index })),
+    amenities: ['اینترنت بی‌سیم رایگان', 'استخر', 'پارکینگ', 'رستوران', 'باشگاه بدن‌سازی', 'اتاق کنفرانس'].map((name) => ({ name })),
+    generalRules: [
+      { id: 1, title: 'ورود و خروج', content: 'ساعت ورود از ۱۴:۰۰ و خروج تا ۱۲:۰۰ ظهر است.' },
+      { id: 2, title: 'مدارک شناسایی', content: 'همراه داشتن کارت ملی یا شناسنامه برای تمام مسافران الزامی است.' },
+    ],
+    cancellationRules: [
+      { id: 1, title: 'کنسلی رایگان', content: 'تا ۴۸ ساعت قبل از ورود، کنسلی بدون جریمه امکان‌پذیر است.' },
+      { id: 2, title: 'کنسلی دیرهنگام', content: 'کنسلی کمتر از ۴۸ ساعت مانده به ورود، مشمول جریمه یک شب اقامت می‌شود.' },
+    ],
+    rooms: MOCK_ROOM_DEFS.map((def) => ({
+      id: def.id,
+      roomKind: def.roomKind,
+      availableCount: 5,
+      personCount: def.personCount,
+      extraPersonCount: def.extraPersonCount,
+      foodServices: ['صبحانه بوفه'],
+      amenities: ['تلویزیون', 'یخچال', 'سرویس بهداشتی فرنگی', 'حوله و دمپایی'],
+      calendar: buildMockCalendar(def.id, def.baseFee),
+    })),
+    rating: { total: 4.6, totalCount: 128, cleanliness: 4.7, location: 4.8, service: 4.5, staff: 4.6, valueOfMoney: 4.3 },
+  }
+}
+
+/**
+ * GET /api/v1/hotel-show/{hotel:slug} — see docs/hotel-detail-plan.md.
+ *
+ * ⚠️ Mocked (docs/hotel-mock-flow-plan.md) — no backend from the hotel-detail stage
+ * onward yet. `fetchHotelDetailFromApi` below has the real implementation, kept
+ * live (type-checked, unused) so swapping back is a one-line rename.
+ */
 export async function fetchHotelDetail(params: HotelDetailParams, signal?: AbortSignal): Promise<HotelDetail> {
+  void signal
+  await new Promise((resolve) => setTimeout(resolve, 300))
+  return buildMockHotel(params.slug)
+}
+
+/** Real implementation of `fetchHotelDetail`, unused while the hotel-detail flow is mocked. */
+export async function fetchHotelDetailFromApi(params: HotelDetailParams, signal?: AbortSignal): Promise<HotelDetail> {
   const query = new URLSearchParams()
   if (params.startDate) query.set('start_date', params.startDate)
   if (params.endDate) query.set('end_date', params.endDate)
@@ -120,6 +211,7 @@ export async function fetchHotelDetail(params: HotelDetailParams, signal?: Abort
   const data = body.data
 
   return {
+    id: data.id,
     slug: data.slug,
     name: data.name,
     hotelKind: data.hotel_kind,

@@ -40,6 +40,13 @@
   font-size: 14px;
 }
 
+.reserveError {
+  margin: 0 0 16px;
+  font-size: 14px;
+  text-align: right;
+  color: $color-text-error;
+}
+
 .retryButton {
   padding: 8px 16px;
   border: 1px solid $color-border-subtle;

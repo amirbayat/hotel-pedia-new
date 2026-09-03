@@ -1,0 +1,151 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.page {
+  width: 100%;
+  min-width: 1024px;
+  background: $color-surface;
+}
+
+.content {
+  @include layout.page-container(1200px);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-top: 16px;
+  padding-bottom: 64px;
+}
+
+.forms {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 32px 32px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+  direction: rtl;
+  text-align: right;
+}
+
+.cardTitle {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.roomBlockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 6px;
+}
+
+.roomBlockTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.selectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selectLabel {
+  padding-inline: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.select {
+  height: 48px;
+  padding-inline: 16px;
+  border: 1px solid $color-border-default;
+  border-radius: 8px;
+  background: $color-surface;
+  font-family: inherit;
+  font-size: 14px;
+  color: $color-text-primary;
+
+  &:focus-visible {
+    border-color: $color-border-focus;
+  }
+}
+
+.infoBanner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background: $color-primary-900;
+  font-size: 14px;
+  color: $color-text-primary;
+
+  span {
+    flex: 1;
+  }
+
+  svg {
+    flex-shrink: 0;
+    color: $color-text-primary;
+  }
+}
+
+.formError {
+  margin: 0;
+  font-size: 12px;
+  color: $color-text-error;
+}
+
+.priceRow,
+.priceRowTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: $color-text-primary;
+}
+
+.priceRowTotal {
+  font-weight: 700;
+}
+
+.priceValue,
+.priceValueTotal {
+  font-weight: 700;
+
+  span {
+    font-weight: 400;
+    color: $color-text-muted;
+  }
+}
+
+.priceValueTotal {
+  font-size: 16px;
+}
+
+.priceLabel {
+  color: $color-text-primary;
+}

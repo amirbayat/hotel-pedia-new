@@ -4,24 +4,22 @@ export interface SwitchProps {
   checked: boolean
   onChange: (checked: boolean) => void
   disabled?: boolean
-  label?: string
-  className?: string
+  'aria-label'?: string
 }
 
-/** Base toggle switch — matches Figma "State=Off/On" (node 451:7275). */
-export function Switch({ checked, onChange, disabled, label, className }: SwitchProps) {
+/** Toggle switch — matches Figma "State=On/Off/Off Disabled" (node 451:7269 family). */
+export function Switch({ checked, onChange, disabled, 'aria-label': ariaLabel }: SwitchProps) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
-      aria-label={label}
+      aria-label={ariaLabel}
       disabled={disabled}
-      className={[styles.switch, checked && styles.checked, className].filter(Boolean).join(' ')}
+      className={[styles.switch, checked && styles.checked, disabled && styles.disabled].filter(Boolean).join(' ')}
       onClick={() => onChange(!checked)}
     >
-      <span className={styles.track} />
-      <span className={styles.thumb} />
+      <span className={styles.knob} />
     </button>
   )
 }

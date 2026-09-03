@@ -28,6 +28,10 @@ export interface MonthGridProps {
   pricesByDate?: PricesByDate
   minDate?: string
   maxDate?: string
+  /** Dates known to be unbookable (e.g. sold out) — disabled just like out-of-bounds days. */
+  unavailableDates?: Set<string>
+  /** Formatted per-night price shown under the day number, e.g. "۴۵,۵۰۰". */
+  priceLabelByDate?: Partial<Record<string, string>>
   onDayClick: (iso: string) => void
   onDayHover: (iso: string | null) => void
 }
@@ -41,6 +45,8 @@ export function MonthGrid({
   pricesByDate,
   minDate,
   maxDate,
+  unavailableDates,
+  priceLabelByDate,
   onDayClick,
   onDayHover,
 }: MonthGridProps) {
@@ -67,7 +73,9 @@ export function MonthGrid({
             if (!day) return <span key={`${weekIndex}-${dayIndex}`} className={styles.emptyCell} />
 
             const tier = pricesByDate?.[day.iso]
-            const disabled = isOutOfBounds(day.iso, minDate, maxDate)
+            const priceLabel = priceLabelByDate?.[day.iso]
+            const unavailable = unavailableDates?.has(day.iso) ?? false
+            const disabled = unavailable || isOutOfBounds(day.iso, minDate, maxDate)
             const selected = isRangeStart(day.iso, value) || isRangeEnd(day.iso, value)
             const isHoverPreviewEnd = !value.to && hoverIso === day.iso && day.iso !== value.from
 
@@ -79,8 +87,10 @@ export function MonthGrid({
                 aria-pressed={selected}
                 className={[
                   styles.day,
+                  priceLabel !== undefined && styles.dayWithPrice,
                   day.weekday === FRIDAY_WEEKDAY && styles.friday,
                   tier && TIER_CLASS_NAME[tier],
+                  unavailable && styles.unavailable,
                   isInRange(day.iso, previewRange) && styles.inRange,
                   selected && styles.selected,
                   isHoverPreviewEnd && styles.previewEnd,
@@ -92,7 +102,8 @@ export function MonthGrid({
                 onMouseEnter={() => onDayHover(day.iso)}
                 onMouseLeave={() => onDayHover(null)}
               >
-                {toPersianDigits(day.jd)}
+                <span className={styles.dayNumber}>{toPersianDigits(day.jd)}</span>
+                {priceLabel !== undefined && <span className={styles.dayPrice}>{priceLabel}</span>}
               </button>
             )
           }),

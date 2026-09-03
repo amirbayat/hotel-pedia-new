@@ -1,0 +1,1 @@
+export { BookingConfirmPay } from './BookingConfirmPay'

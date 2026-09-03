@@ -1,3 +1,4 @@
+import { toIsoDate } from '../../lib/date/jalali'
 import type { DateRange } from './types'
 
 /**
@@ -30,13 +31,35 @@ export function isOutOfBounds(iso: string, minDate?: string, maxDate?: string): 
   return false
 }
 
+/** True if any night strictly between `fromIso` and `toIso` fails `isDayBlocked`. */
+function hasBlockedDayBetween(fromIso: string, toIso: string, isDayBlocked: (iso: string) => boolean): boolean {
+  const [fy, fm, fd] = fromIso.split('-').map(Number)
+  const [ty, tm, td] = toIso.split('-').map(Number)
+  const cursor = new Date(fy, fm - 1, fd + 1)
+  const end = new Date(ty, tm - 1, td)
+
+  while (cursor < end) {
+    if (isDayBlocked(toIsoDate(cursor.getFullYear(), cursor.getMonth() + 1, cursor.getDate()))) return true
+    cursor.setDate(cursor.getDate() + 1)
+  }
+  return false
+}
+
 /**
  * Applies one day-click to the current range: first click sets `from`; a
  * second click completes the range, swapping the two dates (and committing
- * immediately, no third click) if it landed before `from`.
+ * immediately, no third click) if it landed before `from`. Blocked days
+ * (e.g. sold-out nights) are never individually clickable, but a would-be
+ * range can still stretch *over* one — `isDayBlocked` catches that and
+ * restarts the selection at the new click instead of completing it.
  */
-export function pickDate(range: DateRange, iso: string): DateRange {
+export function pickDate(range: DateRange, iso: string, isDayBlocked?: (iso: string) => boolean): DateRange {
   if (!range.from || range.to) return { from: iso, to: null }
   if (iso === range.from) return range
-  return iso < range.from ? { from: iso, to: range.from } : { from: range.from, to: iso }
+
+  const next = iso < range.from ? { from: iso, to: range.from } : { from: range.from, to: iso }
+  if (isDayBlocked && hasBlockedDayBetween(next.from, next.to, isDayBlocked)) {
+    return { from: iso, to: null }
+  }
+  return next
 }

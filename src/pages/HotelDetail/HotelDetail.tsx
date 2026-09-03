@@ -1,7 +1,12 @@
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { getRoomPriceForStay } from '../../api/hotelDetail'
 import { useHotelDetail } from '../../hooks/useHotelDetail'
-import { formatJalaliDisplay, todayIso, toPersianDigits } from '../../lib/date/jalali'
+import { useInitHotelOrder } from '../../hooks/useHotelOrder'
+import { useSimilarHotels } from '../../hooks/useSimilarHotels'
+import { todayIso } from '../../lib/date/jalali'
 import { Footer } from '../../components/Footer'
+import type { DateRange } from '../../components/DateRangeCalendar'
 import { HotelAmenities } from '../../components/HotelAmenities'
 import { HotelDetailHeader } from '../../components/HotelDetailHeader'
 import { HotelFaq } from '../../components/HotelFaq'
@@ -13,7 +18,10 @@ import { HotelSummary } from '../../components/HotelSummary'
 import { HotelTabs } from '../../components/HotelTabs'
 import type { HotelTab } from '../../components/HotelTabs'
 import { NearbyPlaces } from '../../components/NearbyPlaces'
+import type { PassengersValue } from '../../components/PassengersField'
+import { RoomDetailsModal } from '../../components/RoomDetailsModal'
 import { IconArrowLeft } from '../../components/icons'
+import type { BookingLocationState } from '../Booking/bookingTypes'
 import styles from './HotelDetail.module.scss'
 
 const TABS: HotelTab[] = [
@@ -32,17 +40,101 @@ function tomorrowIso(): string {
 /** Hotel-detail page — see docs/hotel-detail-plan.md. */
 export function HotelDetail() {
   const { slug = '' } = useParams<{ slug: string }>()
-  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const startDate = searchParams.get('check_in') ?? todayIso()
   const endDate = searchParams.get('check_out') ?? tomorrowIso()
   const adults = Number(searchParams.get('adults') ?? '2')
   const rooms = Number(searchParams.get('rooms') ?? '1')
 
+  function updateParams(patch: Record<string, string | null>) {
+    const next = new URLSearchParams(searchParams)
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null) next.delete(key)
+      else next.set(key, value)
+    }
+    setSearchParams(next)
+  }
+
+  // "جستجوی مجدد" search bar keeps its own draft state (like SearchCard) rather
+  // than writing straight to the URL on every click — a date range needs two
+  // clicks to complete (from, then to), and a controlled `value` that's
+  // reset to the URL's already-committed range after every keystroke would
+  // never let a second click land as anything but a new `from`.
+  const [draftRange, setDraftRange] = useState<DateRange>({ from: startDate, to: endDate })
+  const [draftPassengers, setDraftPassengers] = useState<PassengersValue>({ adults, childrenAges: [], rooms })
+
+  function handleSearchAgain() {
+    const patch: Record<string, string | null> = {
+      adults: String(draftPassengers.adults),
+      rooms: String(draftPassengers.rooms),
+    }
+    if (draftRange.from && draftRange.to) {
+      patch.check_in = draftRange.from
+      patch.check_out = draftRange.to
+    }
+    updateParams(patch)
+  }
+
   const { data, isLoading, isError, refetch } = useHotelDetail({ slug, startDate, endDate })
 
-  const occupancySummary = `${toPersianDigits(adults)} بزرگسال - ${toPersianDigits(rooms)} اتاق`
-  const dateRangeLabel = `${formatJalaliDisplay(startDate)} - ${formatJalaliDisplay(endDate)}`
+  // hotel-show has no numeric hotel id (see HotelDetail type) — the listing
+  // page forwards its own `hotel.id` as a `hotel_id` query param when linking
+  // here, which is what the /hotels/{id}/similar and /hotels/{id}/calendars
+  // endpoints need. Falls back to `data.id` in case the backend adds one later.
+  const hotelIdParam = searchParams.get('hotel_id')
+  const hotelId = data?.id ?? (hotelIdParam ? Number(hotelIdParam) : undefined)
+
+  const { data: similarHotels } = useSimilarHotels(hotelId)
+  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null)
+  const [reserveError, setReserveError] = useState('')
+
+  const selectedRoom = data?.rooms.find((room) => room.id === selectedRoomId) ?? null
+
+  const initOrder = useInitHotelOrder()
+
+  // Fires when "رزرو اتاق" is clicked (room card or the details modal) — creates
+  // a draft order (see docs/hotel-booking-plan.md §8.1) and only then moves on
+  // to the passenger-details page, carrying the order id forward.
+  async function handleReserve(roomId: number, roomCount: number) {
+    if (!data) return
+    const room = data.rooms.find((candidate) => candidate.id === roomId)
+    if (!room) return
+
+    const stayPrice = getRoomPriceForStay(room, startDate, endDate)
+    if (!stayPrice) {
+      setReserveError('قیمت برای این تاریخ در دسترس نیست.')
+      return
+    }
+
+    setReserveError('')
+    try {
+      const { orderId } = await initOrder.mutateAsync({
+        startDate,
+        endDate,
+        roomPassengers: [{ roomId: room.id, roomCount }],
+      })
+
+      const state: BookingLocationState = {
+        hotel: { slug: data.slug, name: data.name, stars: data.stars, imageUrl: data.images[0]?.path },
+        room: {
+          roomId: room.id,
+          roomKind: room.roomKind,
+          roomCount,
+          nights: stayPrice.nights,
+          feePerRoom: stayPrice.fee,
+          boardPricePerRoom: stayPrice.boardPrice,
+        },
+        startDate,
+        endDate,
+        orderId,
+      }
+      navigate(`/hotels/${slug}/book/passengers`, { state })
+    } catch (err) {
+      setReserveError(err instanceof Error ? err.message : 'ثبت رزرو با خطا مواجه شد.')
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -91,26 +183,42 @@ export function HotelDetail() {
             </section>
 
             <section id="rooms" className={styles.section}>
+              {reserveError && <p className={styles.reserveError}>{reserveError}</p>}
               <HotelRooms
                 rooms={data.rooms}
                 startDate={startDate}
                 endDate={endDate}
-                occupancySummary={occupancySummary}
-                dateRangeLabel={dateRangeLabel}
+                dateRange={draftRange}
+                onDateRangeChange={setDraftRange}
+                passengers={draftPassengers}
+                onPassengersChange={setDraftPassengers}
                 fallbackImageUrl={data.images[0]?.path}
+                onSearchAgain={handleSearchAgain}
+                onViewDetails={setSelectedRoomId}
+                onReserve={handleReserve}
               />
             </section>
 
             {/*
-              ⚠️ Nearby places / similar hotels have no source in the hotel-show API
-              response (see docs/hotel-detail-plan.md) — both stay empty until a real
-              field/endpoint exists, rather than shipping fabricated place/hotel data.
+              ⚠️ Nearby places has no source in the hotel-show API response
+              (see docs/hotel-detail-plan.md) — stays empty until a real field
+              exists, rather than shipping fabricated place data.
             */}
             <section id="nearby" className={styles.section}>
               <NearbyPlaces groups={[]} />
             </section>
 
-            <HotelListSection city="تهران" title={`هتل‌های مشابه ${data.name}`} hotels={[]} />
+            <HotelListSection
+              city="تهران"
+              title={`هتل‌های مشابه ${data.name}`}
+              hotels={(similarHotels ?? []).map((hotel) => ({
+                id: hotel.id,
+                name: hotel.name,
+                imageSrc: hotel.image,
+                rating: hotel.stars,
+                address: hotel.address,
+              }))}
+            />
 
             <section id="rules" className={styles.section}>
               <HotelRules
@@ -123,6 +231,18 @@ export function HotelDetail() {
 
             {/* ⚠️ Placeholder — hotel-show has no FAQ field yet, see docs/hotel-detail-plan.md. */}
             <HotelFaq faqs={[]} />
+
+            <RoomDetailsModal
+              open={selectedRoomId !== null}
+              onClose={() => setSelectedRoomId(null)}
+              hotelId={hotelId}
+              room={selectedRoom}
+              galleryImages={data.images.map((image) => image.path)}
+              startDate={startDate}
+              endDate={endDate}
+              cancellationRules={data.cancellationRules}
+              onBook={handleReserve}
+            />
           </>
         )}
       </div>

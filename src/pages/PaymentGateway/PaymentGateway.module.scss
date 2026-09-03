@@ -1,0 +1,101 @@
+@use '../../styles/colors' as *;
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-surface-muted;
+  direction: rtl;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 420px;
+  padding: 32px;
+  border-radius: 16px;
+  background: $color-surface;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: $color-brand-primary;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.noticeBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: $color-primary-900;
+  font-size: 13px;
+  line-height: 1.6;
+  color: $color-text-primary;
+
+  span {
+    flex: 1;
+  }
+}
+
+.row,
+.rowTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $color-border-subtle;
+  font-size: 14px;
+}
+
+.label {
+  color: $color-text-muted;
+}
+
+.value {
+  font-weight: 600;
+  color: $color-text-primary;
+}
+
+.valueTotal {
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-brand-cta;
+
+  span {
+    font-size: 13px;
+    font-weight: 400;
+    color: $color-text-muted;
+  }
+}
+
+.cardNumberRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px dashed $color-border-default;
+  border-radius: 8px;
+  color: $color-text-muted;
+  letter-spacing: 2px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}

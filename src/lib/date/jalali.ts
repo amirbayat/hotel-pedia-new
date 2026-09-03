@@ -81,6 +81,14 @@ export function addMonths(cursor: JalaliCursor, delta: number): JalaliCursor {
   return { jy: Math.floor(total / 12), jm: (((total % 12) + 12) % 12) + 1 }
 }
 
+/** First/last Gregorian ISO date of a Jalaali month — handy for fetching a month's worth of per-day data. */
+export function jalaliMonthRangeIso(cursor: JalaliCursor): { start: string; end: string } {
+  const { gy: startGy, gm: startGm, gd: startGd } = toGregorian(cursor.jy, cursor.jm, 1)
+  const length = jalaaliMonthLength(cursor.jy, cursor.jm)
+  const { gy: endGy, gm: endGm, gd: endGd } = toGregorian(cursor.jy, cursor.jm, length)
+  return { start: toIsoDate(startGy, startGm, startGd), end: toIsoDate(endGy, endGm, endGd) }
+}
+
 /** 0 = Saturday ... 6 = Friday, derived from the Gregorian weekday of the given date. */
 function persianWeekday(gy: number, gm: number, gd: number): number {
   const jsWeekday = new Date(gy, gm - 1, gd).getDay() // 0 = Sunday ... 6 = Saturday

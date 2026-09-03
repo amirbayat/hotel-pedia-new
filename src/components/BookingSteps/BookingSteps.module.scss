@@ -1,0 +1,70 @@
+@use '../../styles/colors' as *;
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 220px;
+}
+
+.dots {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  width: 100%;
+}
+
+.connector {
+  flex: 1;
+  height: 2px;
+  background: $color-border-subtle;
+}
+
+.connectorDone {
+  background: $color-success-text;
+}
+
+.connectorFailed {
+  background: $color-error-text-strong;
+}
+
+.dot {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 20px;
+  background: $color-surface-muted;
+  color: $color-text-muted;
+}
+
+.dotDone {
+  background: $color-success-bg;
+  color: $color-success-text;
+}
+
+.dotFailed {
+  background: $color-error-bg;
+  color: $color-error-text-strong;
+}
+
+.labels {
+  display: flex;
+  flex-direction: row-reverse;
+  width: 100%;
+  padding-inline: 120px;
+}
+
+.label {
+  flex: 1;
+  font-size: 12px;
+  text-align: center;
+  color: $color-text-muted;
+}
+
+.labelActive {
+  color: $color-text-primary;
+}

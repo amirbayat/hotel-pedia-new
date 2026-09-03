@@ -1,0 +1,203 @@
+@use '../../styles/colors' as *;
+@use '../../styles/layout' as layout;
+
+.page {
+  width: 100%;
+  min-width: 1024px;
+  background: $color-surface;
+}
+
+.content {
+  @include layout.page-container(1200px);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-top: 16px;
+  padding-bottom: 64px;
+}
+
+.forms {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 32px 32px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+  direction: rtl;
+  text-align: right;
+}
+
+.cardTitle {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: $color-text-primary;
+  flex: 1;
+}
+
+// --- Payment gateways ---------------------------------------------------------
+
+.gatewayList {
+  display: flex;
+  flex-direction: column;
+}
+
+.gatewayRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-block: 16px;
+  border-bottom: 1px solid $color-border-subtle;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.gatewayLabel {
+  flex: 1;
+  font-size: 16px;
+  color: $color-text-primary;
+}
+
+// --- Wallet / discount switches -----------------------------------------------
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.walletBalance {
+  font-size: 14px;
+  font-weight: 700;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.discountHint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: $color-text-primary;
+}
+
+.discountForm {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.applyButton {
+  flex-shrink: 0;
+  width: 128px;
+  height: 48px;
+  border: 1px solid $color-primary-600;
+  border-radius: 8px;
+  background: $color-surface;
+  font-family: inherit;
+  font-size: 16px;
+  color: $color-brand-primary;
+  cursor: pointer;
+
+  &:disabled {
+    border-color: $color-border-subtle;
+    color: $color-text-muted;
+    cursor: not-allowed;
+  }
+}
+
+// --- Passenger recap -----------------------------------------------------------
+
+.recapRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 24px;
+  padding-inline: 8px;
+  font-size: 14px;
+  color: $color-text-primary;
+
+  span:first-child {
+    font-weight: 700;
+  }
+}
+
+.recapLabel {
+  font-weight: 400;
+  color: $color-text-primary;
+}
+
+.recapRoomTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-text-primary;
+}
+
+.divider {
+  height: 1px;
+  margin-block: 8px;
+  background: $color-border-subtle;
+}
+
+// --- Sidebar price rows --------------------------------------------------------
+
+.priceRow,
+.priceRowTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: $color-text-primary;
+}
+
+.priceRowTotal {
+  font-weight: 700;
+}
+
+.priceValue,
+.priceValueTotal {
+  font-weight: 700;
+
+  span {
+    font-weight: 400;
+    color: $color-text-muted;
+  }
+}
+
+.priceValueTotal {
+  font-size: 16px;
+}
+
+.priceLabel {
+  color: $color-text-primary;
+}
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background: $color-error-bg;
+  font-size: 14px;
+  color: $color-error-text-strong;
+  direction: rtl;
+
+  span {
+    flex: 1;
+  }
+}
