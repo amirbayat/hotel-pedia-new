@@ -1,0 +1,36 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      # Vite embeds this into every asset URL at build time, so it must match
+      # the repo name since GitHub Pages serves project sites from /<repo>/.
+      - run: yarn build --base=/hotel-pedia-new/
+
+      # BrowserRouter needs a server-side fallback for deep links (e.g.
+      # /hotels/123). GitHub Pages has no rewrite rules, so it serves this
+      # 404.html for any unmatched path; React Router then reads the real
+      # URL from window.location and renders the right screen.
+      - run: cp dist/index.html dist/404.html
+
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
