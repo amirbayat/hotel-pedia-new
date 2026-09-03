@@ -1,7 +1,11 @@
-# فلوی موک (بدون API واقعی) — از جزئیات هتل تا نتیجه‌ی پرداخت
+# فلوی موک (بدون API واقعی) — از هوم‌پیج تا نتیجه‌ی پرداخت
 
-فرض این سند: **از مرحله‌ی جزئیات هتل به بعد نه دیتای واقعی داریم نه API واقعی** — همه‌چیز باید
-موک باشه تا کل فلو (جزئیات هتل → مسافران → تایید/پرداخت → درگاه → callback → نتیجه) قابل دمو باشه.
+فرض این سند: **هیچ بخشی از اپ به `panel.hotelpedia.ir` واقعی وصل نیست** — همه‌چیز (هوم‌پیج،
+جستجوی مقصد، لیست هتل‌ها، جزئیات هتل، مسافران، تایید/پرداخت، درگاه، callback، نتیجه) باید موک
+باشه تا کل فلو قابل دمو باشه، بدون نیاز به بک‌اند واقعی.
+
+این سند در دو مرحله نوشته شده — بخش «از جزئیات هتل به بعد» اول موک شد، و بعداً «هوم‌پیج/جستجو/لیست
+هتل‌ها» (بخش پایین سند، «مرحله‌ی دوم») بهش اضافه شد.
 
 ## Figma — بررسی این جلسه (یک‌بار، همه‌ی لینک‌های داده‌شده چک شد)
 
@@ -55,10 +59,49 @@
   نمی‌خوره. تابع `redirectToPaymentGateway` دست‌نخورده توی `hotelOrders.ts` باقی مونده برای وقتی
   بک‌اند/بانک واقعی وصل شد.
 
+## مرحله‌ی دوم — هوم‌پیج، جستجوی مقصد، لیست هتل‌ها
+
+همون قرارداد بالا (امضای تابع‌ها ثابت، بدنه‌ی `fetch*` با موک جایگزین شده، fetch واقعی به‌عنوان
+`...FromApi` کنار همون تابع نگه داشته شده) برای سه فایل زیر هم تکرار شد:
+
+- **`src/api/mockCityData.ts`** (جدید) — دیتاست مشترک ۶ شهر (تهران، مشهد، شیراز، اصفهان، کیش،
+  تبریز) و ۶ هتل به ازای هر شهر (۳۶ هتل جمعاً، هرکدوم با `slug`/آدرس/قیمت پایه‌ی ثابت)، به‌علاوه
+  یک `seededRandom` مشترک — تا هتل/شهری که در جستجوی مقصد انتخاب می‌شه، دقیقاً همون چیزیه که در
+  صفحه‌ی لیست هتل‌ها یا سکشن‌های هوم‌پیج نشون داده می‌شه.
+- **`src/api/home.ts`** → `fetchHome` (شهرهای محبوب + FAQ + متن‌های SEO)، `fetchCarousel`
+  (اسلایدهای پروموشن)، `fetchCitiesHotels` (سکشن «محبوب‌ترین هتل‌های X») — هرسه از
+  `mockCityData.ts` می‌خونن؛ قیمت/تخفیف هرکدوم با `seededRandom` (نه `Math.random()` خام) ساخته
+  می‌شه تا رفرش/ری‌رندر قیمت رو عوض نکنه.
+- **`src/api/destinations.ts`** → `searchDestinations` روی نام شهرها/هتل‌های موک، substring-match
+  ساده انجام می‌ده (نه fetch به autocomplete واقعی).
+- **`src/api/hotelSearch.ts`** → `searchHotels` هتل‌های همون شهر رو از `mockCityData.ts` می‌گیره،
+  طبق `sortBy` مرتب و صفحه‌بندی می‌کنه (`page_size = 4`، پس هر شهر با ۶ هتل موک، ۲ صفحه داره — برای
+  اینکه `Pagination` هم قابل تست باشه).
+
+⚠️ توی همه‌ی این‌ها `city` که به‌عنوان مقصد رد و بدل می‌شه، **نام فارسی شهره** (مثلاً `"تهران"`)، نه
+یه اسلاگ لاتین — همون قراردادی که از قبل توی `DEFAULT_CITY_SLUG`/`DEFAULT_CITY` (در
+`SearchCard.tsx`/`HotelListing.tsx`) و کامنت `HotelSearchParams.city` بود؛ `mockCityData.ts` هم
+دقیقاً همینو رعایت می‌کنه.
+
+**`src/api/auth.ts`** هم موک شد:
+
+- `sendPassengerOtp`/`sendBusinessOtp` — هیچ پیامکی واقعاً ارسال نمی‌شه؛ فقط یه تأخیر مصنوعی و
+  پیام موفقیت برمی‌گردونن.
+- `verifyPassengerOtp`/`verifyBusinessOtp` — هر کد ۶رقمی (که `AuthModal` از قبل اعتبارسنجی
+  می‌کنه) پذیرفته می‌شه و یه توکن ساختگی (`mock-passenger-token-{phone}` / `mock-business-token-{code}`) برمی‌گردونه؛ سرور واقعی‌ای پشتش نیست.
+- `panelLoginPassenger`/`panelLoginBusiness` — به یه no-op تبدیل شدن. نسخه‌ی واقعی‌شون (که با یه
+  iframe مخفی یه فرم به `panel.hotelpedia.ir` POST می‌کنه تا کوکی سشن ست بشه) نگه داشته شده ولی
+  دیگه صدا زده نمی‌شه، چون الان بدون بک‌اند واقعی، سشنی هم برای ست‌کردن وجود نداره. وضعیت لاگین‌بودن
+  کاربر توی اپ کاملاً از `AuthContext`/`localStorage` میاد (کلید `hotelpedia:auth-user`)، نه این
+  کوکی.
+
 ## چیزهایی که موقع اتصال API واقعی باید برگردن
 
-1. بدنه‌ی `fetchHotelDetail`/`fetchHotelCalendars`/`fetchSimilarHotels`/`initHotelOrder`/`payHotelOrder`
-   به همون fetch واقعی (که کامنت‌شون توی همین فایل‌ها مستنده) برگردن.
+1. بدنه‌ی `fetchHome`/`fetchCarousel`/`fetchCitiesHotels`/`searchDestinations`/`searchHotels`/
+   `fetchHotelDetail`/`fetchHotelCalendars`/`fetchSimilarHotels`/`initHotelOrder`/`payHotelOrder`/
+   `sendPassengerOtp`/`verifyPassengerOtp`/`sendBusinessOtp`/`verifyBusinessOtp`/`panelLoginPassenger`/
+   `panelLoginBusiness` به همون fetch واقعی (که کامنت‌شون توی همین فایل‌ها مستنده، به اسم
+   `...FromApi`) برگردن؛ در اون نقطه `src/api/mockCityData.ts` هم دیگه لازم نیست.
 2. `payHotelOrder` باید دوباره `pay_action` واقعی بانک رو برگردونه و `BookingConfirmPay` باید
    `redirectToPaymentGateway` رو صدا بزنه، نه `navigate` مستقیم به `/payment/gateway`.
 3. صفحه‌ی `/payment/gateway` و روتش از `App.tsx` حذف بشه (دیگه لازم نیست).

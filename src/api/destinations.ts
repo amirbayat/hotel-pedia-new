@@ -1,3 +1,5 @@
+import { MOCK_CITIES, MOCK_HOTELS, hotelsForCity } from './mockCityData'
+
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 const AUTOCOMPLETE_URL = `${PANEL_BASE_URL}/api/v1/hotel-search/autocomplete`
 
@@ -21,8 +23,44 @@ export interface HotelDestination {
 
 export type Destination = CityDestination | HotelDestination
 
-/** Searches both cities and hotels by name — feeds the "مقصد یا هتل" field's suggestions dropdown. */
+/**
+ * Searches both cities and hotels by name — feeds the "مقصد یا هتل" field's suggestions dropdown.
+ *
+ * ⚠️ Mocked (docs/hotel-mock-flow-plan.md) — see `searchDestinationsFromApi` for
+ * the real implementation, kept live (type-checked, unused) to swap back in later.
+ */
 export async function searchDestinations(query: string, signal?: AbortSignal): Promise<Destination[]> {
+  void signal
+  await new Promise((resolve) => setTimeout(resolve, 150))
+
+  const term = query.trim()
+  if (!term) return []
+
+  const cityMatches: CityDestination[] = MOCK_CITIES.filter((city) => city.name.includes(term)).map((city) => ({
+    type: 'city',
+    id: city.name,
+    label: city.name,
+    slug: city.name,
+    province: city.province,
+    hotelsCount: hotelsForCity(city.name).length,
+  }))
+
+  const hotelMatches: HotelDestination[] = MOCK_HOTELS.filter((hotel) => hotel.name.includes(term))
+    .slice(0, 5)
+    .map((hotel) => ({
+      type: 'hotel',
+      id: hotel.id,
+      label: hotel.name,
+      slug: hotel.slug,
+      cityName: hotel.cityName,
+      citySlug: hotel.cityName,
+    }))
+
+  return [...cityMatches, ...hotelMatches]
+}
+
+/** Real implementation of `searchDestinations`, unused while destination search is mocked. */
+export async function searchDestinationsFromApi(query: string, signal?: AbortSignal): Promise<Destination[]> {
   const url = `${AUTOCOMPLETE_URL}?keyword=${encodeURIComponent(query)}`
   const response = await fetch(url, { headers: { Accept: 'application/json' }, signal })
 
