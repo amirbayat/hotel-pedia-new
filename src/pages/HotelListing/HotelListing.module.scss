@@ -39,16 +39,13 @@
   pointer-events: none;
 }
 
-// 80px sticky header + 16px gap; scrolls with the page until it hits that
-// offset, then stays put — and scrolls internally since it can be taller
-// than the viewport.
+// Sticky while the page scrolls; no internal scrollbar — the full panel height is visible.
 .sidebar {
   width: 300px;
   flex-shrink: 0;
   position: sticky;
   top: 96px;
-  max-height: calc(100vh - 112px);
-  overflow-y: auto;
+  align-self: flex-start;
 }
 
 .stateMessage {
