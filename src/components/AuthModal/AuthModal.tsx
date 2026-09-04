@@ -47,6 +47,24 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
 
+  const resetAll = () => {
+    setStep("request");
+    setIdentifier("");
+    setCode("");
+    setError("");
+    setResendCooldown(0);
+  };
+
+  const handleDismiss = () => {
+    setError("");
+    onClose();
+  };
+
+  const handleSuccessClose = () => {
+    resetAll();
+    onClose();
+  };
+
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const timeout = setTimeout(
@@ -61,7 +79,10 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
 
     document.body.style.overflow = "hidden";
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        setError("");
+        onClose();
+      }
     };
     window.addEventListener("keydown", onKeyDown);
 
@@ -72,19 +93,6 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
   }, [open, onClose]);
 
   if (!open) return null;
-
-  const resetAll = () => {
-    setStep("request");
-    setIdentifier("");
-    setCode("");
-    setError("");
-    setResendCooldown(0);
-  };
-
-  const handleClose = () => {
-    resetAll();
-    onClose();
-  };
 
   const handleTabChange = (nextTab: AuthTab) => {
     if (nextTab === tab) return;
@@ -159,7 +167,7 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
       login({ name: "کاربر هتل‌پدیا", phone: identifier, walletBalance: 0 });
 
       onSuccess?.(token);
-      handleClose();
+      handleSuccessClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "کد وارد شده صحیح نیست.");
     } finally {
@@ -176,13 +184,13 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
     tab === "otp" ? "تغییر شماره همراه" : "تغییر شماره پرسنلی";
 
   return (
-    <div className={styles.overlay} onMouseDown={handleClose}>
+    <div className={styles.overlay} onMouseDown={handleDismiss}>
       <div className={styles.dialog} onMouseDown={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <button
             type="button"
             className={styles.iconButton}
-            onClick={handleClose}
+            onClick={handleDismiss}
             aria-label="بستن"
           >
             <IconClose width={20} height={20} />

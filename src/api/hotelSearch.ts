@@ -74,7 +74,7 @@ const MOCK_SORTERS: Record<HotelSortBy, (a: HotelSearchItem, b: HotelSearchItem)
   default: (a, b) => Number(b.isPinned) - Number(a.isPinned),
   lowest_price: (a, b) => a.minSellPrice - b.minSellPrice,
   highest_price: (a, b) => b.minSellPrice - a.minSellPrice,
-  highest_rating: (a, b) => (b.score ?? 0) - (a.score ?? 0),
+  highest_rating: (a, b) => b.stars - a.stars || (b.score ?? 0) - (a.score ?? 0),
   highest_discount: (a, b) => b.roomBoardPrice - b.roomFee - (a.roomBoardPrice - a.roomFee),
 }
 

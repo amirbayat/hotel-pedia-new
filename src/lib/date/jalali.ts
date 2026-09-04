@@ -66,6 +66,35 @@ export function formatJalaliDisplay(iso: string): string {
   return toPersianDigits(`${jy}/${jm}/${jd}`)
 }
 
+/** "۱۳ شهریور" — day + Persian month name. */
+export function formatJalaliDayMonth(iso: string): string {
+  const { jm, jd } = isoDateToJalali(iso)
+  return `${toPersianDigits(jd)} ${PERSIAN_MONTH_NAMES[jm - 1]}`
+}
+
+/** "۲۷ شهریور - ۲۹ شهریور" — check-in through check-out, for RTL display. */
+export function formatJalaliDayMonthRange(range: {
+  from: string | null
+  to: string | null
+}): string {
+  if (!range.from) return ''
+  if (!range.to) return formatJalaliDayMonth(range.from)
+  return `${formatJalaliDayMonth(range.from)} - ${formatJalaliDayMonth(range.to)}`
+}
+
+export function nightsBetween(from: string, to: string): number {
+  const ms = new Date(to).getTime() - new Date(from).getTime()
+  return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24)))
+}
+
+/** "ورود ۱۶ شهریور - خروج ۱۹ شهریور  ۳ شب" — calendar footer summary. */
+export function formatStaySummary(range: { from: string | null; to: string | null }): string {
+  if (!range.from) return ''
+  if (!range.to) return `ورود ${formatJalaliDayMonth(range.from)}`
+  const nights = nightsBetween(range.from, range.to)
+  return `ورود ${formatJalaliDayMonth(range.from)} - خروج ${formatJalaliDayMonth(range.to)}  ${toPersianDigits(nights)} شب`
+}
+
 export function todayIso(): string {
   const now = new Date()
   return toIsoDate(now.getFullYear(), now.getMonth() + 1, now.getDate())

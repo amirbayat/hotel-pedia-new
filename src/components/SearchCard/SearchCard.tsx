@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Destination } from '../../api/destinations'
-import { formatJalaliDisplay } from '../../lib/date/jalali'
+import { formatJalaliDayMonthRange } from '../../lib/date/jalali'
 import { Button } from '../Button'
 import { DateRangeCalendar } from '../DateRangeCalendar'
 import type { DateRange } from '../DateRangeCalendar'
@@ -9,42 +9,56 @@ import { DestinationSearchField } from '../DestinationSearchField'
 import { Input } from '../Input'
 import { PassengersField } from '../PassengersField'
 import type { PassengersValue } from '../PassengersField'
-import { IconArrowDown, IconDate, IconHotel } from '../icons'
+import { IconArrowDown, IconDate } from '../icons'
 import styles from './SearchCard.module.scss'
 
-const DEFAULT_CITY_SLUG = 'تهران'
-
-function formatRangeLabel(range: DateRange): string {
-  if (!range.from) return ''
-  if (!range.to) return formatJalaliDisplay(range.from)
-  return `${formatJalaliDisplay(range.to)} - ${formatJalaliDisplay(range.from)}`
+function buildDateError(range: DateRange): string {
+  const errors: string[] = []
+  if (!range.from) errors.push('تاریخ ورود را وارد کنید.')
+  if (!range.to) errors.push('تاریخ خروج را وارد کنید.')
+  return errors.join(' ')
 }
 
 /**
- * The floating search widget that straddles HomeHeader and the section below
- * it. Only the "هتل" tab is wired up for now — the other travel-type tabs
- * (پرواز/اتوبوس/تور/ویلا) will be added once their icons/behavior are defined.
+ * The floating search widget that straddles HomeHeader and the section below it.
  */
 export function SearchCard() {
   const [range, setRange] = useState<DateRange>({ from: null, to: null })
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [passengers, setPassengers] = useState<PassengersValue>({ adults: 2, childrenAges: [], rooms: 1 })
-  const [citySlug, setCitySlug] = useState(DEFAULT_CITY_SLUG)
+  const [destination, setDestination] = useState('')
+  const [citySlug, setCitySlug] = useState('')
+  const [destinationError, setDestinationError] = useState('')
+  const [dateError, setDateError] = useState('')
   const dateFieldRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
-  function handleDestinationSelect(destination: Destination) {
-    setCitySlug(destination.type === 'city' ? destination.slug : destination.citySlug)
+  function handleDestinationSelect(selected: Destination) {
+    setCitySlug(selected.type === 'city' ? selected.slug : selected.citySlug)
+    setDestinationError('')
   }
 
   function handleSearch() {
-    const params = new URLSearchParams({ city: citySlug, sort_by: 'default' })
+    const nextDestinationError = !destination.trim() ? 'مقصد یا هتل را وارد کنید.' : ''
+    const nextDateError = buildDateError(range)
+
+    setDestinationError(nextDestinationError)
+    setDateError(nextDateError)
+
+    if (nextDestinationError || nextDateError) return
+
+    const params = new URLSearchParams({ city: citySlug || destination.trim(), sort_by: 'default' })
     if (range.from) params.set('check_in', range.from)
     if (range.to) params.set('check_out', range.to)
     params.set('adults', String(passengers.adults))
     params.set('rooms', String(passengers.rooms))
     if (passengers.childrenAges.length) params.set('children', passengers.childrenAges.join(','))
     navigate(`/hotels?${params}`)
+  }
+
+  function handleRangeChange(next: DateRange) {
+    setRange(next)
+    if (dateError) setDateError(buildDateError(next))
   }
 
   useEffect(() => {
@@ -62,21 +76,12 @@ export function SearchCard() {
 
   return (
     <div className={styles.card}>
-      <div className={styles.tabs}>
-        <button type="button" className={styles.tabActive}>
-          <span className={styles.tabIcon}>
-            <IconHotel width={24} height={24} />
-          </span>
-          <span className={styles.tabLabel}>هتل</span>
-        </button>
-      </div>
-
       <div className={styles.fields}>
         <Button variant="primary" className={styles.searchButton} onClick={handleSearch}>
           جستجو
         </Button>
 
-        <PassengersField className={styles.field} value={passengers} onChange={setPassengers} />
+        <PassengersField className={styles.field} value={passengers} onChange={setPassengers} reserveHintSpace />
 
         <div className={styles.dateField} ref={dateFieldRef} onClick={() => setIsCalendarOpen(true)}>
           <Input
@@ -85,17 +90,38 @@ export function SearchCard() {
             leadingIcon={IconDate}
             trailingIcon={IconArrowDown}
             reverseIcons
-            value={formatRangeLabel(range)}
+            value={formatJalaliDayMonthRange(range)}
+            error={dateError || undefined}
+            reserveHintSpace
+            dir="rtl"
             onFocus={() => setIsCalendarOpen(true)}
             readOnly
           />
 
           {isCalendarOpen && (
-            <DateRangeCalendar className={styles.calendarPopover} value={range} onChange={setRange} />
+            <DateRangeCalendar
+              className={styles.calendarPopover}
+              value={range}
+              onChange={handleRangeChange}
+              onConfirm={() => setIsCalendarOpen(false)}
+            />
           )}
         </div>
 
-        <DestinationSearchField className={styles.field} reverseIcons onSelect={handleDestinationSelect} />
+        <DestinationSearchField
+          className={styles.field}
+          reverseIcons
+          value={destination}
+          onChange={(value) => {
+            setDestination(value)
+            if (value.trim()) setDestinationError('')
+            if (!value.trim()) setCitySlug('')
+          }}
+          error={destinationError || undefined}
+          reserveHintSpace
+          showDefaultSuggestionsOnFocus
+          onSelect={handleDestinationSelect}
+        />
       </div>
     </div>
   )

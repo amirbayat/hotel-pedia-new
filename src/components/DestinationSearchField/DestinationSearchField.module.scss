@@ -68,7 +68,8 @@
   color: $color-text-muted;
 }
 
-.loading {
+.loading,
+.empty {
   padding: 8px;
   font-size: 13px;
   color: $color-text-muted;

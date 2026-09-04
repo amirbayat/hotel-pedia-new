@@ -236,3 +236,29 @@
     border-color: $color-price-tier-expensive;
   }
 }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid $color-border-subtle;
+}
+
+.summary {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+.confirmButton {
+  flex-shrink: 0;
+  min-width: 96px;
+  height: 40px;
+}

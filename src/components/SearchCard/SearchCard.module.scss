@@ -1,11 +1,19 @@
 @use "../../styles/colors" as *;
 @use "../../styles/layout" as layout;
 
+$search-card-overlap: 90px;
+$search-card-label-height: 26px;
+$search-card-control-height: 48px;
+$search-card-error-area-height: 40px;
+$search-card-field-height: $search-card-label-height + $search-card-control-height +
+  $search-card-error-area-height;
+$search-card-height: $search-card-field-height + 32px;
+
 .card {
   @include layout.page-container(1200px);
   // Pulls the card up so it overlaps the bottom edge of HomeHeader's image
   // a little, with the rest of the card sitting on the section below it.
-  margin-top: -90px;
+  margin-top: calc(-#{$search-card-overlap} + #{$search-card-height} / 3 - #{$search-card-height} / 4);
   position: relative;
   z-index: 1;
 
@@ -13,54 +21,19 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
   padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.tabs {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-}
-
-.tabActive {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  color: $color-brand-cta;
-  font-family: inherit;
-}
-
-.tabIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid $color-brand-cta;
-}
-
-.tabLabel {
-  font-size: 14px;
-  font-weight: 600;
+  min-height: $search-card-height;
 }
 
 .fields {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 16px;
 }
 
 .searchButton {
   flex-shrink: 0;
   width: 176px;
+  margin-top: $search-card-label-height;
 }
 
 .field {

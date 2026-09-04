@@ -18,6 +18,8 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   onTrailingIconClick?: () => void
   /** Puts the leading icon on the right and the trailing icon on the left, for RTL fields. */
   reverseIcons?: boolean
+  /** Keeps space below the field for hint/error text so surrounding layouts don't shift. */
+  reserveHintSpace?: boolean
 }
 
 /**
@@ -36,6 +38,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     trailingIcon: TrailingIcon,
     onTrailingIconClick,
     reverseIcons,
+    reserveHintSpace,
     disabled,
     className,
     id,
@@ -78,7 +81,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           ))}
       </div>
 
-      {message && <p className={[styles.hint, error && styles.hintError].filter(Boolean).join(' ')}>{message}</p>}
+      {reserveHintSpace || message ? (
+        <p
+          className={[
+            styles.hint,
+            error && styles.hintError,
+            reserveHintSpace && styles.hintReserved,
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {message || '\u00a0'}
+        </p>
+      ) : null}
     </div>
   )
 })

@@ -23,6 +23,28 @@ export interface HotelDestination {
 
 export type Destination = CityDestination | HotelDestination
 
+const DEFAULT_FOCUS_CITY_SUGGESTIONS: Array<{ name: string; province: string }> = [
+  { name: 'مشهد', province: 'استان خراسان رضوی' },
+  { name: 'تهران', province: 'استان تهران' },
+  { name: 'اصفهان', province: 'استان اصفهان' },
+  { name: 'کاشان', province: 'استان اصفهان' },
+  { name: 'کیش', province: 'استان هرمزگان' },
+  { name: 'قشم', province: 'استان هرمزگان' },
+  { name: 'تبریز', province: 'استان آذربایجان شرقی' },
+]
+
+/** Popular cities shown when the destination field is focused with no query yet. */
+export function getDefaultDestinationSuggestions(): CityDestination[] {
+  return DEFAULT_FOCUS_CITY_SUGGESTIONS.map((city) => ({
+    type: 'city',
+    id: city.name,
+    label: city.name,
+    slug: city.name,
+    province: city.province,
+    hotelsCount: hotelsForCity(city.name).length,
+  }))
+}
+
 /**
  * Searches both cities and hotels by name — feeds the "مقصد یا هتل" field's suggestions dropdown.
  *

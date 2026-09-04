@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { addMonths, todayCursor, todayIso } from '../../lib/date/jalali'
+import { addMonths, formatStaySummary, todayCursor, todayIso } from '../../lib/date/jalali'
 import type { JalaliCursor } from '../../lib/date/jalali'
 import { IconArrowLeft, IconArrowRight } from '../icons'
+import { Button } from '../Button'
 import { MonthGrid } from './MonthGrid'
 import { pickDate } from './rangeUtils'
 import type { DateRange, PriceTier, PricesByDate } from './types'
@@ -35,6 +36,8 @@ export interface DateRangeCalendarProps {
   cursor?: JalaliCursor
   /** Required alongside `cursor` — called with the next cursor when the user navigates months. */
   onCursorChange?: (cursor: JalaliCursor) => void
+  /** When set, renders a footer summary + "تایید" button that calls this handler. */
+  onConfirm?: () => void
 }
 
 /**
@@ -53,6 +56,7 @@ export function DateRangeCalendar({
   className,
   cursor: controlledCursor,
   onCursorChange,
+  onConfirm,
 }: DateRangeCalendarProps) {
   const [internalCursor, setInternalCursor] = useState(todayCursor)
   const cursor = controlledCursor ?? internalCursor
@@ -70,13 +74,19 @@ export function DateRangeCalendar({
   // search-card calendar — widen the months (instead of the fixed compact
   // width) whenever they're actually shown, rather than adding a separate prop.
   const hasPriceLabels = Boolean(priceLabelByDate && Object.keys(priceLabelByDate).length > 0)
+  const canConfirm = Boolean(value.from && value.to)
+  const summary = formatStaySummary(value)
 
   function handleDayClick(iso: string) {
     onChange(pickDate(value, iso, unavailableDates ? (day) => unavailableDates.has(day) : undefined))
   }
 
   return (
-    <div className={[styles.calendar, hasPriceLabels && styles.calendarWithPrices, className].filter(Boolean).join(' ')}>
+    <div
+      className={[styles.calendar, hasPriceLabels && styles.calendarWithPrices, className].filter(Boolean).join(' ')}
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+    >
       {/*
         DOM order matches the visual (non-RTL-flex) layout used throughout
         this app: the later month renders on the left, the earlier one on
@@ -140,6 +150,20 @@ export function DateRangeCalendar({
               {label}
             </span>
           ))}
+        </div>
+      )}
+
+      {onConfirm && (
+        <div className={styles.footer} dir="rtl">
+          <p className={styles.summary}>{summary || '\u00a0'}</p>
+          <Button
+            type="button"
+            className={styles.confirmButton}
+            disabled={!canConfirm}
+            onClick={onConfirm}
+          >
+            تایید
+          </Button>
         </div>
       )}
     </div>

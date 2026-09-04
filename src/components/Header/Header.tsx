@@ -3,7 +3,7 @@ import { AccountMenu } from '../AccountMenu'
 import { Button } from '../Button'
 import { AuthModal } from '../AuthModal'
 import { useAuth } from '../../context/authContextValue'
-import { IconCallCenter, IconLogin } from '../icons'
+import { IconLogin } from '../icons'
 import logo from '../../assets/logo.svg'
 import styles from './Header.module.scss'
 
@@ -31,7 +31,6 @@ export function Header() {
               ورود - ثبت نام
             </Button>
           )}
-          <Button variant="secondary" icon={IconCallCenter} aria-label="پشتیبانی" />
         </div>
 
         <img src={logo} alt="هتل‌پدیا" className={styles.logo} />

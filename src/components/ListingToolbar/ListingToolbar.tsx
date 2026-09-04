@@ -8,8 +8,6 @@ interface SortPill {
   label: string;
 }
 
-// "پرستاره‌ترین" has no matching `sort_by` enum value on the backend yet — mapped
-// provisionally to `highest_rating` pending confirmation (docs/hotel-listing-plan.md §6).
 const SORT_PILLS: SortPill[] = [
   { value: "highest_rating", label: "پرستاره ترین" },
   { value: "highest_price", label: "گرانترین" },

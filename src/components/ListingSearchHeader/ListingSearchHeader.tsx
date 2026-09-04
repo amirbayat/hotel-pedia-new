@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Destination } from "../../api/destinations";
-import { formatJalaliDisplay } from "../../lib/date/jalali";
+import { formatJalaliDayMonthRange } from "../../lib/date/jalali";
 import { useAuth } from "../../context/authContextValue";
 import { AccountMenu } from "../AccountMenu";
 import { AuthModal } from "../AuthModal";
@@ -20,12 +20,6 @@ import {
 } from "../icons";
 import logo from "../../assets/logo.svg";
 import styles from "./ListingSearchHeader.module.scss";
-
-function formatRangeLabel(range: DateRange): string {
-  if (!range.from) return "";
-  if (!range.to) return formatJalaliDisplay(range.from);
-  return `${formatJalaliDisplay(range.to)} - ${formatJalaliDisplay(range.from)}`;
-}
 
 export interface ListingSearchHeaderProps {
   destinationLabel: string;
@@ -120,7 +114,8 @@ export function ListingSearchHeader({
               leadingIcon={IconDate}
               trailingIcon={IconArrowDown}
               reverseIcons
-              value={formatRangeLabel(dateRange)}
+              value={formatJalaliDayMonthRange(dateRange)}
+              dir="rtl"
               onFocus={() => setIsCalendarOpen(true)}
               readOnly
             />
@@ -130,6 +125,7 @@ export function ListingSearchHeader({
                 className={styles.calendarPopover}
                 value={dateRange}
                 onChange={onDateRangeChange}
+                onConfirm={() => setIsCalendarOpen(false)}
               />
             )}
           </div>

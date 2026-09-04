@@ -17,6 +17,7 @@ export interface PassengersFieldProps {
   onChange: (value: PassengersValue) => void;
   /** Hides the "مسافران" title above the field, for compact/header contexts. Defaults to true. */
   showLabel?: boolean;
+  reserveHintSpace?: boolean;
 }
 
 const MIN_ADULTS = 1;
@@ -43,6 +44,7 @@ export function PassengersField({
   value,
   onChange,
   showLabel = true,
+  reserveHintSpace,
 }: PassengersFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -99,6 +101,7 @@ export function PassengersField({
         value={formatSummary(value)}
         onFocus={() => setIsOpen(true)}
         readOnly
+        reserveHintSpace={reserveHintSpace}
         className={styles.input}
       />
 

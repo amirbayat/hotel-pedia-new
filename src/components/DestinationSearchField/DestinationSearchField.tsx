@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { searchDestinations, type Destination } from "../../api/destinations";
+import { searchDestinations, getDefaultDestinationSuggestions, type Destination } from "../../api/destinations";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { Input } from "../Input";
 import { IconArrowLeft, IconHotel, IconLocation } from "../icons";
@@ -13,7 +13,13 @@ export interface DestinationSearchFieldProps {
   defaultValue?: string;
   /** Hides the "مقصد یا هتل" title above the field, for compact/header contexts. Defaults to true. */
   showLabel?: boolean;
+  error?: string;
+  reserveHintSpace?: boolean;
+  value?: string;
+  onChange?: (value: string) => void;
   onSelect?: (destination: Destination) => void;
+  /** Shows popular cities on focus when the field is still empty — no search request. */
+  showDefaultSuggestionsOnFocus?: boolean;
 }
 
 /** "مقصد یا هتل" field — debounced destination search with a suggestions dropdown. */
@@ -22,22 +28,41 @@ export function DestinationSearchField({
   reverseIcons,
   defaultValue = "",
   showLabel = true,
+  error,
+  reserveHintSpace,
+  value,
+  onChange,
   onSelect,
+  showDefaultSuggestionsOnFocus = false,
 }: DestinationSearchFieldProps) {
-  const [query, setQuery] = useState(defaultValue);
+  const [internalQuery, setInternalQuery] = useState(defaultValue);
+  const query = value ?? internalQuery;
+  const setQuery = (next: string) => {
+    if (value === undefined) setInternalQuery(next);
+    onChange?.(next);
+  };
   const [results, setResults] = useState<Destination[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasUserEdited, setHasUserEdited] = useState(false);
   const debouncedQuery = useDebouncedValue(query.trim(), 350);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const defaultSuggestions = showDefaultSuggestionsOnFocus
+    ? getDefaultDestinationSuggestions()
+    : [];
+  const suggestions = query.trim() ? results : defaultSuggestions;
+  const isDebouncing = query.trim() !== debouncedQuery;
+  const showNoResults =
+    Boolean(query.trim()) &&
+    !isLoading &&
+    !isDebouncing &&
+    results.length === 0;
+  const showDropdown =
+    isOpen && (isLoading || suggestions.length > 0 || showNoResults);
 
   useEffect(() => {
-    if (!hasUserEdited) return;
-
     if (!debouncedQuery) {
       setResults([]);
-      setIsOpen(false);
+      setIsLoading(false);
       return;
     }
 
@@ -57,7 +82,7 @@ export function DestinationSearchField({
       .finally(() => setIsLoading(false));
 
     return () => controller.abort();
-  }, [debouncedQuery, hasUserEdited]);
+  }, [debouncedQuery]);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -76,8 +101,13 @@ export function DestinationSearchField({
   function handleSelect(destination: Destination) {
     setQuery(destination.label);
     setIsOpen(false);
-    setHasUserEdited(false);
     onSelect?.(destination);
+  }
+
+  function handleFocus() {
+    if (showDefaultSuggestionsOnFocus && !query.trim()) {
+      setIsOpen(true);
+    }
   }
 
   return (
@@ -94,17 +124,28 @@ export function DestinationSearchField({
         value={query}
         onChange={(event) => {
           setQuery(event.target.value);
-          setHasUserEdited(true);
+          setIsOpen(true);
         }}
+        onFocus={handleFocus}
+        error={error}
+        reserveHintSpace={reserveHintSpace}
         autoComplete="off"
         className={styles.input}
       />
 
-      {isOpen && (isLoading || results.length > 0) && (
+      {showDropdown && (
         <ul className={styles.dropdown}>
-          {isLoading && <li className={styles.loading}>در حال جستجو...</li>}
+          {isLoading && query.trim() && (
+            <li className={styles.loading}>در حال جستجو...</li>
+          )}
 
-          {results.map((destination) => (
+          {showNoResults && (
+            <li className={styles.empty}>.نتیجه ای یافت نشد</li>
+          )}
+
+          {!isLoading &&
+            !showNoResults &&
+            suggestions.map((destination) => (
             <li key={destination.id}>
               <button
                 type="button"
@@ -142,7 +183,7 @@ export function DestinationSearchField({
                 )}
               </button>
             </li>
-          ))}
+            ))}
         </ul>
       )}
     </div>
