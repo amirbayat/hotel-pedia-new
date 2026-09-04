@@ -56,9 +56,8 @@ function Section({
 /**
  * Listing sidebar filters — matches Figma "Frame 87" (node 451:7858).
  *
- * These filters only update the `value` object (kept in the page's URL query
- * params by the caller); the hotel-search API doesn't accept any of them yet.
- * See docs/hotel-listing-plan.md §3.4.
+ * Filters update the page URL; the mock search applies them client-side before pagination.
+ * Wire the same fields to the real API when backend support lands (docs/hotel-listing-plan.md §3.4).
  */
 export function FilterSidebar({
   value,
@@ -82,12 +81,17 @@ export function FilterSidebar({
     });
   }
 
-  const sliderMin = value.minPrice ?? priceBounds.min;
-  const sliderMax = value.maxPrice ?? priceBounds.max;
-  const minPercent =
-    ((sliderMin - priceBounds.min) / (priceBounds.max - priceBounds.min)) * 100;
-  const maxPercent =
-    ((sliderMax - priceBounds.min) / (priceBounds.max - priceBounds.min)) * 100;
+  const sliderMin = Math.min(
+    Math.max(value.minPrice ?? priceBounds.min, priceBounds.min),
+    priceBounds.max,
+  );
+  const sliderMax = Math.min(
+    Math.max(value.maxPrice ?? priceBounds.max, priceBounds.min),
+    priceBounds.max,
+  );
+  const priceSpan = priceBounds.max - priceBounds.min;
+  const minPercent = priceSpan === 0 ? 0 : ((sliderMin - priceBounds.min) / priceSpan) * 100;
+  const maxPercent = priceSpan === 0 ? 100 : ((sliderMax - priceBounds.min) / priceSpan) * 100;
 
   return (
     <div className={[styles.sidebar, className].filter(Boolean).join(" ")}>
@@ -195,6 +199,7 @@ export function FilterSidebar({
             className={styles.rangeInput}
             min={priceBounds.min}
             max={priceBounds.max}
+            step={10_000}
             value={sliderMin}
             onChange={(event) =>
               onChange({
@@ -208,6 +213,7 @@ export function FilterSidebar({
             className={styles.rangeInput}
             min={priceBounds.min}
             max={priceBounds.max}
+            step={10_000}
             value={sliderMax}
             onChange={(event) =>
               onChange({
@@ -218,8 +224,8 @@ export function FilterSidebar({
           />
         </div>
         <div className={styles.sliderLegend}>
-          <span>از</span>
-          <span>تا</span>
+          <span>از {priceBounds.min.toLocaleString("en-US")}</span>
+          <span>تا {priceBounds.max.toLocaleString("en-US")}</span>
         </div>
       </Section>
     </div>

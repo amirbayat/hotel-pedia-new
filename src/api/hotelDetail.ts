@@ -1,3 +1,5 @@
+import { findMockHotelBySlug, seededRandom, type MockHotel } from './mockCityData'
+
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 
 export interface HotelImage {
@@ -108,24 +110,6 @@ export interface HotelDetailParams {
   endDate?: string
 }
 
-/** Deterministic pseudo-random in [0, 1) — same (seed) always yields the same value, unlike Math.random(). */
-function seededRandom(seed: string): number {
-  let hash = 0
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash * 31 + seed.charCodeAt(i)) | 0
-  }
-  return (hash >>> 0) / 0xffffffff
-}
-
-const MOCK_HOTEL_ID = 1
-const MOCK_IMAGES = Array.from({ length: 6 }, (_, i) => `https://picsum.photos/seed/hotelpedia-hotel-${i}/1200/800`)
-
-const MOCK_ROOM_DEFS = [
-  { id: 101, roomKind: 'دو تخته برای دو نفر', personCount: 2, extraPersonCount: 1, baseFee: 3_200_000 },
-  { id: 102, roomKind: 'یک تخته برای یک نفر', personCount: 1, extraPersonCount: 0, baseFee: 2_100_000 },
-  { id: 103, roomKind: 'سوئیت خانوادگی برای چهار نفر', personCount: 4, extraPersonCount: 2, baseFee: 5_400_000 },
-] as const
-
 /** Generates ~1 year of nightly rates starting today, so any near-term date range has prices. */
 function buildMockCalendar(roomId: number, baseFee: number): HotelRoom['calendar'] {
   const days: HotelRoom['calendar'] = []
@@ -142,19 +126,60 @@ function buildMockCalendar(roomId: number, baseFee: number): HotelRoom['calendar
   return days
 }
 
-function buildMockHotel(slug: string): HotelDetail {
+function buildMockRooms(hotel: MockHotel): HotelRoom[] {
+  const defs = [
+    { roomKind: hotel.roomName, personCount: 2, extraPersonCount: 1, baseFee: hotel.baseFee },
+    { roomKind: 'یک تخته برای یک نفر', personCount: 1, extraPersonCount: 0, baseFee: Math.round(hotel.baseFee * 0.65) },
+    { roomKind: 'سوئیت خانوادگی برای چهار نفر', personCount: 4, extraPersonCount: 2, baseFee: Math.round(hotel.baseFee * 1.35) },
+  ]
+
+  return defs.map((def, index) => {
+    const roomId = hotel.id * 10 + index + 1
+    return {
+      id: roomId,
+      roomKind: def.roomKind,
+      availableCount: 5,
+      personCount: def.personCount,
+      extraPersonCount: def.extraPersonCount,
+      foodServices: ['صبحانه بوفه'],
+      amenities: ['تلویزیون', 'یخچال', 'سرویس بهداشتی فرنگی', 'حوله و دمپایی'],
+      calendar: buildMockCalendar(roomId, def.baseFee),
+    }
+  })
+}
+
+function buildMockRating(hotel: MockHotel): HotelRating {
+  const base = 3.8 + seededRandom(`${hotel.slug}-rating`) * 1.1
+  const rounded = Math.round(base * 10) / 10
   return {
-    id: MOCK_HOTEL_ID,
-    slug,
-    name: 'هتل پنج ستاره اسپیناس پالاس',
+    total: rounded,
+    totalCount: 40 + Math.floor(seededRandom(`${hotel.slug}-reviews`) * 200),
+    cleanliness: rounded,
+    location: Math.min(5, rounded + 0.1),
+    service: Math.max(3.5, rounded - 0.1),
+    staff: rounded,
+    valueOfMoney: Math.max(3.5, rounded - 0.2),
+  }
+}
+
+function buildMockHotel(hotel: MockHotel): HotelDetail {
+  const locationSeed = seededRandom(`${hotel.slug}-location`)
+
+  return {
+    id: hotel.id,
+    slug: hotel.slug,
+    name: hotel.name,
     hotelKind: 'هتل',
-    address: 'تهران، بزرگراه چمران، خیابان یمن',
-    location: { lat: 35.7982, lng: 51.3891 },
-    stars: 5,
+    address: hotel.address,
+    location: { lat: 35.7 + locationSeed * 0.2, lng: 51.3 + locationSeed * 0.2 },
+    stars: hotel.stars,
     checkIn: '14:00',
     checkOut: '12:00',
-    description: 'اقامتگاهی مجهز در قلب تهران با دسترسی آسان به مراکز تجاری و گردشگری شهر.',
-    images: MOCK_IMAGES.map((path, index) => ({ path, orderColumn: index })),
+    description: `${hotel.name} در ${hotel.cityName} با امکانات رفاهی کامل آماده پذیرایی از مسافران است.`,
+    images: Array.from({ length: 6 }, (_, index) => ({
+      path: `https://picsum.photos/seed/${hotel.imageSeed}-${index}/1200/800`,
+      orderColumn: index,
+    })),
     amenities: ['اینترنت بی‌سیم رایگان', 'استخر', 'پارکینگ', 'رستوران', 'باشگاه بدن‌سازی', 'اتاق کنفرانس'].map((name) => ({ name })),
     generalRules: [
       { id: 1, title: 'ورود و خروج', content: 'ساعت ورود از ۱۴:۰۰ و خروج تا ۱۲:۰۰ ظهر است.' },
@@ -164,17 +189,8 @@ function buildMockHotel(slug: string): HotelDetail {
       { id: 1, title: 'کنسلی رایگان', content: 'تا ۴۸ ساعت قبل از ورود، کنسلی بدون جریمه امکان‌پذیر است.' },
       { id: 2, title: 'کنسلی دیرهنگام', content: 'کنسلی کمتر از ۴۸ ساعت مانده به ورود، مشمول جریمه یک شب اقامت می‌شود.' },
     ],
-    rooms: MOCK_ROOM_DEFS.map((def) => ({
-      id: def.id,
-      roomKind: def.roomKind,
-      availableCount: 5,
-      personCount: def.personCount,
-      extraPersonCount: def.extraPersonCount,
-      foodServices: ['صبحانه بوفه'],
-      amenities: ['تلویزیون', 'یخچال', 'سرویس بهداشتی فرنگی', 'حوله و دمپایی'],
-      calendar: buildMockCalendar(def.id, def.baseFee),
-    })),
-    rating: { total: 4.6, totalCount: 128, cleanliness: 4.7, location: 4.8, service: 4.5, staff: 4.6, valueOfMoney: 4.3 },
+    rooms: buildMockRooms(hotel),
+    rating: buildMockRating(hotel),
   }
 }
 
@@ -188,7 +204,11 @@ function buildMockHotel(slug: string): HotelDetail {
 export async function fetchHotelDetail(params: HotelDetailParams, signal?: AbortSignal): Promise<HotelDetail> {
   void signal
   await new Promise((resolve) => setTimeout(resolve, 300))
-  return buildMockHotel(params.slug)
+  const hotel = findMockHotelBySlug(params.slug)
+  if (!hotel) {
+    throw new Error(`fetchHotelDetail: unknown hotel slug "${params.slug}"`)
+  }
+  return buildMockHotel(hotel)
 }
 
 /** Real implementation of `fetchHotelDetail`, unused while the hotel-detail flow is mocked. */

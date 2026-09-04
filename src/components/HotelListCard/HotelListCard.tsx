@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { toPersianDigits } from "../../lib/date/jalali";
 import { Button } from "../Button";
-import { IconFavorits, IconLocationPin, IconStar } from "../icons";
+import { IconLocationPin, IconStar } from "../icons";
 import styles from "./HotelListCard.module.scss";
 
 export interface HotelListCardProps {
@@ -28,8 +27,6 @@ export interface HotelListCardProps {
   originalPrice?: number;
   discountPercent?: number;
   currency?: string;
-  isFavorite?: boolean;
-  onToggleFavorite?: () => void;
   onReserve?: () => void;
   onViewDetails?: () => void;
 }
@@ -55,63 +52,43 @@ export function HotelListCard({
   originalPrice,
   discountPercent,
   currency = "تومان",
-  isFavorite,
-  onToggleFavorite,
   onReserve,
   onViewDetails,
 }: HotelListCardProps) {
-  const [favorite, setFavorite] = useState(isFavorite ?? false);
-
-  function handleToggleFavorite() {
-    setFavorite((current) => !current);
-    onToggleFavorite?.();
-  }
-
   return (
     // DOM order matches the Figma visual (non-RTL-flex) layout, like
     // DateRangeCalendar: actions column, divider, info column, image —
     // left to right, since this container doesn't set direction: rtl.
     <div className={styles.card}>
       <div className={styles.actions}>
-        <button
-          type="button"
-          className={styles.favoriteButton}
-          onClick={handleToggleFavorite}
-          aria-pressed={favorite}
-          aria-label="علاقه‌مندی"
-        >
-          <IconFavorits
-            width={24}
-            height={24}
-            className={favorite ? styles.favoriteActive : undefined}
-          />
-        </button>
         {isAvailable ? (
           <>
+            <div className={styles.priceArea}>
+              {price != null && (
+                <div className={styles.priceBlock}>
+                  {discountPercent ? (
+                    <span className={styles.discountBadge}>
+                      ٪{discountPercent}
+                    </span>
+                  ) : null}
+                  <div className={styles.priceStack}>
+                    {originalPrice != null && (
+                      <span className={styles.originalPrice}>
+                        {formatPrice(originalPrice)} {currency}
+                      </span>
+                    )}
+                    <span className={styles.priceValue}>
+                      {formatPrice(price)} {currency}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {(nights != null || occupancySummary) && (
               <div className={styles.stayInfo}>
                 {occupancySummary && <span>{occupancySummary}</span>}
                 {nights != null && <span>{toPersianDigits(nights)} شب</span>}
-              </div>
-            )}
-
-            {price != null && (
-              <div className={styles.priceBlock}>
-                {discountPercent ? (
-                  <span className={styles.discountBadge}>
-                    ٪{discountPercent}
-                  </span>
-                ) : null}
-                <div className={styles.priceStack}>
-                  {originalPrice != null && (
-                    <span className={styles.originalPrice}>
-                      {formatPrice(originalPrice)} {currency}
-                    </span>
-                  )}
-                  <span className={styles.priceValue}>
-                    {formatPrice(price)} {currency}
-                  </span>
-                </div>
               </div>
             )}
 
@@ -125,7 +102,9 @@ export function HotelListCard({
           </>
         ) : (
           <>
-            <span className={styles.soldOut}>تکمیل ظرفیت</span>
+            <div className={styles.priceArea}>
+              <span className={styles.soldOut}>تکمیل ظرفیت</span>
+            </div>
             <Button
               variant="secondary"
               className={styles.reserveButton}

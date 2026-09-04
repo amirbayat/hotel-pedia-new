@@ -1,16 +1,20 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { searchHotels } from '../api/hotelSearch'
 import type { HotelSearchParams } from '../api/hotelSearch'
 
+type InfiniteHotelSearchParams = Omit<HotelSearchParams, 'page'>
+
 /**
- * Hotel-search list query. `placeholderData: keepPreviousData` keeps the
- * previous page's hotels on screen (instead of flashing empty) while a new
- * page/sort request is in flight — pair with `isFetching` for a loading overlay.
+ * Hotel-search list query with infinite scroll — each page appends to the list.
  */
-export function useHotelSearch(params: HotelSearchParams) {
-  return useQuery({
+export function useInfiniteHotelSearch(params: InfiniteHotelSearchParams) {
+  return useInfiniteQuery({
     queryKey: ['hotel-search', params],
-    queryFn: ({ signal }) => searchHotels(params, signal),
+    queryFn: ({ pageParam, signal }) =>
+      searchHotels({ ...params, page: pageParam }, signal),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
     placeholderData: keepPreviousData,
   })
 }

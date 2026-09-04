@@ -41,22 +41,20 @@
   }
 }
 
-// --- Info (favorite/share actions + details) --------------------------------
+// --- Info (details + share) -------------------------------------------------
 
 .info {
   flex: 1;
   min-width: 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
   padding-block: 16px;
 }
 
-.actions {
-  flex-shrink: 0;
+.topRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 16px;
+  direction: rtl;
 }
 
 .iconButton {
@@ -73,10 +71,6 @@
   }
 }
 
-.favoriteActive {
-  color: $color-error-200;
-}
-
 .details {
   flex: 1;
   min-width: 0;
@@ -89,6 +83,8 @@
 }
 
 .name {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-size: 24px;
   font-weight: 700;

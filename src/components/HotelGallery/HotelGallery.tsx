@@ -55,11 +55,11 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
 
             <div className={styles.lightboxMain}>
               <button type="button" className={styles.navButton} onClick={showPrev} aria-label="قبلی">
-                <IconArrowRight width={24} height={24} />
+                <IconArrowLeft width={24} height={24} />
               </button>
               <img src={images[lightboxIndex]} alt={hotelName} className={styles.lightboxImage} />
               <button type="button" className={styles.navButton} onClick={showNext} aria-label="بعدی">
-                <IconArrowLeft width={24} height={24} />
+                <IconArrowRight width={24} height={24} />
               </button>
             </div>
 

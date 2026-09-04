@@ -17,6 +17,7 @@ import {
   IconLocalParking,
   IconLocalTaxi,
   IconMosque,
+  IconPeople,
   IconPool,
   IconShower,
   IconToiletIranian,
@@ -29,9 +30,6 @@ import {
  * not a fixed enum, so this is a best-effort keyword match rather than an exact lookup.
  * Longer/more specific phrases are listed before shorter ones that could also match
  * (e.g. "کافی نت" before "کافی شاپ" — both contain "کافی").
- *
- * Several of these icons (see docs/hotel-detail-plan.md) are still placeholders
- * (dashed-circle svgs in src/assets/icons-raw) pending the real Figma export.
  */
 const AMENITY_ICON_RULES: Array<{ keywords: string[]; icon: IconComponent }> = [
   { keywords: ['اینترنت در قسمت پذیرش', 'اینترنت در لابی', 'وایفای', 'بی‌سیم', 'بی سیم', 'اینترنت'], icon: IconAndroidWifi3Bar },
@@ -43,7 +41,8 @@ const AMENITY_ICON_RULES: Array<{ keywords: string[]; icon: IconComponent }> = [
   { keywords: ['صبحانه'], icon: IconLocalCafe },
   { keywords: ['نماز'], icon: IconMosque },
   { keywords: ['لابی'], icon: IconHotel },
-  { keywords: ['بدنسازی', 'فیتنس', 'ورزشی'], icon: IconFitnessCenter },
+  { keywords: ['بدنسازی', 'بدن‌سازی', 'باشگاه', 'ورزشی'], icon: IconFitnessCenter },
+  { keywords: ['کنفرانس', 'سالن'], icon: IconPeople },
   { keywords: ['رستوران'], icon: IconForkSpoon },
   { keywords: ['خودپرداز', 'عابر بانک'], icon: IconAtm },
   { keywords: ['خشکشویی', 'لاندری'], icon: IconLocalLaundryService },

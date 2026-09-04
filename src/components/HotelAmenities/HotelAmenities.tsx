@@ -26,8 +26,8 @@ export function HotelAmenities({ hotelName, description, amenities }: HotelAmeni
               const Icon = getAmenityIcon(amenity)
               return (
                 <div className={styles.cell} key={amenity}>
-                  <span className={styles.cellLabel}>{amenity}</span>
                   <Icon width={24} height={24} className={styles.cellIcon} />
+                  <span className={styles.cellLabel}>{amenity}</span>
                 </div>
               )
             })}

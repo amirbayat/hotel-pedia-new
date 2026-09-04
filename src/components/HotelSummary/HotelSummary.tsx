@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NeshanMap } from '../NeshanMap'
-import { IconFavorits, IconLocationPin, IconShare, IconStar } from '../icons'
+import { IconLocationPin, IconShare, IconStar } from '../icons'
 import styles from './HotelSummary.module.scss'
 
 export interface HotelSummaryProps {
@@ -14,8 +14,6 @@ export interface HotelSummaryProps {
   lat: number
   lng: number
   tags?: string[]
-  isFavorite?: boolean
-  onToggleFavorite?: () => void
 }
 
 /** Best-effort label from a 0-10 score — the API doesn't provide one (same gap as hotelSearch.ts). */
@@ -27,14 +25,8 @@ function ratingLabel(score: number): string {
 }
 
 /** Title/rating/address block + map preview — matches Figma "Hotel detail" node 620:11104. */
-export function HotelSummary({ name, stars, score, reviewCount, address, lat, lng, tags = [], isFavorite, onToggleFavorite }: HotelSummaryProps) {
-  const [favorite, setFavorite] = useState(isFavorite ?? false)
+export function HotelSummary({ name, stars, score, reviewCount, address, lat, lng, tags = [] }: HotelSummaryProps) {
   const [mapModalOpen, setMapModalOpen] = useState(false)
-
-  function handleToggleFavorite() {
-    setFavorite((current) => !current)
-    onToggleFavorite?.()
-  }
 
   async function handleShare() {
     const shareData = { title: name, url: window.location.href }
@@ -59,23 +51,13 @@ export function HotelSummary({ name, stars, score, reviewCount, address, lat, ln
       </div>
 
       <div className={styles.info}>
-        <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.iconButton}
-            onClick={handleToggleFavorite}
-            aria-pressed={favorite}
-            aria-label="علاقه‌مندی"
-          >
-            <IconFavorits width={24} height={24} className={favorite ? styles.favoriteActive : undefined} />
-          </button>
-          <button type="button" className={styles.iconButton} onClick={handleShare} aria-label="اشتراک‌گذاری">
-            <IconShare width={24} height={24} />
-          </button>
-        </div>
-
         <div className={styles.details}>
-          <h1 className={styles.name}>{name}</h1>
+          <div className={styles.topRow}>
+            <h1 className={styles.name}>{name}</h1>
+            <button type="button" className={styles.iconButton} onClick={handleShare} aria-label="اشتراک‌گذاری">
+              <IconShare width={24} height={24} />
+            </button>
+          </div>
 
           <div className={styles.ratingRow}>
             <span className={styles.starsValue}>{stars}</span>

@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { Destination } from "../../api/destinations";
 import type { HotelSortBy } from "../../api/hotelSearch";
-import { useHotelSearch } from "../../hooks/useHotelSearch";
+import { useInfiniteHotelSearch } from "../../hooks/useHotelSearch";
 import { toIsoDate, todayIso, toPersianDigits } from "../../lib/date/jalali";
 import type { DateRange } from "../../components/DateRangeCalendar";
 import { FilterSidebar } from "../../components/FilterSidebar";
 import type { HotelListingFilters } from "../../components/FilterSidebar";
+import { DEFAULT_PRICE_BOUNDS } from "../../components/FilterSidebar/filters";
 import { Footer } from "../../components/Footer";
 import { HotelListCard } from "../../components/HotelListCard";
 import { ListingSearchHeader } from "../../components/ListingSearchHeader";
 import { ListingToolbar } from "../../components/ListingToolbar";
-import { Pagination } from "../../components/Pagination";
 import type { PassengersValue } from "../../components/PassengersField";
 import styles from "./HotelListing.module.scss";
 
@@ -47,7 +47,6 @@ export function HotelListing() {
   const checkOut = searchParams.get("check_out") ?? tomorrowIso();
   const sortBy =
     (searchParams.get("sort_by") as HotelSortBy | null) ?? "default";
-  const page = Number(searchParams.get("page") ?? "1");
 
   const adults = Number(searchParams.get("adults") ?? "2");
   const rooms = Number(searchParams.get("rooms") ?? "1");
@@ -56,7 +55,7 @@ export function HotelListing() {
     .filter(Boolean)
     .map(Number);
 
-  // Kept only in the URL — the hotel-search API doesn't accept any of these yet (docs/hotel-listing-plan.md §3.4).
+  // Sidebar filters are stored in the URL and applied client-side in the mock search.
   const filters: HotelListingFilters = {
     name: searchParams.get("name") ?? "",
     discountedOnly: searchParams.get("discounted") === "1",
@@ -75,13 +74,53 @@ export function HotelListing() {
     filters.minPrice != null ||
     filters.maxPrice != null;
 
-  const { data, isLoading, isFetching, isError, refetch } = useHotelSearch({
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteHotelSearch({
     city,
     checkIn,
     checkOut,
     sortBy,
-    page,
+    name: filters.name || undefined,
+    discountedOnly: filters.discountedOnly || undefined,
+    stars: filters.stars.length ? filters.stars : undefined,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
   });
+
+  const hotels = data?.pages.flatMap((page) => page.hotels) ?? [];
+  const total = data?.pages[0]?.total ?? 0;
+  const priceBoundsRef = useRef(DEFAULT_PRICE_BOUNDS);
+  const apiPriceBounds = data?.pages[0]?.priceBounds;
+  if (apiPriceBounds && apiPriceBounds.max > 0) {
+    priceBoundsRef.current = apiPriceBounds;
+  }
+  const priceBounds = priceBoundsRef.current;
+  const isRefreshing = isFetching && !isFetchingNextPage && !isLoading;
+
+  useEffect(() => {
+    const node = loadMoreRef.current;
+    if (!node || !hasNextPage || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void fetchNextPage();
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, hotels.length]);
 
   function updateParams(patch: Record<string, string | null>) {
     const next = new URLSearchParams(searchParams);
@@ -95,12 +134,12 @@ export function HotelListing() {
   function handleDestinationSelect(destination: Destination) {
     const citySlug =
       destination.type === "city" ? destination.slug : destination.citySlug;
-    updateParams({ city: citySlug, page: null });
+    updateParams({ city: citySlug });
   }
 
   function handleDateRangeChange(range: DateRange) {
     if (!range.from || !range.to) return;
-    updateParams({ check_in: range.from, check_out: range.to, page: null });
+    updateParams({ check_in: range.from, check_out: range.to });
   }
 
   function handlePassengersChange(value: PassengersValue) {
@@ -118,7 +157,6 @@ export function HotelListing() {
       stars: next.stars.length ? next.stars.join(",") : null,
       min_price: next.minPrice != null ? String(next.minPrice) : null,
       max_price: next.maxPrice != null ? String(next.maxPrice) : null,
-      page: null,
     });
   }
 
@@ -129,7 +167,6 @@ export function HotelListing() {
       stars: null,
       min_price: null,
       max_price: null,
-      page: null,
     });
   }
 
@@ -160,10 +197,10 @@ export function HotelListing() {
         onSearch={() => refetch()}
       />
       <ListingToolbar
-        resultCount={data?.total ?? 0}
+        resultCount={total}
         cityLabel={city}
         sortBy={sortBy}
-        onSortChange={(next) => updateParams({ sort_by: next, page: null })}
+        onSortChange={(next) => updateParams({ sort_by: next })}
         hasActiveFilters={hasActiveFilters}
         onClearFilters={handleClearFilters}
         filtersOpen={filtersOpen}
@@ -186,17 +223,17 @@ export function HotelListing() {
                   تلاش مجدد
                 </button>
               </div>
-            ) : data && data.hotels.length === 0 ? (
+            ) : hotels.length === 0 ? (
               <p className={styles.stateMessage}>
                 هتلی با این مشخصات یافت نشد.
               </p>
             ) : (
               <div
-                className={[styles.cards, isFetching && styles.cardsFetching]
+                className={[styles.cards, isRefreshing && styles.cardsFetching]
                   .filter(Boolean)
                   .join(" ")}
               >
-                {data?.hotels.map((hotel) => (
+                {hotels.map((hotel) => (
                   <HotelListCard
                     key={hotel.id}
                     imageSrc={hotel.imageUrl}
@@ -208,19 +245,19 @@ export function HotelListing() {
                     occupancySummary={occupancySummary}
                     isAvailable={hotel.isAvailable}
                     price={hotel.isAvailable ? hotel.minSellPrice : undefined}
+                    originalPrice={hotel.originalPrice}
+                    discountPercent={hotel.discountPercent}
                     onReserve={() => handleViewHotel(hotel.slug, hotel.id)}
                     onViewDetails={() => handleViewHotel(hotel.slug, hotel.id)}
                   />
                 ))}
-              </div>
-            )}
 
-            {data && (
-              <Pagination
-                page={data.page}
-                totalPages={data.totalPages}
-                onPageChange={(next) => updateParams({ page: String(next) })}
-              />
+                <div ref={loadMoreRef} className={styles.loadMoreSentinel} aria-hidden />
+
+                {isFetchingNextPage && (
+                  <p className={styles.loadingMore}>در حال بارگذاری...</p>
+                )}
+              </div>
             )}
           </div>
 
@@ -229,6 +266,7 @@ export function HotelListing() {
               className={styles.sidebar}
               value={filters}
               onChange={handleFiltersChange}
+              priceBounds={priceBounds}
             />
           )}
         </div>

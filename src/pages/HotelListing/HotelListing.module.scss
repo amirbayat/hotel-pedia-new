@@ -76,3 +76,14 @@
     border-color: $color-border-hover;
   }
 }
+
+.loadMoreSentinel {
+  height: 1px;
+}
+
+.loadingMore {
+  padding: 16px 0 8px;
+  text-align: center;
+  color: $color-text-muted;
+  font-size: 14px;
+}

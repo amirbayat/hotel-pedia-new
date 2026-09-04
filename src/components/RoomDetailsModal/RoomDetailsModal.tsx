@@ -173,8 +173,8 @@ export function RoomDetailsModal({
                     const Icon = getAmenityIcon(amenity)
                     return (
                       <div className={styles.amenityCell} key={amenity + index}>
-                        <span>{amenity}</span>
                         <Icon width={24} height={24} className={styles.amenityIcon} />
+                        <span>{amenity}</span>
                       </div>
                     )
                   })}

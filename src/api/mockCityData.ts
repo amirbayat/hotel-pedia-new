@@ -76,6 +76,10 @@ export function hotelsForCity(cityName: string): MockHotel[] {
   return MOCK_HOTELS.filter((hotel) => hotel.cityName === cityName)
 }
 
+export function findMockHotelBySlug(slug: string): MockHotel | undefined {
+  return MOCK_HOTELS.find((hotel) => hotel.slug === slug)
+}
+
 /** Deterministic pseudo-random in [0, 1) — same (seed) always yields the same value, unlike Math.random(). */
 export function seededRandom(seed: string): number {
   let hash = 0
