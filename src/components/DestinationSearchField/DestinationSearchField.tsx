@@ -66,9 +66,10 @@ export function DestinationSearchField({
       return;
     }
 
+    if (!isOpen) return;
+
     const controller = new AbortController();
     setIsLoading(true);
-    setIsOpen(true);
 
     searchDestinations(debouncedQuery, controller.signal)
       .then((destinations) => {
@@ -82,7 +83,7 @@ export function DestinationSearchField({
       .finally(() => setIsLoading(false));
 
     return () => controller.abort();
-  }, [debouncedQuery]);
+  }, [debouncedQuery, isOpen]);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -105,7 +106,7 @@ export function DestinationSearchField({
   }
 
   function handleFocus() {
-    if (showDefaultSuggestionsOnFocus && !query.trim()) {
+    if (showDefaultSuggestionsOnFocus || query.trim()) {
       setIsOpen(true);
     }
   }
