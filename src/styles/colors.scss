@@ -57,6 +57,15 @@ $color-star: #ffb400; // hotel star rating icons
 // seen in the design export. Verify with design before treating as stable.
 $color-price-cheap: #1a9c5c;
 
+// Room-details calendar (Figma node 788:22528) — G/E/P scale values from that
+// frame. Distinct from the compact search-card calendar colors above.
+$color-calendar-cheap-border: #d5e1a9; // G-600
+$color-calendar-cheap-price: #a7c04a; // G-300
+$color-calendar-medium-border: #cce6ff; // P-800
+$color-calendar-medium-price: #52a9ff; // P-400
+$color-calendar-expensive-border: #f0cccc; // E-800
+$color-calendar-expensive-price: #cc5252; // E-400
+
 // --- Semantic aliases — use these in components ------------------------------
 
 // Text
@@ -93,6 +102,13 @@ $color-brand-cta: $color-cta-orange; // primary CTA button background
 $color-price-tier-cheap: $color-price-cheap;
 $color-price-tier-medium: $color-primary-200;
 $color-price-tier-expensive: $color-error-200;
+
+$color-calendar-tier-cheap-border: $color-calendar-cheap-border;
+$color-calendar-tier-cheap-price: $color-calendar-cheap-price;
+$color-calendar-tier-medium-border: $color-calendar-medium-border;
+$color-calendar-tier-medium-price: $color-calendar-medium-price;
+$color-calendar-tier-expensive-border: $color-calendar-expensive-border;
+$color-calendar-tier-expensive-price: $color-calendar-expensive-price;
 
 // Calendar range selection
 $color-calendar-range-edge: $color-cta-orange; // start/end day fill

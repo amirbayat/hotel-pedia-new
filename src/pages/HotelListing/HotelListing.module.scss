@@ -39,12 +39,9 @@
   pointer-events: none;
 }
 
-// Sticky while the page scrolls; no internal scrollbar — the full panel height is visible.
 .sidebar {
   width: 300px;
   flex-shrink: 0;
-  position: sticky;
-  top: 96px;
   align-self: flex-start;
 }
 

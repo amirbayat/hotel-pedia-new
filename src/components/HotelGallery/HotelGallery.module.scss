@@ -31,6 +31,7 @@
   overflow: hidden;
   cursor: pointer;
   background: $color-surface-muted;
+  font-family: inherit;
 }
 
 .cellImage {
@@ -49,6 +50,7 @@
   gap: 8px;
   background: rgba(0, 0, 0, 0.5);
   color: $color-text-inverse;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
 }

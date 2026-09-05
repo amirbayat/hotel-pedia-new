@@ -103,23 +103,30 @@ export function RoomDetailsModal({
     return calendarDays.filter((day) => day.roomId === room.id)
   }, [calendarDays, room])
 
-  const pricesByDate = useMemo(
-    () => computePriceTiers(Object.fromEntries(roomCalendarDays.map((day) => [day.date, day.sellPrice]))),
-    [roomCalendarDays],
-  )
+  const nightlyPrices = useMemo(() => {
+    if (roomCalendarDays.length > 0) {
+      return Object.fromEntries(roomCalendarDays.map((day) => [day.date.slice(0, 10), day.sellPrice]))
+    }
+    if (!room) return {}
+    return Object.fromEntries(room.calendar.map((day) => [day.date.slice(0, 10), day.fee]))
+  }, [roomCalendarDays, room])
+
+  const pricesByDate = useMemo(() => computePriceTiers(nightlyPrices), [nightlyPrices])
 
   // "Sold out" nights (remained_count <= 0) are disabled outright, and picking
   // a range can't stretch over one — see rangeUtils.pickDate's isDayBlocked.
   const unavailableDates = useMemo(
-    () => new Set(roomCalendarDays.filter((day) => day.remainedCount <= 0).map((day) => day.date)),
+    () => new Set(roomCalendarDays.filter((day) => day.remainedCount <= 0).map((day) => day.date.slice(0, 10))),
     [roomCalendarDays],
   )
 
   const priceLabelByDate = useMemo(() => {
     const map: Record<string, string> = {}
-    for (const day of roomCalendarDays) map[day.date] = formatPrice(day.sellPrice)
+    for (const [date, price] of Object.entries(nightlyPrices)) {
+      map[date] = toPersianDigits(formatPrice(price))
+    }
     return map
-  }, [roomCalendarDays])
+  }, [nightlyPrices])
 
   if (!open || !room) return null
 
@@ -185,6 +192,7 @@ export function RoomDetailsModal({
             {tab === 'calendar' && (
               <DateRangeCalendar
                 className={styles.embeddedCalendar}
+                variant="priced"
                 value={range}
                 onChange={setRange}
                 pricesByDate={pricesByDate}
@@ -256,7 +264,7 @@ export function RoomDetailsModal({
               {stayPrice ? (
                 <>
                   <span className={styles.priceLabel}>{`قیمت برای ${toPersianDigits(stayPrice.nights)} شب`}</span>
-                  <span className={styles.priceValue}>{formatPrice(stayPrice.fee * roomCount)} تومان</span>
+                  <span className={styles.priceValue}>{toPersianDigits(formatPrice(stayPrice.fee * roomCount))} تومان</span>
                 </>
               ) : (
                 <span className={styles.priceUnavailable}>
@@ -267,7 +275,7 @@ export function RoomDetailsModal({
               )}
 
               <Button
-                variant="primary"
+                variant="brand"
                 className={styles.bookButton}
                 onClick={() => onBook?.(room.id, roomCount)}
                 disabled={!stayPrice}

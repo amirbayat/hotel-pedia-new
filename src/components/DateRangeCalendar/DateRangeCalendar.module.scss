@@ -45,12 +45,16 @@
   min-width: 0;
 }
 
+.header {
+  display: none;
+}
+
 // Per-day price captions ("9,585,000") need more horizontal room than the
 // plain compact calendar — let the two months share whatever width the
 // container actually has instead of a fixed 280px each.
 .calendarWithPrices .month {
-  width: auto;
-  flex: 1 1 0;
+  width: 384px;
+  flex: none;
 }
 
 .monthTitle {
@@ -261,4 +265,234 @@
   flex-shrink: 0;
   min-width: 96px;
   height: 40px;
+}
+
+// Room-details calendar (Figma node 788:22528) — 48px cells, 8px gap, pastel
+// 2px tier borders, orange range fill with white type. Compact search-card
+// calendar above is unchanged.
+.calendarWithPrices {
+  width: 100%;
+  gap: 16px;
+  padding: 0;
+
+  .header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .headerMonth {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    min-width: 0;
+
+    &:first-child {
+      padding-inline-end: 48px;
+    }
+
+    &:last-child {
+      padding-inline-start: 48px;
+    }
+
+    .monthTitle {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .months {
+    gap: 32px;
+    justify-content: center;
+  }
+
+  .navButton {
+    width: 48px;
+    height: 48px;
+    margin-top: 0;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .month {
+    gap: 16px;
+  }
+
+  .weekdays,
+  .grid {
+    gap: 8px;
+    grid-template-columns: repeat(7, 48px);
+  }
+
+  .weekday {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    font-size: 14px;
+    font-weight: 400;
+    color: $color-neutral-700;
+
+    &.friday {
+      color: $color-neutral-700;
+    }
+  }
+
+  .emptyCell {
+    width: 48px;
+    height: 48px;
+    aspect-ratio: auto;
+  }
+
+  .day {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    aspect-ratio: auto;
+    border: 1px solid $color-border-subtle;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    color: $color-text-primary;
+
+    &.friday {
+      color: $color-text-primary;
+    }
+
+    &.dayWithPrice {
+      gap: 1px;
+      padding: 2px 1px;
+    }
+
+    &.today:not(.selected):not(.inRange):not(.previewEnd) {
+      border-width: 1px;
+      border-color: $color-border-subtle;
+
+      &.tierCheap {
+        border-width: 2px;
+        border-color: $color-calendar-tier-cheap-border;
+      }
+
+      &.tierMedium {
+        border-width: 2px;
+        border-color: $color-calendar-tier-medium-border;
+      }
+
+      &.tierExpensive {
+        border-width: 2px;
+        border-color: $color-calendar-tier-expensive-border;
+      }
+    }
+
+    &.tierCheap {
+      border-width: 2px;
+      border-color: $color-calendar-tier-cheap-border;
+      color: $color-text-primary;
+
+      .dayPrice {
+        color: $color-calendar-tier-cheap-price;
+        opacity: 1;
+      }
+    }
+
+    &.tierMedium {
+      border-width: 2px;
+      border-color: $color-calendar-tier-medium-border;
+      color: $color-text-primary;
+
+      .dayPrice {
+        color: $color-calendar-tier-medium-price;
+        opacity: 1;
+      }
+    }
+
+    &.tierExpensive {
+      border-width: 2px;
+      border-color: $color-calendar-tier-expensive-border;
+      color: $color-text-error;
+
+      .dayPrice {
+        color: $color-calendar-tier-expensive-price;
+        opacity: 1;
+      }
+    }
+
+    &.inRange {
+      background: $color-calendar-range-middle;
+      border-color: $color-calendar-range-middle;
+      color: $color-text-inverse;
+
+      .dayNumber {
+        font-weight: 700;
+      }
+
+      .dayPrice {
+        color: rgba(255, 255, 255, 0.9);
+        opacity: 1;
+      }
+    }
+
+    &.selected {
+      background: $color-calendar-range-edge;
+      border-color: $color-calendar-range-edge;
+      color: $color-text-inverse;
+      font-weight: 700;
+
+      .dayPrice {
+        color: rgba(255, 255, 255, 0.9);
+        opacity: 1;
+      }
+    }
+
+    &.previewEnd {
+      background: none;
+      border-style: solid;
+      border-width: 1px;
+      border-color: $color-brand-cta;
+    }
+
+    &:disabled {
+      color: $color-text-muted;
+      cursor: not-allowed;
+    }
+  }
+
+  .dayPrice {
+    font-size: 8px;
+    font-weight: 400;
+    opacity: 1;
+  }
+
+  .legend {
+    justify-content: flex-end;
+    gap: 24px;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .legendItem {
+    flex-direction: row-reverse;
+    gap: 8px;
+    color: $color-text-primary;
+  }
+
+  .legendSwatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    border-width: 2px;
+
+    &.tierCheap {
+      border-color: $color-calendar-tier-cheap-border;
+    }
+
+    &.tierMedium {
+      border-color: $color-calendar-tier-medium-border;
+    }
+
+    &.tierExpensive {
+      border-color: $color-calendar-tier-expensive-border;
+    }
+  }
 }

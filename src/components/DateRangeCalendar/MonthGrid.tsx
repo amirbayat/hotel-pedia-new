@@ -34,6 +34,8 @@ export interface MonthGridProps {
   priceLabelByDate?: Partial<Record<string, string>>
   onDayClick: (iso: string) => void
   onDayHover: (iso: string | null) => void
+  /** Hide the month/year heading — used when the parent renders a shared two-month header. */
+  hideTitle?: boolean
 }
 
 export function MonthGrid({
@@ -49,15 +51,18 @@ export function MonthGrid({
   priceLabelByDate,
   onDayClick,
   onDayHover,
+  hideTitle = false,
 }: MonthGridProps) {
   const weeks = useMemo(() => buildMonthMatrix(jalaliYear, jalaliMonth), [jalaliYear, jalaliMonth])
   const previewRange = getPreviewRange(value, hoverIso)
 
   return (
     <div className={styles.month}>
-      <p className={styles.monthTitle}>
-        {PERSIAN_MONTH_NAMES[jalaliMonth - 1]} {toPersianDigits(jalaliYear)}
-      </p>
+      {!hideTitle && (
+        <p className={styles.monthTitle}>
+          {PERSIAN_MONTH_NAMES[jalaliMonth - 1]} {toPersianDigits(jalaliYear)}
+        </p>
+      )}
 
       <div className={styles.weekdays}>
         {PERSIAN_WEEKDAY_LABELS.map((label, index) => (

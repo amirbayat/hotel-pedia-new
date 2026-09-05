@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { addMonths, formatStaySummary, todayCursor, todayIso } from '../../lib/date/jalali'
+import {
+  addMonths,
+  formatStaySummary,
+  PERSIAN_MONTH_NAMES,
+  todayCursor,
+  todayIso,
+  toPersianDigits,
+} from '../../lib/date/jalali'
 import type { JalaliCursor } from '../../lib/date/jalali'
 import { IconArrowLeft, IconArrowRight } from '../icons'
 import { Button } from '../Button'
@@ -31,6 +38,11 @@ export interface DateRangeCalendarProps {
   unavailableDates?: Set<string>
   /** Formatted per-night price shown under the day number, e.g. "۴۵,۵۰۰". */
   priceLabelByDate?: Partial<Record<string, string>>
+  /**
+   * `priced` is only for the room-details modal calendar tab (Figma 788:22528).
+   * Search-card / listing / hotel-rooms calendars must stay `compact`.
+   */
+  variant?: 'compact' | 'priced'
   className?: string
   /** Controlled right-hand month cursor — omit to let the calendar manage its own navigation state. */
   cursor?: JalaliCursor
@@ -41,8 +53,9 @@ export interface DateRangeCalendarProps {
 }
 
 /**
- * Two-month Jalali date-range picker (matches the Hotelpedia search-card
- * calendar). The right-hand month is the earlier one, following RTL reading
+ * Two-month Jalali date-range picker. Compact layout matches the search-card
+ * calendar; `variant="priced"` matches the room-details calendar (Figma
+ * 788:22528). The right-hand month is the earlier one, following RTL reading
  * order; the left arrow moves forward in time, the right arrow moves back.
  */
 export function DateRangeCalendar({
@@ -53,6 +66,7 @@ export function DateRangeCalendar({
   maxDate,
   unavailableDates,
   priceLabelByDate,
+  variant = 'compact',
   className,
   cursor: controlledCursor,
   onCursorChange,
@@ -69,11 +83,8 @@ export function DateRangeCalendar({
   const secondCursor = addMonths(cursor, 1)
   const today = todayIso()
   const effectiveMinDate = minDate ?? today
-  const hasLegend = pricesByDate && Object.keys(pricesByDate).length > 0
-  // Per-day price captions need noticeably more room per cell than the plain
-  // search-card calendar — widen the months (instead of the fixed compact
-  // width) whenever they're actually shown, rather than adding a separate prop.
-  const hasPriceLabels = Boolean(priceLabelByDate && Object.keys(priceLabelByDate).length > 0)
+  const isPriced = variant === 'priced'
+  const hasLegend = isPriced && pricesByDate && Object.keys(pricesByDate).length > 0
   const canConfirm = Boolean(value.from && value.to)
   const summary = formatStaySummary(value)
 
@@ -81,9 +92,45 @@ export function DateRangeCalendar({
     onChange(pickDate(value, iso, unavailableDates ? (day) => unavailableDates.has(day) : undefined))
   }
 
+  const monthGridProps = {
+    todayIso: today,
+    value,
+    hoverIso,
+    pricesByDate,
+    minDate: effectiveMinDate,
+    maxDate,
+    unavailableDates,
+    priceLabelByDate,
+    onDayClick: handleDayClick,
+    onDayHover: setHoverIso,
+    hideTitle: isPriced,
+  }
+
+  const nextButton = (
+    <button
+      type="button"
+      className={styles.navButton}
+      aria-label="ماه بعد"
+      onClick={() => setCursor((c) => addMonths(c, 1))}
+    >
+      <IconArrowLeft width={isPriced ? 24 : 20} height={isPriced ? 24 : 20} />
+    </button>
+  )
+
+  const prevButton = (
+    <button
+      type="button"
+      className={styles.navButton}
+      aria-label="ماه قبل"
+      onClick={() => setCursor((c) => addMonths(c, -1))}
+    >
+      <IconArrowRight width={isPriced ? 24 : 20} height={isPriced ? 24 : 20} />
+    </button>
+  )
+
   return (
     <div
-      className={[styles.calendar, hasPriceLabels && styles.calendarWithPrices, className].filter(Boolean).join(' ')}
+      className={[styles.calendar, isPriced && styles.calendarWithPrices, className].filter(Boolean).join(' ')}
       onClick={(event) => event.stopPropagation()}
       onMouseDown={(event) => event.stopPropagation()}
     >
@@ -92,54 +139,31 @@ export function DateRangeCalendar({
         this app: the later month renders on the left, the earlier one on
         the right, so the later month and its "next" button come first.
       */}
+      {isPriced && (
+        <div className={styles.header}>
+          <div className={styles.headerMonth}>
+            {nextButton}
+            <p className={styles.monthTitle}>
+              {PERSIAN_MONTH_NAMES[secondCursor.jm - 1]} {toPersianDigits(secondCursor.jy)}
+            </p>
+          </div>
+          <div className={styles.headerMonth}>
+            <p className={styles.monthTitle}>
+              {PERSIAN_MONTH_NAMES[cursor.jm - 1]} {toPersianDigits(cursor.jy)}
+            </p>
+            {prevButton}
+          </div>
+        </div>
+      )}
+
       <div className={styles.months}>
-        <button
-          type="button"
-          className={styles.navButton}
-          aria-label="ماه بعد"
-          onClick={() => setCursor((c) => addMonths(c, 1))}
-        >
-          <IconArrowLeft width={20} height={20} />
-        </button>
+        {!isPriced && nextButton}
 
-        <MonthGrid
-          jalaliYear={secondCursor.jy}
-          jalaliMonth={secondCursor.jm}
-          todayIso={today}
-          value={value}
-          hoverIso={hoverIso}
-          pricesByDate={pricesByDate}
-          minDate={effectiveMinDate}
-          maxDate={maxDate}
-          unavailableDates={unavailableDates}
-          priceLabelByDate={priceLabelByDate}
-          onDayClick={handleDayClick}
-          onDayHover={setHoverIso}
-        />
+        <MonthGrid jalaliYear={secondCursor.jy} jalaliMonth={secondCursor.jm} {...monthGridProps} />
 
-        <MonthGrid
-          jalaliYear={cursor.jy}
-          jalaliMonth={cursor.jm}
-          todayIso={today}
-          value={value}
-          hoverIso={hoverIso}
-          pricesByDate={pricesByDate}
-          minDate={effectiveMinDate}
-          maxDate={maxDate}
-          unavailableDates={unavailableDates}
-          priceLabelByDate={priceLabelByDate}
-          onDayClick={handleDayClick}
-          onDayHover={setHoverIso}
-        />
+        <MonthGrid jalaliYear={cursor.jy} jalaliMonth={cursor.jm} {...monthGridProps} />
 
-        <button
-          type="button"
-          className={styles.navButton}
-          aria-label="ماه قبل"
-          onClick={() => setCursor((c) => addMonths(c, -1))}
-        >
-          <IconArrowRight width={20} height={20} />
-        </button>
+        {!isPriced && prevButton}
       </div>
 
       {hasLegend && (

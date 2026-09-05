@@ -56,6 +56,14 @@ export const colorScale = {
   // Figma variable, picked to match the "ارزان/میانه/گران قیمت" legend colors
   // seen in the design export. Verify with design before treating as stable.
   priceCheap: "#1a9c5c",
+
+  // Room-details calendar (Figma node 788:22528).
+  calendarCheapBorder: "#d5e1a9",
+  calendarCheapPrice: "#a7c04a",
+  calendarMediumBorder: "#cce6ff",
+  calendarMediumPrice: "#52a9ff",
+  calendarExpensiveBorder: "#f0cccc",
+  calendarExpensivePrice: "#cc5252",
 } as const;
 
 /** Semantic aliases — use these in components instead of the raw scale. */
@@ -94,6 +102,13 @@ export const colors = {
   priceTierCheap: colorScale.priceCheap,
   priceTierMedium: colorScale.primary200,
   priceTierExpensive: colorScale.error200,
+
+  calendarCheapBorder: colorScale.calendarCheapBorder,
+  calendarCheapPrice: colorScale.calendarCheapPrice,
+  calendarMediumBorder: colorScale.calendarMediumBorder,
+  calendarMediumPrice: colorScale.calendarMediumPrice,
+  calendarExpensiveBorder: colorScale.calendarExpensiveBorder,
+  calendarExpensivePrice: colorScale.calendarExpensivePrice,
 
   // Calendar range selection
   calendarRangeEdge: colorScale.ctaOrange,

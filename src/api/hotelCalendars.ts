@@ -33,23 +33,27 @@ function seededRandom(seed: string): number {
   return (hash >>> 0) / 0xffffffff
 }
 
-/** Mirrors the room defs/base fees baked into src/api/hotelDetail.ts's mock hotel. */
-const MOCK_ROOM_BASE_FEES: Record<number, number> = { 101: 3_200_000, 102: 2_100_000, 103: 5_400_000 }
+/** Mirrors `buildMockRooms` in hotelDetail.ts: room ids are `hotelId * 10 + 1..3`. */
+const MOCK_ROOM_DEFS = [
+  { offset: 1, baseFee: 3_200_000 },
+  { offset: 2, baseFee: 2_100_000 },
+  { offset: 3, baseFee: 5_400_000 },
+]
 
 function buildMockCalendarDays(params: HotelCalendarsParams): HotelCalendarDay[] {
   const days: HotelCalendarDay[] = []
   const start = new Date(params.startDate)
   const end = new Date(params.endDate)
 
-  for (const [roomIdStr, baseFee] of Object.entries(MOCK_ROOM_BASE_FEES)) {
-    const roomId = Number(roomIdStr)
+  for (const def of MOCK_ROOM_DEFS) {
+    const roomId = params.hotelId * 10 + def.offset
     const cursor = new Date(start)
     let dayIndex = 0
     while (cursor <= end) {
       const isoDate = cursor.toISOString().slice(0, 10)
       const isWeekend = cursor.getDay() === 4 || cursor.getDay() === 5 // پنجشنبه/جمعه
       const variance = 0.85 + seededRandom(`${roomId}-${isoDate}`) * 0.4
-      const fee = Math.round(((baseFee * variance * (isWeekend ? 1.25 : 1)) / 10_000)) * 10_000
+      const fee = Math.round(((def.baseFee * variance * (isWeekend ? 1.25 : 1)) / 10_000)) * 10_000
       const remainedCount = seededRandom(`${roomId}-remain-${isoDate}`) > 0.15 ? Math.ceil(seededRandom(`${roomId}-count-${isoDate}`) * 5) : 0
 
       days.push({

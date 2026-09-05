@@ -50,6 +50,27 @@ export function ListingSearchHeader({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const dateFieldRef = useRef<HTMLDivElement>(null);
+  // Keep a local draft so the first click of a new range (`to: null`) is not
+  // discarded — the parent only writes a complete range to the URL, and a
+  // controlled value that snaps back to that committed range after every click
+  // would treat the second click as a new `from` forever.
+  const [draftRange, setDraftRange] = useState<DateRange>(dateRange);
+
+  useEffect(() => {
+    setDraftRange(dateRange);
+  }, [dateRange.from, dateRange.to]);
+
+  function handleRangeChange(next: DateRange) {
+    setDraftRange(next);
+    if (next.from && next.to) onDateRangeChange(next);
+  }
+
+  function closeCalendar() {
+    setIsCalendarOpen(false);
+    setDraftRange((current) =>
+      current.from && current.to ? current : dateRange,
+    );
+  }
 
   useEffect(() => {
     if (!isCalendarOpen) return;
@@ -59,13 +80,13 @@ export function ListingSearchHeader({
         dateFieldRef.current &&
         !dateFieldRef.current.contains(event.target as Node)
       ) {
-        setIsCalendarOpen(false);
+        closeCalendar();
       }
     }
 
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, [isCalendarOpen]);
+  }, [isCalendarOpen, dateRange.from, dateRange.to]);
 
   return (
     <header className={styles.header}>
@@ -114,7 +135,7 @@ export function ListingSearchHeader({
               leadingIcon={IconDate}
               trailingIcon={IconArrowDown}
               reverseIcons
-              value={formatJalaliDayMonthRange(dateRange)}
+              value={formatJalaliDayMonthRange(draftRange)}
               dir="rtl"
               onFocus={() => setIsCalendarOpen(true)}
               readOnly
@@ -123,9 +144,9 @@ export function ListingSearchHeader({
             {isCalendarOpen && (
               <DateRangeCalendar
                 className={styles.calendarPopover}
-                value={dateRange}
-                onChange={onDateRangeChange}
-                onConfirm={() => setIsCalendarOpen(false)}
+                value={draftRange}
+                onChange={handleRangeChange}
+                onConfirm={closeCalendar}
               />
             )}
           </div>
@@ -135,6 +156,7 @@ export function ListingSearchHeader({
             reverseIcons
             defaultValue={destinationLabel}
             showLabel={false}
+            citiesOnly
             onSelect={onDestinationSelect}
           />
         </div>

@@ -27,14 +27,14 @@ export function SearchCard() {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [passengers, setPassengers] = useState<PassengersValue>({ adults: 2, childrenAges: [], rooms: 1 })
   const [destination, setDestination] = useState('')
-  const [citySlug, setCitySlug] = useState('')
+  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null)
   const [destinationError, setDestinationError] = useState('')
   const [dateError, setDateError] = useState('')
   const dateFieldRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
   function handleDestinationSelect(selected: Destination) {
-    setCitySlug(selected.type === 'city' ? selected.slug : selected.citySlug)
+    setSelectedDestination(selected)
     setDestinationError('')
   }
 
@@ -47,12 +47,22 @@ export function SearchCard() {
 
     if (nextDestinationError || nextDateError) return
 
-    const params = new URLSearchParams({ city: citySlug || destination.trim(), sort_by: 'default' })
+    const params = new URLSearchParams({
+      adults: String(passengers.adults),
+      rooms: String(passengers.rooms),
+    })
     if (range.from) params.set('check_in', range.from)
     if (range.to) params.set('check_out', range.to)
-    params.set('adults', String(passengers.adults))
-    params.set('rooms', String(passengers.rooms))
     if (passengers.childrenAges.length) params.set('children', passengers.childrenAges.join(','))
+
+    if (selectedDestination?.type === 'hotel') {
+      params.set('hotel_id', String(selectedDestination.id))
+      navigate(`/hotels/${selectedDestination.slug}?${params}`)
+      return
+    }
+
+    params.set('city', selectedDestination?.type === 'city' ? selectedDestination.slug : destination.trim())
+    params.set('sort_by', 'default')
     navigate(`/hotels?${params}`)
   }
 
@@ -114,8 +124,8 @@ export function SearchCard() {
           value={destination}
           onChange={(value) => {
             setDestination(value)
+            setSelectedDestination(null)
             if (value.trim()) setDestinationError('')
-            if (!value.trim()) setCitySlug('')
           }}
           error={destinationError || undefined}
           reserveHintSpace

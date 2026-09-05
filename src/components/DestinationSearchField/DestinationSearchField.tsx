@@ -13,6 +13,9 @@ export interface DestinationSearchFieldProps {
   defaultValue?: string;
   /** Hides the "مقصد یا هتل" title above the field, for compact/header contexts. Defaults to true. */
   showLabel?: boolean;
+  placeholder?: string;
+  /** Drops hotel matches from the dropdown — listing header is city-only. */
+  citiesOnly?: boolean;
   error?: string;
   reserveHintSpace?: boolean;
   value?: string;
@@ -23,11 +26,16 @@ export interface DestinationSearchFieldProps {
 }
 
 /** "مقصد یا هتل" field — debounced destination search with a suggestions dropdown. */
+const DEFAULT_PLACEHOLDER = "مقصد یا هتل مورد نظر را وارد کنید";
+const CITIES_ONLY_PLACEHOLDER = "مقصد مورد نظر را وارد کنید";
+
 export function DestinationSearchField({
   className,
   reverseIcons,
   defaultValue = "",
   showLabel = true,
+  placeholder,
+  citiesOnly = false,
   error,
   reserveHintSpace,
   value,
@@ -73,7 +81,11 @@ export function DestinationSearchField({
 
     searchDestinations(debouncedQuery, controller.signal)
       .then((destinations) => {
-        setResults(destinations);
+        setResults(
+          citiesOnly
+            ? destinations.filter((destination) => destination.type === "city")
+            : destinations,
+        );
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError")
@@ -83,7 +95,7 @@ export function DestinationSearchField({
       .finally(() => setIsLoading(false));
 
     return () => controller.abort();
-  }, [debouncedQuery, isOpen]);
+  }, [debouncedQuery, isOpen, citiesOnly]);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -124,7 +136,10 @@ export function DestinationSearchField({
     >
       <Input
         label={showLabel ? "مقصد یا هتل" : undefined}
-        placeholder="مقصد یا هتل مورد نظر را وارد کنید"
+        placeholder={
+          placeholder ??
+          (citiesOnly ? CITIES_ONLY_PLACEHOLDER : DEFAULT_PLACEHOLDER)
+        }
         // leadingIcon={IconLocation}
         trailingIcon={IconLocation}
         reverseIcons={reverseIcons}
