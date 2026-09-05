@@ -11,10 +11,10 @@ export interface SimilarHotel {
 }
 
 const MOCK_SIMILAR_HOTELS: Omit<SimilarHotel, 'id'>[] = [
-  { name: 'هتل پارسیان استقلال', slug: 'parsian-esteghlal', stars: 5, address: 'تهران، ولنجک', citySlug: 'tehran', image: 'https://picsum.photos/seed/hotelpedia-similar-1/600/400' },
-  { name: 'هتل اسپیناس تهران', slug: 'espinas-tehran', stars: 5, address: 'تهران، سعادت‌آباد', citySlug: 'tehran', image: 'https://picsum.photos/seed/hotelpedia-similar-2/600/400' },
-  { name: 'هتل لاله', slug: 'laleh', stars: 4, address: 'تهران، خیابان کارگر', citySlug: 'tehran', image: 'https://picsum.photos/seed/hotelpedia-similar-3/600/400' },
-  { name: 'هتل هما', slug: 'homa', stars: 4, address: 'تهران، میدان ونک', citySlug: 'tehran', image: 'https://picsum.photos/seed/hotelpedia-similar-4/600/400' },
+  { name: 'هتل پارسیان تهران', slug: 'parsian-tehran', stars: 5, address: 'تهران، خیابان آزادی، پلاک ۲۴', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-1/600/400' },
+  { name: 'هتل لاله تهران', slug: 'laleh-tehran', stars: 4, address: 'تهران، خیابان ولیعصر، پلاک ۳۶', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-2/600/400' },
+  { name: 'هتل هما تهران', slug: 'homa-tehran', stars: 4, address: 'تهران، خیابان آزادی، پلاک ۴۸', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-3/600/400' },
+  { name: 'هتل ارم تهران', slug: 'arm-tehran', stars: 3, address: 'تهران، خیابان ولیعصر، پلاک ۶۰', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-4/600/400' },
 ]
 
 /**

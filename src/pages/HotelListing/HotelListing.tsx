@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import type { Destination } from "../../api/destinations";
 import type { HotelSortBy } from "../../api/hotelSearch";
 import { useInfiniteHotelSearch } from "../../hooks/useHotelSearch";
-import { toIsoDate, todayIso, toPersianDigits } from "../../lib/date/jalali";
+import { toPersianDigits } from "../../lib/date/jalali";
 import type { DateRange } from "../../components/DateRangeCalendar";
 import { FilterSidebar } from "../../components/FilterSidebar";
 import type { HotelListingFilters } from "../../components/FilterSidebar";
@@ -16,12 +16,6 @@ import type { PassengersValue } from "../../components/PassengersField";
 import styles from "./HotelListing.module.scss";
 
 const DEFAULT_CITY = "تهران";
-
-function tomorrowIso(): string {
-  const now = new Date();
-  now.setDate(now.getDate() + 1);
-  return toIsoDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
-}
 
 function daysBetween(from: string, to: string): number {
   const ms = new Date(to).getTime() - new Date(from).getTime();
@@ -43,8 +37,8 @@ export function HotelListing() {
   const [filtersOpen, setFiltersOpen] = useState(true);
 
   const city = searchParams.get("city") ?? DEFAULT_CITY;
-  const checkIn = searchParams.get("check_in") ?? todayIso();
-  const checkOut = searchParams.get("check_out") ?? tomorrowIso();
+  const checkIn = searchParams.get("check_in");
+  const checkOut = searchParams.get("check_out");
   const sortBy =
     (searchParams.get("sort_by") as HotelSortBy | null) ?? "default";
 
@@ -87,8 +81,8 @@ export function HotelListing() {
     hasNextPage,
   } = useInfiniteHotelSearch({
     city,
-    checkIn,
-    checkOut,
+    checkIn: checkIn ?? undefined,
+    checkOut: checkOut ?? undefined,
     sortBy,
     name: filters.name || undefined,
     discountedOnly: filters.discountedOnly || undefined,
@@ -171,18 +165,18 @@ export function HotelListing() {
   }
 
   function handleViewHotel(slug: string, hotelId: number) {
-    navigate(
-      `/hotels/${slug}?${new URLSearchParams({
-        check_in: checkIn,
-        check_out: checkOut,
-        adults: String(adults),
-        rooms: String(rooms),
-        hotel_id: String(hotelId),
-      })}`,
-    );
+    const params = new URLSearchParams({
+      adults: String(adults),
+      rooms: String(rooms),
+      hotel_id: String(hotelId),
+    });
+    if (checkIn) params.set("check_in", checkIn);
+    if (checkOut) params.set("check_out", checkOut);
+    if (childrenAges.length) params.set("children", childrenAges.join(","));
+    navigate(`/hotels/${slug}?${params}`);
   }
 
-  const nights = daysBetween(checkIn, checkOut);
+  const nights = checkIn && checkOut ? daysBetween(checkIn, checkOut) : undefined;
   const occupancySummary = `${toPersianDigits(adults)} بزرگسال - ${toPersianDigits(rooms)} اتاق`;
 
   return (

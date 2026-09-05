@@ -4,7 +4,6 @@ import { getRoomPriceForStay } from '../../api/hotelDetail'
 import { useHotelDetail } from '../../hooks/useHotelDetail'
 import { useInitHotelOrder } from '../../hooks/useHotelOrder'
 import { useSimilarHotels } from '../../hooks/useSimilarHotels'
-import { todayIso } from '../../lib/date/jalali'
 import { Footer } from '../../components/Footer'
 import type { DateRange } from '../../components/DateRangeCalendar'
 import { HotelAmenities } from '../../components/HotelAmenities'
@@ -31,20 +30,14 @@ const TABS: HotelTab[] = [
   { id: 'rules', label: 'قوانین و مقررات هتل' },
 ]
 
-function tomorrowIso(): string {
-  const now = new Date()
-  now.setDate(now.getDate() + 1)
-  return now.toISOString().slice(0, 10)
-}
-
 /** Hotel-detail page — see docs/hotel-detail-plan.md. */
 export function HotelDetail() {
   const { slug = '' } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const startDate = searchParams.get('check_in') ?? todayIso()
-  const endDate = searchParams.get('check_out') ?? tomorrowIso()
+  const startDate = searchParams.get('check_in') ?? undefined
+  const endDate = searchParams.get('check_out') ?? undefined
   const adults = Number(searchParams.get('adults') ?? '2')
   const rooms = Number(searchParams.get('rooms') ?? '1')
 
@@ -62,7 +55,7 @@ export function HotelDetail() {
   // clicks to complete (from, then to), and a controlled `value` that's
   // reset to the URL's already-committed range after every keystroke would
   // never let a second click land as anything but a new `from`.
-  const [draftRange, setDraftRange] = useState<DateRange>({ from: startDate, to: endDate })
+  const [draftRange, setDraftRange] = useState<DateRange>({ from: startDate ?? null, to: endDate ?? null })
   const [draftPassengers, setDraftPassengers] = useState<PassengersValue>({ adults, childrenAges: [], rooms })
 
   function handleSearchAgain() {
@@ -99,6 +92,10 @@ export function HotelDetail() {
   // to the passenger-details page, carrying the order id forward.
   async function handleReserve(roomId: number, roomCount: number) {
     if (!data) return
+    if (!startDate || !endDate) {
+      setReserveError('تاریخ ورود و خروج را انتخاب کنید.')
+      return
+    }
     const room = data.rooms.find((candidate) => candidate.id === roomId)
     if (!room) return
 
@@ -217,6 +214,7 @@ export function HotelDetail() {
                 imageSrc: hotel.image,
                 rating: hotel.stars,
                 address: hotel.address,
+                href: `/hotels/${hotel.slug}`,
               }))}
             />
 

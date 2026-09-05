@@ -8,10 +8,10 @@ export type HotelSortBy = 'default' | 'lowest_price' | 'highest_price' | 'highes
 export interface HotelSearchParams {
   /** city_slug, e.g. "تهران". */
   city: string
-  /** Gregorian ISO date ("YYYY-MM-DD"). */
-  checkIn: string
-  /** Gregorian ISO date ("YYYY-MM-DD"). */
-  checkOut: string
+  /** Gregorian ISO date ("YYYY-MM-DD"). Optional when browsing a city without a stay. */
+  checkIn?: string
+  /** Gregorian ISO date ("YYYY-MM-DD"). Optional when browsing a city without a stay. */
+  checkOut?: string
   sortBy: HotelSortBy
   page?: number
   /** Client-side filters — applied in the mock; wire to API params when backend supports them. */
@@ -59,11 +59,12 @@ export interface HotelSearchResult {
 
 const MOCK_PAGE_SIZE = 4
 
-function buildMockHotelItem(hotel: MockHotel, checkIn: string): HotelSearchItem {
-  const variance = 0.9 + seededRandom(`${hotel.slug}-search-${checkIn}`) * 0.35
+function buildMockHotelItem(hotel: MockHotel, checkIn?: string): HotelSearchItem {
+  const seed = checkIn ?? 'open'
+  const variance = 0.9 + seededRandom(`${hotel.slug}-search-${seed}`) * 0.35
   const roomFee = Math.round((hotel.baseFee * variance) / 10_000) * 10_000
   const roomBoardPrice = Math.round((roomFee * 1.15) / 10_000) * 10_000
-  const isAvailable = seededRandom(`${hotel.slug}-avail-${checkIn}`) > 0.08
+  const isAvailable = checkIn ? seededRandom(`${hotel.slug}-avail-${checkIn}`) > 0.08 : true
   const hasDiscount = isAvailable && seededRandom(`${hotel.slug}-home-discount`) > 0.5
   const originalPrice = hasDiscount ? Math.round((roomFee * 1.2) / 10_000) * 10_000 : undefined
   const discountPercent =
@@ -185,10 +186,10 @@ export async function searchHotels(params: HotelSearchParams, signal?: AbortSign
 export async function searchHotelsFromApi(params: HotelSearchParams, signal?: AbortSignal): Promise<HotelSearchResult> {
   const query = new URLSearchParams({
     city: params.city,
-    check_in: params.checkIn,
-    check_out: params.checkOut,
     sort_by: params.sortBy,
   })
+  if (params.checkIn) query.set('check_in', params.checkIn)
+  if (params.checkOut) query.set('check_out', params.checkOut)
   if (params.page) query.set('page', String(params.page))
 
   const response = await fetch(`${PANEL_BASE_URL}/api/v1/hotel-search?${query}`, {

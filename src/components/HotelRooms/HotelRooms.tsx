@@ -13,8 +13,8 @@ import styles from './HotelRooms.module.scss'
 
 export interface HotelRoomsProps {
   rooms: HotelRoom[]
-  startDate: string
-  endDate: string
+  startDate?: string
+  endDate?: string
   dateRange: DateRange
   onDateRangeChange: (range: DateRange) => void
   passengers: PassengersValue
@@ -45,15 +45,16 @@ function RoomCard({
   onReserve,
 }: {
   room: HotelRoom
-  startDate: string
-  endDate: string
+  startDate?: string
+  endDate?: string
   fallbackImageUrl?: string
   onViewDetails?: (roomId: number) => void
   onReserve?: (roomId: number, roomCount: number) => void
 }) {
   const [roomCount, setRoomCount] = useState(1)
-  const stayPrice = getRoomPriceForStay(room, startDate, endDate)
+  const stayPrice = startDate && endDate ? getRoomPriceForStay(room, startDate, endDate) : null
   const maxRoomCount = Math.max(1, room.availableCount)
+  const canReserve = Boolean(stayPrice)
 
   return (
     <div className={styles.card}>
@@ -96,10 +97,17 @@ function RoomCard({
             )}
           </>
         ) : (
-          <span className={styles.priceUnavailable}>قیمت برای این تاریخ در دسترس نیست</span>
+          <span className={styles.priceUnavailable}>
+            {startDate && endDate ? 'قیمت برای این تاریخ در دسترس نیست' : 'برای مشاهده قیمت، تاریخ را انتخاب کنید'}
+          </span>
         )}
 
-        <Button variant="brand" className={styles.reserveButton} onClick={() => onReserve?.(room.id, roomCount)}>
+        <Button
+          variant="brand"
+          className={styles.reserveButton}
+          onClick={() => onReserve?.(room.id, roomCount)}
+          disabled={!canReserve}
+        >
           رزرو اتاق
         </Button>
       </div>

@@ -25,13 +25,17 @@ const fallbackPromoSlides: PromoSlide[] = [
 ]
 
 // Fallback shown until the /api/v1/home response arrives (or if it fails).
+function cityListingHref(cityName: string) {
+  return `/hotels?city=${encodeURIComponent(cityName)}`
+}
+
 const fallbackPopularCities: CityCard[] = [
-  { id: 'shiraz', name: 'شهر شیراز' },
-  { id: 'isfahan', name: 'شهر اصفهان' },
-  { id: 'kish', name: 'جزیره کیش', tall: true },
-  { id: 'mashhad', name: 'شهر مشهد', tall: true },
-  { id: 'tehran', name: 'شهر تهران' },
-  { id: 'tabriz', name: 'شهر تبریز' },
+  { id: 'shiraz', name: 'شهر شیراز', href: cityListingHref('شیراز') },
+  { id: 'isfahan', name: 'شهر اصفهان', href: cityListingHref('اصفهان') },
+  { id: 'kish', name: 'جزیره کیش', href: cityListingHref('کیش'), tall: true },
+  { id: 'mashhad', name: 'شهر مشهد', href: cityListingHref('مشهد'), tall: true },
+  { id: 'tehran', name: 'شهر تهران', href: cityListingHref('تهران') },
+  { id: 'tabriz', name: 'شهر تبریز', href: cityListingHref('تبریز') },
 ]
 
 // Same mock hotel repeated — real data comes from the API later.
@@ -72,6 +76,7 @@ function mapApiHotel(hotel: CityHotel): HotelListItem {
     pricePerNight: hotel.price,
     originalPricePerNight: hasDiscount ? hotel.discountPrice : undefined,
     discountPercent: hasDiscount ? Math.round((1 - hotel.price / hotel.discountPrice) * 100) : undefined,
+    href: hotel.detailsUrl,
   }
 }
 
@@ -163,6 +168,7 @@ export function Home() {
             name: `شهر ${city.name}`,
             imageSrc: city.imageSrc,
             tall: index === 2 || index === 3,
+            href: cityListingHref(city.name),
           })),
         )
         setFaqs(apiFaqs.map((faq) => ({ id: faq.id, question: faq.question, answer: faq.answer })))
@@ -209,7 +215,12 @@ export function Home() {
         <PromoCarousel slides={promoSlides} />
         <PopularCities cities={popularCities} />
         {citySections.map((section) => (
-          <HotelListSection key={section.id} city={section.city} hotels={section.hotels} />
+          <HotelListSection
+            key={section.id}
+            city={section.city}
+            hotels={section.hotels}
+            showAllHref={cityListingHref(section.city)}
+          />
         ))}
         <AdvantageBoxes items={seoTexts} />
         <Faq items={faqs} />

@@ -1,5 +1,8 @@
 @use "../../styles/colors" as *;
 
+$popover-gap: 4px;
+$reserved-hint-height: 40px;
+
 .wrapper {
   position: relative;
   width: 100%;
@@ -11,7 +14,7 @@
 
 .popover {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + #{$popover-gap});
   right: 0;
   left: 0;
   z-index: 10;
@@ -123,4 +126,8 @@
   &:hover {
     border-color: $color-border-hover;
   }
+}
+
+.hasReservedHint .popover {
+  top: calc(100% - #{$reserved-hint-height} + #{$popover-gap});
 }

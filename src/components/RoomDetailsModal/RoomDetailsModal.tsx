@@ -31,8 +31,8 @@ export interface RoomDetailsModalProps {
   /** No per-room images in the hotel-show API — falls back to the hotel's own gallery photos. */
   galleryImages: string[]
   /** Currently searched stay — used as the default selection before the user picks a range in the calendar tab. */
-  startDate: string
-  endDate: string
+  startDate?: string
+  endDate?: string
   cancellationRules: HotelRule[]
   /** Forwarded to the calendars API so prices come back with the wallet's discount applied. */
   walletId?: number
@@ -59,7 +59,7 @@ export function RoomDetailsModal({
   const [tab, setTab] = useState<ModalTab>('gallery')
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [roomCount, setRoomCount] = useState(1)
-  const [range, setRange] = useState<DateRange>({ from: startDate, to: endDate })
+  const [range, setRange] = useState<DateRange>({ from: startDate ?? null, to: endDate ?? null })
   const [cursor, setCursor] = useState<JalaliCursor>(todayCursor())
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export function RoomDetailsModal({
     setTab('gallery')
     setActiveImageIndex(0)
     setRoomCount(1)
-    setRange({ from: startDate, to: endDate })
+    setRange({ from: startDate ?? null, to: endDate ?? null })
     setCursor(todayCursor())
   }, [open, room, startDate, endDate])
 
@@ -125,7 +125,8 @@ export function RoomDetailsModal({
 
   const effectiveStart = range.from ?? startDate
   const effectiveEnd = range.to ?? endDate
-  const stayPrice = getRoomPriceForStay(room, effectiveStart, effectiveEnd)
+  const stayPrice =
+    effectiveStart && effectiveEnd ? getRoomPriceForStay(room, effectiveStart, effectiveEnd) : null
   const maxRoomCount = Math.max(1, room.availableCount)
   const roomAmenities = [...room.amenities, ...room.foodServices]
 
@@ -258,10 +259,19 @@ export function RoomDetailsModal({
                   <span className={styles.priceValue}>{formatPrice(stayPrice.fee * roomCount)} تومان</span>
                 </>
               ) : (
-                <span className={styles.priceUnavailable}>قیمت برای این تاریخ در دسترس نیست</span>
+                <span className={styles.priceUnavailable}>
+                  {effectiveStart && effectiveEnd
+                    ? 'قیمت برای این تاریخ در دسترس نیست'
+                    : 'برای مشاهده قیمت، تاریخ را انتخاب کنید'}
+                </span>
               )}
 
-              <Button variant="primary" className={styles.bookButton} onClick={() => onBook?.(room.id, roomCount)}>
+              <Button
+                variant="primary"
+                className={styles.bookButton}
+                onClick={() => onBook?.(room.id, roomCount)}
+                disabled={!stayPrice}
+              >
                 رزرو اتاق
               </Button>
             </div>

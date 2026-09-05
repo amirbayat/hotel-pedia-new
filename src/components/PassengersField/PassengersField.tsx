@@ -88,7 +88,13 @@ export function PassengersField({
 
   return (
     <div
-      className={[styles.wrapper, className].filter(Boolean).join(" ")}
+      className={[
+        styles.wrapper,
+        reserveHintSpace && styles.hasReservedHint,
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       ref={wrapperRef}
       onClick={() => setIsOpen(true)}
     >

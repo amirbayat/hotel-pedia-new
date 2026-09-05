@@ -49,7 +49,7 @@ $search-card-height: $search-card-field-height + 32px;
 
 .calendarPopover {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% - #{$search-card-error-area-height} + 4px);
   right: 0;
   z-index: 10;
 }

@@ -1,7 +1,10 @@
+import { Link } from "react-router-dom";
 import { IconLocationPin, IconStar } from "../icons";
 import styles from "./HotelCard.module.scss";
 
 export interface HotelCardProps {
+  /** Detail URL for this hotel — omit to keep the card non-clickable. */
+  href?: string;
   imageSrc?: string;
   name: string;
   /** 0-5 */
@@ -24,6 +27,7 @@ function formatPrice(value: number) {
 
 /** Vertical hotel card — image, name, rating, feature badges, address, price + discount. */
 export function HotelCard({
+  href,
   imageSrc,
   name,
   rating = 5,
@@ -34,8 +38,8 @@ export function HotelCard({
   discountPercent,
   currency = "تومان",
 }: HotelCardProps) {
-  return (
-    <div className={styles.card}>
+  const content = (
+    <>
       <div className={styles.imageWrapper}>
         {imageSrc ? (
           <img src={imageSrc} alt="" className={styles.image} />
@@ -106,6 +110,16 @@ export function HotelCard({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
+
+  if (href) {
+    return (
+      <Link to={href} className={styles.card}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={styles.card}>{content}</div>;
 }
