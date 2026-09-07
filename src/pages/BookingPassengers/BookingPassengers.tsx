@@ -7,7 +7,7 @@ import { Chip } from '../../components/Chip'
 import { Footer } from '../../components/Footer'
 import { HotelDetailHeader } from '../../components/HotelDetailHeader'
 import { Input } from '../../components/Input'
-import { IconInformation } from '../../components/icons'
+import { IconArrowDown, IconInformation } from '../../components/icons'
 import { toPersianDigits } from '../../lib/date/jalali'
 import { NATIONALITIES } from '../../lib/nationalities'
 import styles from './BookingPassengers.module.scss'
@@ -77,16 +77,16 @@ export function BookingPassengers() {
           onSecondary={() => navigate(`/hotels/${slug}`)}
         >
           <div className={styles.priceRow}>
+            <span className={styles.priceLabel}>{state.room.roomKind}:</span>
             <span className={styles.priceValue}>
               {formatPrice(state.room.feePerRoom)} <span>تومان</span>
             </span>
-            <span className={styles.priceLabel}>{state.room.roomKind}:</span>
           </div>
           <div className={styles.priceRowTotal}>
+            <span className={styles.priceLabel}>مبلغ برای اقامت:</span>
             <span className={styles.priceValueTotal}>
               {formatPrice(stayPrice)} <span>تومان</span>
             </span>
-            <span className={styles.priceLabel}>مبلغ برای اقامت:</span>
           </div>
         </BookingHotelCard>
 
@@ -94,17 +94,11 @@ export function BookingPassengers() {
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>اطلاعات رزرو کننده</h2>
             <div className={styles.grid2}>
+              <Input label="نام" value={reservedBy.firstName} onChange={(e) => setReservedBy({ ...reservedBy, firstName: e.target.value })} />
               <Input
                 label="نام خانوادگی"
                 value={reservedBy.lastName}
                 onChange={(e) => setReservedBy({ ...reservedBy, lastName: e.target.value })}
-              />
-              <Input label="نام" value={reservedBy.firstName} onChange={(e) => setReservedBy({ ...reservedBy, firstName: e.target.value })} />
-              <Input
-                label="ایمیل"
-                type="email"
-                value={reservedBy.email}
-                onChange={(e) => setReservedBy({ ...reservedBy, email: e.target.value })}
               />
               <Input
                 label="شماره همراه"
@@ -112,11 +106,17 @@ export function BookingPassengers() {
                 value={reservedBy.phone}
                 onChange={(e) => setReservedBy({ ...reservedBy, phone: e.target.value })}
               />
+              <Input
+                label="ایمیل"
+                type="email"
+                value={reservedBy.email}
+                onChange={(e) => setReservedBy({ ...reservedBy, email: e.target.value })}
+              />
             </div>
             {error && <p className={styles.formError}>{error}</p>}
             <div className={styles.infoBanner}>
-              <span>اطلاعات رزرو و اطلاع‌رسانی از تمام تغییرات را به این شماره می‌فرستیم.</span>
               <IconInformation width={24} height={24} />
+              <span>اطلاعات رزرو و اطلاع‌رسانی از تمام تغییرات را به این شماره می‌فرستیم.</span>
             </div>
           </section>
 
@@ -126,42 +126,27 @@ export function BookingPassengers() {
                 <h2 className={styles.cardTitle}>{`اتاق شماره ${toPersianDigits(index + 1)}: ${state.room.roomKind}`}</h2>
               </div>
               <div className={styles.roomBlockHeader}>
+                <span className={styles.roomBlockTitle}>{`مسافر بزرگسال ${toPersianDigits(index + 1)}`}</span>
                 <Chip active={usingReservedBy[index]} onClick={() => toggleUseReservedBy(index)}>
                   استفاده از اطلاعات رزرو کننده
                 </Chip>
-                <span className={styles.roomBlockTitle}>{`مسافر بزرگسال ${toPersianDigits(index + 1)}`}</span>
               </div>
 
               <div className={styles.grid2}>
-                <Input
-                  label="نام خانوادگی"
-                  placeholder="نام خانوادگی مسافر را وارد کنید"
-                  value={passenger.lastName}
-                  onChange={(e) => updatePassenger(index, { lastName: e.target.value })}
-                />
                 <Input
                   label="نام"
                   placeholder="نام مسافر را وارد کنید"
                   value={passenger.firstName}
                   onChange={(e) => updatePassenger(index, { firstName: e.target.value })}
                 />
+                <Input
+                  label="نام خانوادگی"
+                  placeholder="نام خانوادگی مسافر را وارد کنید"
+                  value={passenger.lastName}
+                  onChange={(e) => updatePassenger(index, { lastName: e.target.value })}
+                />
               </div>
               <div className={styles.grid2}>
-                <label className={styles.selectWrapper}>
-                  <span className={styles.selectLabel}>ملیت</span>
-                  <select
-                    className={styles.select}
-                    value={passenger.nationality}
-                    onChange={(e) => updatePassenger(index, { nationality: e.target.value })}
-                  >
-                    <option value="">ملیت مسافر را انتخاب کنید</option>
-                    {NATIONALITIES.map((nationality) => (
-                      <option key={nationality} value={nationality}>
-                        {nationality}
-                      </option>
-                    ))}
-                  </select>
-                </label>
                 <Input
                   label="شماره همراه"
                   inputMode="tel"
@@ -169,11 +154,34 @@ export function BookingPassengers() {
                   value={passenger.phone}
                   onChange={(e) => updatePassenger(index, { phone: e.target.value })}
                 />
+                <label className={styles.selectWrapper}>
+                  <span className={styles.selectLabel}>ملیت</span>
+                  <div className={styles.selectControl}>
+                    <IconArrowDown
+                      className={styles.selectChevron}
+                      width={20}
+                      height={20}
+                      aria-hidden
+                    />
+                    <select
+                      className={styles.select}
+                      value={passenger.nationality}
+                      onChange={(e) => updatePassenger(index, { nationality: e.target.value })}
+                    >
+                      <option value="">ملیت مسافر را انتخاب کنید</option>
+                      {NATIONALITIES.map((nationality) => (
+                        <option key={nationality} value={nationality}>
+                          {nationality}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </label>
               </div>
 
               <div className={styles.infoBanner}>
-                <span>برای هر اتاق صرفا وارد کردن اطلاعات سرپرست کافی است و نیاز به ثبت سایر مسافران نیست.</span>
                 <IconInformation width={24} height={24} />
+                <span>برای هر اتاق صرفا وارد کردن اطلاعات سرپرست کافی است و نیاز به ثبت سایر مسافران نیست.</span>
               </div>
             </section>
           ))}

@@ -44,38 +44,44 @@ export function BookingHotelCard({
       </div>
 
       <div className={styles.body}>
-        <h3 className={styles.name}>{hotel.name}</h3>
-        <div className={styles.rating}>
-          {Array.from({ length: hotel.stars }, (_, index) => (
-            <IconStar key={index} width={20} height={20} className={styles.star} />
-          ))}
+        <div className={styles.header}>
+          <h3 className={styles.name}>{hotel.name}</h3>
+          <div className={styles.rating}>
+            {Array.from({ length: hotel.stars }, (_, index) => (
+              <IconStar key={index} width={24} height={24} className={styles.star} />
+            ))}
+          </div>
         </div>
 
         <div className={styles.divider} />
 
-        <div className={styles.dateRow}>
-          <span className={styles.dateValue}>{formatJalaliDisplay(startDate)}</span>
-          <span className={styles.dateLabel}>
-            تاریخ ورود: <IconDate width={20} height={20} />
-          </span>
-        </div>
-        <div className={styles.dateRow}>
-          <span className={styles.dateValue}>{formatJalaliDisplay(endDate)}</span>
-          <span className={styles.dateLabel}>
-            تاریخ خروج: <IconDate width={20} height={20} />
-          </span>
+        <div className={styles.dateGroup}>
+          <div className={styles.dateRow}>
+            <span className={styles.dateLabel}>
+              <IconDate width={24} height={24} /> تاریخ ورود:
+            </span>
+            <span className={styles.dateValue}>{formatJalaliDisplay(startDate)}</span>
+          </div>
+          <div className={styles.dateRow}>
+            <span className={styles.dateLabel}>
+              <IconDate width={24} height={24} /> تاریخ خروج:
+            </span>
+            <span className={styles.dateValue}>{formatJalaliDisplay(endDate)}</span>
+          </div>
         </div>
 
         <div className={styles.divider} />
 
-        {children}
+        <div className={styles.footer}>
+          <div className={styles.priceSlot}>{children}</div>
 
-        <Button variant="primary" className={styles.primaryButton} onClick={onPrimary} disabled={primaryDisabled || primaryLoading}>
-          {primaryLoading ? 'در حال پردازش...' : primaryLabel}
-        </Button>
-        <Button variant="secondary" className={styles.secondaryButton} onClick={onSecondary}>
-          {secondaryLabel}
-        </Button>
+          <Button variant="primary" className={styles.primaryButton} onClick={onPrimary} disabled={primaryDisabled || primaryLoading}>
+            {primaryLoading ? 'در حال پردازش...' : primaryLabel}
+          </Button>
+          <Button variant="secondary" className={styles.secondaryButton} onClick={onSecondary}>
+            {secondaryLabel}
+          </Button>
+        </div>
       </div>
     </div>
   )

@@ -1,10 +1,13 @@
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { BookingSteps } from '../../components/BookingSteps'
 import { Button } from '../../components/Button'
 import { Footer } from '../../components/Footer'
 import { HotelDetailHeader } from '../../components/HotelDetailHeader'
-import { IconCancel, IconCheckCircle, IconCopy, IconDownload } from '../../components/icons'
+import { IconCancel, IconCheckCircle, IconCopy, IconDownload, IconTick } from '../../components/icons'
 import styles from './BookingResult.module.scss'
+
+const COPY_FEEDBACK_MS = 1500
 
 /**
  * "صدور واچر" (success/failure) — matches Figma nodes 718:10139 / 720:10551
@@ -21,9 +24,29 @@ export function BookingResult() {
   const { slug = '' } = useParams<{ slug: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const [copied, setCopied] = useState(false)
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const success = searchParams.get('status') !== 'failed'
   const trackingId = searchParams.get('tracking_id') ?? searchParams.get('order_id') ?? ''
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+    }
+  }, [])
+
+  async function handleCopyTrackingId() {
+    if (!trackingId) return
+    try {
+      await navigator.clipboard.writeText(trackingId)
+    } catch {
+      return
+    }
+    setCopied(true)
+    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+    copyTimeoutRef.current = setTimeout(() => setCopied(false), COPY_FEEDBACK_MS)
+  }
 
   return (
     <div className={styles.page}>
@@ -47,13 +70,23 @@ export function BookingResult() {
 
         {trackingId && (
           <div className={styles.trackingRow}>
-            <IconCopy width={24} height={24} onClick={() => navigator.clipboard?.writeText(trackingId)} className={styles.copyIcon} />
-            <span>{trackingId}</span>
             <span className={styles.trackingLabel}>{success ? 'شناسه پیگیری سفارش:' : 'شناسه پیگیری پرداخت:'}</span>
+            <span className={styles.trackingId}>{trackingId}</span>
+            <button
+              type="button"
+              className={[styles.copyButton, copied && styles.copyButtonDone].filter(Boolean).join(' ')}
+              onClick={handleCopyTrackingId}
+              aria-label={copied ? 'کپی شد' : 'کپی شناسه پیگیری'}
+            >
+              {copied ? <IconTick width={24} height={24} /> : <IconCopy width={24} height={24} />}
+            </button>
           </div>
         )}
 
         <div className={styles.actions}>
+          <Button variant="secondary" onClick={() => navigate('/')}>
+            بازگشت به خانه
+          </Button>
           {success ? (
             <Button variant="primary" icon={IconDownload}>
               دریافت واچر
@@ -66,9 +99,6 @@ export function BookingResult() {
               پرداخت مجدد
             </Button>
           )}
-          <Button variant="secondary" onClick={() => navigate('/')}>
-            بازگشت به خانه
-          </Button>
         </div>
       </div>
 
