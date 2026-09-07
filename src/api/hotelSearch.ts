@@ -1,4 +1,4 @@
-import { hotelsForCity, seededRandom } from './mockCityData'
+import { hotelsForCity, mockHotelScore01, seededRandom } from './mockCityData'
 import type { MockHotel } from './mockCityData'
 
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
@@ -45,6 +45,8 @@ export interface HotelSearchItem {
   hasDiscount: boolean
   /** 0-1 aggregate rating. Absent for unavailable hotels. The API doesn't expose a review count or text label (e.g. "عالی") yet. */
   score?: number
+  /** Feature badges, e.g. "لوکس"، "بهترین منطقه". */
+  tags: string[]
 }
 
 export interface HotelSearchResult {
@@ -87,7 +89,8 @@ function buildMockHotelItem(hotel: MockHotel, checkIn?: string): HotelSearchItem
     originalPrice,
     discountPercent,
     hasDiscount,
-    score: isAvailable ? Math.round((0.6 + seededRandom(`${hotel.slug}-score`) * 0.38) * 100) / 100 : undefined,
+    score: isAvailable ? mockHotelScore01(hotel.slug) : undefined,
+    tags: [...hotel.tags],
   }
 }
 
@@ -220,6 +223,7 @@ export async function searchHotelsFromApi(params: HotelSearchParams, signal?: Ab
       minSellPrice: hotel.min_sell_price,
       hasDiscount: false,
       score: hotel.score,
+      tags: Array.isArray(hotel.tags) ? hotel.tags : [],
     }))
 
   return {

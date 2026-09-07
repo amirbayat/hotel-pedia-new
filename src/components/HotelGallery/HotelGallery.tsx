@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IconArrowLeft, IconArrowRight, IconClose, IconPhoto } from '../icons'
 import styles from './HotelGallery.module.scss'
 
@@ -10,6 +10,36 @@ export interface HotelGalleryProps {
 /** Thumbnail grid + full lightbox — matches Figma "Hotel detail" node 612:10719. */
 export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (lightboxIndex === null) return
+
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setLightboxIndex(null)
+        return
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        setLightboxIndex((current) =>
+          current === null ? null : (current - 1 + images.length) % images.length,
+        )
+        return
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        setLightboxIndex((current) => (current === null ? null : (current + 1) % images.length))
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [lightboxIndex, images.length])
 
   if (images.length === 0) {
     return <div className={styles.emptyState} />

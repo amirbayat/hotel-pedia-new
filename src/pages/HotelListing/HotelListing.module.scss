@@ -7,6 +7,11 @@
   background: $color-surface;
 }
 
+// Sticky ListingSearchHeader is 80px tall — keep the toolbar visible below it.
+.listAnchor {
+  scroll-margin-top: 80px;
+}
+
 .content {
   @include layout.page-container(1200px);
   padding-top: 16px;

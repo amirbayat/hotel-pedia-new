@@ -126,11 +126,29 @@ export interface CarouselSlide {
   link: string
 }
 
-const MOCK_CAROUSEL_SLIDES: CarouselSlide[] = MOCK_CITIES.slice(0, 4).map((city, index) => ({
-  id: index + 1,
-  imageUrl: `https://picsum.photos/seed/hotelpedia-promo-${index}/1200/400`,
-  link: `/hotels?city=${encodeURIComponent(city.name)}`,
-}))
+// Mix of city listing + hotel detail links so carousel clicks exercise both routes.
+const MOCK_CAROUSEL_SLIDES: CarouselSlide[] = [
+  {
+    id: 1,
+    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-0/1200/400',
+    link: `/hotels?city=${encodeURIComponent(MOCK_CITIES[0].name)}`,
+  },
+  {
+    id: 2,
+    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-1/1200/400',
+    link: `/hotels/${hotelsForCity(MOCK_CITIES[0].name)[0].slug}`,
+  },
+  {
+    id: 3,
+    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-2/1200/400',
+    link: `/hotels?city=${encodeURIComponent(MOCK_CITIES[1].name)}`,
+  },
+  {
+    id: 4,
+    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-3/1200/400',
+    link: `/hotels/${hotelsForCity(MOCK_CITIES[1].name)[0].slug}`,
+  },
+]
 
 /**
  * ⚠️ Mocked (docs/hotel-mock-flow-plan.md) — see `fetchCarouselFromApi` for the

@@ -102,6 +102,10 @@ export function HotelListing() {
   const isRefreshing = isFetching && !isFetchingNextPage && !isLoading;
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
     const node = loadMoreRef.current;
     if (!node || !hasNextPage || isFetchingNextPage) return;
 
@@ -115,7 +119,6 @@ export function HotelListing() {
     observer.observe(node);
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, hotels.length]);
-
   function updateParams(patch: Record<string, string | null>) {
     const next = new URLSearchParams(searchParams);
     for (const [key, value] of Object.entries(patch)) {
@@ -176,6 +179,32 @@ export function HotelListing() {
     navigate(`/hotels/${slug}?${params}`);
   }
 
+  function handleSearch(values: {
+    city: string;
+    dateRange: DateRange;
+  }) {
+    const nextCity = values.city;
+    const nextCheckIn = values.dateRange.from;
+    const nextCheckOut = values.dateRange.to;
+    if (!nextCheckIn || !nextCheckOut) return;
+
+    const unchanged =
+      nextCity === city &&
+      nextCheckIn === checkIn &&
+      nextCheckOut === checkOut;
+
+    if (unchanged) {
+      void refetch();
+      return;
+    }
+
+    updateParams({
+      city: nextCity,
+      check_in: nextCheckIn,
+      check_out: nextCheckOut,
+    });
+  }
+
   const nights = checkIn && checkOut ? daysBetween(checkIn, checkOut) : undefined;
   const occupancySummary = `${toPersianDigits(adults)} بزرگسال - ${toPersianDigits(rooms)} اتاق`;
 
@@ -188,18 +217,20 @@ export function HotelListing() {
         onDateRangeChange={handleDateRangeChange}
         passengers={{ adults, childrenAges, rooms }}
         onPassengersChange={handlePassengersChange}
-        onSearch={() => refetch()}
+        onSearch={handleSearch}
       />
-      <ListingToolbar
-        resultCount={total}
-        cityLabel={city}
-        sortBy={sortBy}
-        onSortChange={(next) => updateParams({ sort_by: next })}
-        hasActiveFilters={hasActiveFilters}
-        onClearFilters={handleClearFilters}
-        filtersOpen={filtersOpen}
-        onToggleFilters={() => setFiltersOpen((open) => !open)}
-      />
+      <div className={styles.listAnchor}>
+        <ListingToolbar
+          resultCount={total}
+          cityLabel={city}
+          sortBy={sortBy}
+          onSortChange={(next) => updateParams({ sort_by: next })}
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={handleClearFilters}
+          filtersOpen={filtersOpen}
+          onToggleFilters={() => setFiltersOpen((open) => !open)}
+        />
+      </div>
 
       <div className={styles.content}>
         <div className={styles.body}>
@@ -233,7 +264,12 @@ export function HotelListing() {
                     imageSrc={hotel.imageUrl}
                     name={hotel.name}
                     stars={hotel.stars}
-                    score={hotel.score != null ? hotel.score * 10 : undefined}
+                    score={
+                      hotel.score != null
+                        ? Math.round(hotel.score * 100) / 10
+                        : undefined
+                    }
+                    tags={hotel.tags}
                     address={hotel.address}
                     nights={nights}
                     occupancySummary={occupancySummary}

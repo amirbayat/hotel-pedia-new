@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getRoomPriceForStay } from '../../api/hotelDetail'
 import { useHotelDetail } from '../../hooks/useHotelDetail'
 import { useInitHotelOrder } from '../../hooks/useHotelOrder'
@@ -26,9 +26,20 @@ import styles from './HotelDetail.module.scss'
 const TABS: HotelTab[] = [
   { id: 'intro', label: 'معرفی و امکانات' },
   { id: 'rooms', label: 'اتاق‌ها' },
-  { id: 'nearby', label: 'اماکن اطراف هتل' },
+  { id: 'similar', label: 'هتل‌های مشابه' },
   { id: 'rules', label: 'قوانین و مقررات هتل' },
 ]
+
+/** Listing URL for a city, keeping the current stay/occupancy query when present. */
+function cityListingHref(cityName: string, searchParams: URLSearchParams) {
+  const params = new URLSearchParams()
+  params.set('city', cityName)
+  for (const key of ['check_in', 'check_out', 'adults', 'rooms', 'children'] as const) {
+    const value = searchParams.get(key)
+    if (value) params.set(key, value)
+  }
+  return `/hotels?${params}`
+}
 
 /** Hotel-detail page — see docs/hotel-detail-plan.md. */
 export function HotelDetail() {
@@ -150,11 +161,20 @@ export function HotelDetail() {
         ) : (
           <>
             <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
-              <span>{data.name}</span>
-              <IconArrowLeft width={16} height={16} />
-              <span>هتل‌های شهر تهران</span>
-              <IconArrowLeft width={16} height={16} />
-              <span>هتل</span>
+              <span className={styles.breadcrumbCurrent} aria-current="page">
+                {data.name}
+              </span>
+              <IconArrowLeft width={16} height={16} aria-hidden />
+              <Link
+                to={cityListingHref(data.cityName, searchParams)}
+                className={styles.breadcrumbLink}
+              >
+                {`هتل‌های شهر ${data.cityName}`}
+              </Link>
+              <IconArrowLeft width={16} height={16} aria-hidden />
+              <Link to="/" className={styles.breadcrumbLink}>
+                هتل
+              </Link>
             </nav>
 
             <HotelGallery images={data.images.map((image) => image.path)} hotelName={data.name} />
@@ -206,7 +226,8 @@ export function HotelDetail() {
             </section>
 
             <HotelListSection
-              city="تهران"
+              id="similar"
+              city={data.cityName}
               title={`هتل‌های مشابه ${data.name}`}
               hotels={(similarHotels ?? []).map((hotel) => ({
                 id: hotel.id,

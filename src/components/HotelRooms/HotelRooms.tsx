@@ -8,7 +8,7 @@ import type { DateRange } from '../DateRangeCalendar'
 import { Input } from '../Input'
 import { PassengersField } from '../PassengersField'
 import type { PassengersValue } from '../PassengersField'
-import { IconArrowDown, IconBed, IconDate, IconInformation, IconLocalCafe, IconPeople, IconPlus } from '../icons'
+import { IconArrowDown, IconDate, IconInformation, IconLocalCafe, IconPeople, IconPlus } from '../icons'
 import styles from './HotelRooms.module.scss'
 
 export interface HotelRoomsProps {
@@ -84,32 +84,41 @@ function RoomCard({
           </div>
         </div>
 
-        {stayPrice ? (
-          <>
-            <span className={styles.priceLabel}>{`قیمت برای ${toPersianDigits(stayPrice.nights)} شب`}</span>
-            <span className={styles.price}>
-              {formatPrice(stayPrice.fee * roomCount)} <span>تومان</span>
+        <div className={styles.priceFooter}>
+          {stayPrice ? (
+            <>
+              <span className={styles.priceLabel}>{`قیمت برای ${toPersianDigits(stayPrice.nights)} شب`}</span>
+              <div className={styles.priceBlock}>
+                {stayPrice.discountPercent ? (
+                  <span className={styles.discountBadge}>٪{stayPrice.discountPercent}</span>
+                ) : null}
+                <div className={styles.priceStack}>
+                  {stayPrice.originalPrice != null && (
+                    <span className={styles.originalPrice}>
+                      {formatPrice(stayPrice.originalPrice * roomCount)} تومان
+                    </span>
+                  )}
+                  <span className={styles.price}>
+                    {formatPrice(stayPrice.fee * roomCount)} <span>تومان</span>
+                  </span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <span className={styles.priceUnavailable}>
+              {startDate && endDate ? 'قیمت برای این تاریخ در دسترس نیست' : 'برای مشاهده قیمت، تاریخ را انتخاب کنید'}
             </span>
-            {stayPrice.boardPrice > stayPrice.fee && (
-              <span className={styles.boardPrice}>
-                با صبحانه: {formatPrice(stayPrice.boardPrice * roomCount)} تومان
-              </span>
-            )}
-          </>
-        ) : (
-          <span className={styles.priceUnavailable}>
-            {startDate && endDate ? 'قیمت برای این تاریخ در دسترس نیست' : 'برای مشاهده قیمت، تاریخ را انتخاب کنید'}
-          </span>
-        )}
+          )}
 
-        <Button
-          variant="brand"
-          className={styles.reserveButton}
-          onClick={() => onReserve?.(room.id, roomCount)}
-          disabled={!canReserve}
-        >
-          رزرو اتاق
-        </Button>
+          <Button
+            variant="brand"
+            className={styles.reserveButton}
+            onClick={() => onReserve?.(room.id, roomCount)}
+            disabled={!canReserve}
+          >
+            رزرو اتاق
+          </Button>
+        </div>
       </div>
 
       <div className={styles.divider} />
@@ -124,10 +133,6 @@ function RoomCard({
           </span>
           <IconPeople width={24} height={24} />
         </div>
-        <div className={styles.row}>
-          <span>{toPersianDigits(room.availableCount)} اتاق موجود</span>
-          <IconBed width={24} height={24} />
-        </div>
         {room.foodServices.length > 0 && (
           <div className={styles.row}>
             <span>{room.foodServices.join('، ')}</span>
@@ -135,8 +140,8 @@ function RoomCard({
           </div>
         )}
         <button type="button" className={styles.detailsRow} onClick={() => onViewDetails?.(room.id)}>
-          <span>جزئیات و قوانین</span>
           <IconInformation width={24} height={24} />
+          <span>جزئیات و قوانین</span>
         </button>
       </div>
 

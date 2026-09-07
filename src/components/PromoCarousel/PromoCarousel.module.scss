@@ -9,12 +9,47 @@
   gap: 16px;
 }
 
-.slide {
+.viewport {
   position: relative;
   width: 100%;
   aspect-ratio: 1200 / 300;
   border-radius: 8px;
   overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
+  direction: ltr;
+}
+
+.viewportDragging {
+  cursor: grabbing;
+}
+
+.track {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.trackDragging {
+  transition: none;
+}
+
+.slide,
+.slideLink {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+
+.slideLink {
+  cursor: pointer;
+  display: block;
 }
 
 .image {
@@ -23,6 +58,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
 }
 
 .placeholder {
@@ -35,6 +71,7 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
 }
 
 .title {
@@ -47,6 +84,7 @@
   color: $color-text-inverse;
   font-size: 24px;
   font-weight: 600;
+  pointer-events: none;
 }
 
 .dots {

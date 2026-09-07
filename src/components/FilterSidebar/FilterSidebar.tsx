@@ -224,8 +224,8 @@ export function FilterSidebar({
           />
         </div>
         <div className={styles.sliderLegend}>
-          <span>از {priceBounds.min.toLocaleString("en-US")}</span>
-          <span>تا {priceBounds.max.toLocaleString("en-US")}</span>
+          <span>از {priceBounds.min.toLocaleString("en-US")} تومان</span>
+          <span>تا {priceBounds.max.toLocaleString("en-US")} تومان</span>
         </div>
       </Section>
     </div>

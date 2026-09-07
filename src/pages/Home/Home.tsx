@@ -17,17 +17,17 @@ import type { FaqItem } from '../../components/Faq'
 import { Footer } from '../../components/Footer'
 import styles from './Home.module.scss'
 
-// Fallback shown until the /api/v1/home/carousel response arrives (or if it fails).
-const fallbackPromoSlides: PromoSlide[] = [
-  { id: 1, title: 'لورم ایپسوم متن ساختگی با تولید سادگی' },
-  { id: 2, title: 'لورم ایپسوم متن ساختگی با تولید سادگی' },
-  { id: 3, title: 'لورم ایپسوم متن ساختگی با تولید سادگی' },
-]
-
 // Fallback shown until the /api/v1/home response arrives (or if it fails).
 function cityListingHref(cityName: string) {
   return `/hotels?city=${encodeURIComponent(cityName)}`
 }
+
+// Fallback shown until the /api/v1/home/carousel response arrives (or if it fails).
+const fallbackPromoSlides: PromoSlide[] = [
+  { id: 1, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('تهران') },
+  { id: 2, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: '/hotels/palace-tehran' },
+  { id: 3, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('مشهد') },
+]
 
 const fallbackPopularCities: CityCard[] = [
   { id: 'shiraz', name: 'شهر شیراز', href: cityListingHref('شیراز') },

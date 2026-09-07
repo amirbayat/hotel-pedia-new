@@ -17,6 +17,8 @@ export interface HotelListSectionProps {
   showAllHref?: string
   /** Overrides the default "محبوب ترین هتل های {city}" heading, e.g. for a "هتل‌های مشابه" section. */
   title?: string
+  /** Optional section id for in-page tab anchors. */
+  id?: string
 }
 
 function ShowAllControl({ href, onClick }: { href?: string; onClick?: () => void }) {
@@ -43,11 +45,11 @@ function ShowAllControl({ href, onClick }: { href?: string; onClick?: () => void
 }
 
 /** "محبوب ترین هتل های شهر X" — title + "نمایش همه" + horizontally scrollable hotel cards. */
-export function HotelListSection({ city, hotels, onShowAll, showAllHref, title }: HotelListSectionProps) {
+export function HotelListSection({ city, hotels, onShowAll, showAllHref, title, id }: HotelListSectionProps) {
   const showAll = Boolean(showAllHref || onShowAll)
 
   return (
-    <section className={styles.section}>
+    <section id={id} className={styles.section}>
       <div className={styles.header}>
         {showAll && <ShowAllControl href={showAllHref} onClick={onShowAll} />}
         <h2 className={styles.title}>{title ?? `محبوب ترین هتل های ${city}`}</h2>

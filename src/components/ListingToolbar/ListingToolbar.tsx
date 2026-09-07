@@ -1,6 +1,6 @@
 import type { HotelSortBy } from "../../api/hotelSearch";
 import { toPersianDigits } from "../../lib/date/jalali";
-import { IconClose, IconSwapDown } from "../icons";
+import { IconClose } from "../icons";
 import styles from "./ListingToolbar.module.scss";
 
 interface SortPill {
@@ -66,7 +66,6 @@ export function ListingToolbar({
 
           <div className={styles.sortLabel}>
             <span>:مرتب‌سازی</span>
-            <IconSwapDown width={24} height={24} aria-hidden />
           </div>
         </div>
 
@@ -88,7 +87,6 @@ export function ListingToolbar({
             aria-pressed={filtersOpen}
           >
             <span>فیلترها</span>
-            <IconSwapDown width={24} height={24} aria-hidden />
           </button>
         </div>
       </div>

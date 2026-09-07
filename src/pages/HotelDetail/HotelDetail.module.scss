@@ -25,6 +25,20 @@
   color: $color-text-muted;
 }
 
+.breadcrumbLink {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-text-primary;
+    text-decoration: underline;
+  }
+}
+
+.breadcrumbCurrent {
+  color: $color-text-primary;
+}
+
 .section {
   scroll-margin-top: 16px;
 }

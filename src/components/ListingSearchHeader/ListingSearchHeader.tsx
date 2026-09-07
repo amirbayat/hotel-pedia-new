@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import type { Destination } from "../../api/destinations";
 import { formatJalaliDayMonthRange } from "../../lib/date/jalali";
 import { useAuth } from "../../context/authContextValue";
@@ -13,13 +14,24 @@ import { PassengersField } from "../PassengersField";
 import type { PassengersValue } from "../PassengersField";
 import {
   IconArrowDown,
-  IconCallCenter,
   IconDate,
   IconLogin,
   IconSearch,
 } from "../icons";
 import logo from "../../assets/logo.svg";
 import styles from "./ListingSearchHeader.module.scss";
+
+function buildDateError(range: DateRange): string {
+  const errors: string[] = [];
+  if (!range.from) errors.push("تاریخ ورود را وارد کنید.");
+  if (!range.to) errors.push("تاریخ خروج را وارد کنید.");
+  return errors.join(" ");
+}
+
+export interface ListingSearchValues {
+  city: string;
+  dateRange: DateRange;
+}
 
 export interface ListingSearchHeaderProps {
   destinationLabel: string;
@@ -28,7 +40,7 @@ export interface ListingSearchHeaderProps {
   onDateRangeChange: (range: DateRange) => void;
   passengers: PassengersValue;
   onPassengersChange: (value: PassengersValue) => void;
-  onSearch: () => void;
+  onSearch: (values: ListingSearchValues) => void;
 }
 
 /**
@@ -49,6 +61,11 @@ export function ListingSearchHeader({
   const { user, logout } = useAuth();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [destination, setDestination] = useState(destinationLabel);
+  const [selectedDestination, setSelectedDestination] =
+    useState<Destination | null>(null);
+  const [destinationError, setDestinationError] = useState("");
+  const [dateError, setDateError] = useState("");
   const dateFieldRef = useRef<HTMLDivElement>(null);
   // Keep a local draft so the first click of a new range (`to: null`) is not
   // discarded — the parent only writes a complete range to the URL, and a
@@ -60,8 +77,20 @@ export function ListingSearchHeader({
     setDraftRange(dateRange);
   }, [dateRange.from, dateRange.to]);
 
+  useEffect(() => {
+    setDestination(destinationLabel);
+    setSelectedDestination(null);
+  }, [destinationLabel]);
+
+  function handleDestinationSelect(selected: Destination) {
+    setSelectedDestination(selected);
+    setDestinationError("");
+    onDestinationSelect(selected);
+  }
+
   function handleRangeChange(next: DateRange) {
     setDraftRange(next);
+    if (dateError) setDateError(buildDateError(next));
     if (next.from && next.to) onDateRangeChange(next);
   }
 
@@ -70,6 +99,26 @@ export function ListingSearchHeader({
     setDraftRange((current) =>
       current.from && current.to ? current : dateRange,
     );
+  }
+
+  function handleSearch() {
+    const nextDestinationError = !destination.trim()
+      ? "مقصد را وارد کنید."
+      : "";
+    const nextDateError = buildDateError(draftRange);
+
+    setDestinationError(nextDestinationError);
+    setDateError(nextDateError);
+
+    if (nextDestinationError || nextDateError) return;
+    if (!draftRange.from || !draftRange.to) return;
+
+    const city =
+      selectedDestination?.type === "city"
+        ? selectedDestination.slug
+        : destination.trim();
+
+    onSearch({ city, dateRange: { from: draftRange.from, to: draftRange.to } });
   }
 
   useEffect(() => {
@@ -103,18 +152,13 @@ export function ListingSearchHeader({
               ورود - ثبت نام
             </Button>
           )}
-          <Button
-            variant="secondary"
-            icon={IconCallCenter}
-            aria-label="پشتیبانی"
-          />
         </div>
 
         <div className={styles.fields}>
           <Button
             variant="primary"
             icon={IconSearch}
-            onClick={onSearch}
+            onClick={handleSearch}
             aria-label="جستجو"
           />
 
@@ -126,7 +170,12 @@ export function ListingSearchHeader({
           />
 
           <div
-            className={styles.dateField}
+            className={[
+              styles.dateField,
+              dateError && styles.dateFieldWithError,
+            ]
+              .filter(Boolean)
+              .join(" ")}
             ref={dateFieldRef}
             onClick={() => setIsCalendarOpen(true)}
           >
@@ -136,6 +185,7 @@ export function ListingSearchHeader({
               trailingIcon={IconArrowDown}
               reverseIcons
               value={formatJalaliDayMonthRange(draftRange)}
+              error={dateError || undefined}
               dir="rtl"
               onFocus={() => setIsCalendarOpen(true)}
               readOnly
@@ -154,15 +204,23 @@ export function ListingSearchHeader({
           <DestinationSearchField
             className={styles.field}
             reverseIcons
-            defaultValue={destinationLabel}
+            value={destination}
+            onChange={(value) => {
+              setDestination(value);
+              setSelectedDestination(null);
+              if (value.trim()) setDestinationError("");
+            }}
+            error={destinationError || undefined}
             showLabel={false}
             citiesOnly
-            onSelect={onDestinationSelect}
+            onSelect={handleDestinationSelect}
           />
         </div>
 
         <div className={styles.right}>
-          <img src={logo} alt="هتل‌پدیا" className={styles.logo} />
+          <Link to="/" aria-label="هتل‌پدیا">
+            <img src={logo} alt="هتل‌پدیا" className={styles.logo} />
+          </Link>
         </div>
       </div>
 

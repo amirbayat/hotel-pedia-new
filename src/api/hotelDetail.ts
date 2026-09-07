@@ -1,4 +1,10 @@
-import { findMockHotelBySlug, seededRandom, type MockHotel } from './mockCityData'
+import {
+  findMockHotelBySlug,
+  mockHotelReviewCount,
+  mockHotelScore10,
+  seededRandom,
+  type MockHotel,
+} from './mockCityData'
 
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 
@@ -59,14 +65,27 @@ export function getRoomPriceForStay(room: HotelRoom, startDate: string, endDate:
   const nights = room.calendar.filter((day) => day.date >= startDate && day.date < endDate)
   if (nights.length === 0) return null
 
+  const fee = nights.reduce((sum, day) => sum + day.fee, 0)
+  const boardPrice = nights.reduce((sum, day) => sum + day.boardPrice, 0)
+
+  // Promotional discount is separate from boardPrice (breakfast markup) — same mock
+  // pattern as hotelSearch. Real API can replace this once a discount field exists.
+  const hasDiscount = seededRandom(`${room.id}-room-discount`) > 0.5
+  const originalPrice = hasDiscount ? Math.round((fee * 1.2) / 10_000) * 10_000 : undefined
+  const discountPercent =
+    hasDiscount && originalPrice ? Math.round((1 - fee / originalPrice) * 100) : undefined
+
   return {
     nights: nights.length,
-    fee: nights.reduce((sum, day) => sum + day.fee, 0),
-    boardPrice: nights.reduce((sum, day) => sum + day.boardPrice, 0),
+    fee,
+    boardPrice,
+    originalPrice,
+    discountPercent,
   }
 }
 
 export interface HotelRating {
+  /** 0–10 aggregate guest score (same number the listing card shows). */
   total: number
   totalCount: number
   cleanliness: number
@@ -88,6 +107,8 @@ export interface HotelDetail {
   slug: string
   name: string
   hotelKind: string
+  /** Display name / city_slug used in listing URLs (e.g. "تهران"). */
+  cityName: string
   address: string
   location: { lat: number; lng: number }
   stars: number
@@ -149,16 +170,16 @@ function buildMockRooms(hotel: MockHotel): HotelRoom[] {
 }
 
 function buildMockRating(hotel: MockHotel): HotelRating {
-  const base = 3.8 + seededRandom(`${hotel.slug}-rating`) * 1.1
-  const rounded = Math.round(base * 10) / 10
+  // Same seed/formula as search mock (`mockHotelScore01` × 10) so card ↔ detail match.
+  const total = mockHotelScore10(hotel.slug)
   return {
-    total: rounded,
-    totalCount: 40 + Math.floor(seededRandom(`${hotel.slug}-reviews`) * 200),
-    cleanliness: rounded,
-    location: Math.min(5, rounded + 0.1),
-    service: Math.max(3.5, rounded - 0.1),
-    staff: rounded,
-    valueOfMoney: Math.max(3.5, rounded - 0.2),
+    total,
+    totalCount: mockHotelReviewCount(hotel.slug),
+    cleanliness: total,
+    location: Math.min(10, Math.round((total + 0.2) * 10) / 10),
+    service: Math.max(5, Math.round((total - 0.2) * 10) / 10),
+    staff: total,
+    valueOfMoney: Math.max(5, Math.round((total - 0.4) * 10) / 10),
   }
 }
 
@@ -170,6 +191,7 @@ function buildMockHotel(hotel: MockHotel): HotelDetail {
     slug: hotel.slug,
     name: hotel.name,
     hotelKind: 'هتل',
+    cityName: hotel.cityName,
     address: hotel.address,
     location: { lat: 35.7 + locationSeed * 0.2, lng: 51.3 + locationSeed * 0.2 },
     stars: hotel.stars,
@@ -235,6 +257,7 @@ export async function fetchHotelDetailFromApi(params: HotelDetailParams, signal?
     slug: data.slug,
     name: data.name,
     hotelKind: data.hotel_kind,
+    cityName: data.city_name ?? data.city_slug ?? data.city ?? 'تهران',
     address: data.address,
     location: { lat: Number(data.location.lat), lng: Number(data.location.lng) },
     stars: data.stars,

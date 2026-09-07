@@ -5,11 +5,19 @@ import { useHotelCalendars } from '../../hooks/useHotelCalendars'
 import { getAmenityIcon } from '../../lib/amenityIcons'
 import { addMonths, jalaliMonthRangeIso, todayCursor, todayIso, toPersianDigits } from '../../lib/date/jalali'
 import type { JalaliCursor } from '../../lib/date/jalali'
-import { computePriceTiers } from '../../lib/priceTiers'
 import { Button } from '../Button'
 import { DateRangeCalendar } from '../DateRangeCalendar'
 import type { DateRange } from '../DateRangeCalendar'
-import { IconArrowLeft, IconCalendar, IconClose, IconInformation, IconPicture, IconPlus, IconRules } from '../icons'
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconCalendar,
+  IconClose,
+  IconInformation,
+  IconPicture,
+  IconPlus,
+  IconRules,
+} from '../icons'
 import type { IconComponent } from '../icons/types'
 import styles from './RoomDetailsModal.module.scss'
 
@@ -25,7 +33,7 @@ const TABS: { id: ModalTab; label: string; icon: IconComponent }[] = [
 export interface RoomDetailsModalProps {
   open: boolean
   onClose: () => void
-  /** Undefined when the page has no numeric hotel id (see HotelDetail type) — the calendar tab just renders without price-tier colors. */
+  /** Undefined when the page has no numeric hotel id (see HotelDetail type) — the calendar tab skips the calendars API. */
   hotelId: number | undefined
   room: HotelRoom | null
   /** No per-room images in the hotel-show API — falls back to the hotel's own gallery photos. */
@@ -67,7 +75,20 @@ export function RoomDetailsModal({
 
     document.body.style.overflow = 'hidden'
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (tab !== 'gallery' || galleryImages.length === 0) return
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        setActiveImageIndex((current) => (current - 1 + galleryImages.length) % galleryImages.length)
+        return
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        setActiveImageIndex((current) => (current + 1) % galleryImages.length)
+      }
     }
     window.addEventListener('keydown', onKeyDown)
 
@@ -75,7 +96,7 @@ export function RoomDetailsModal({
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [open, onClose])
+  }, [open, onClose, tab, galleryImages.length])
 
   // Reset to a clean state whenever the modal is (re-)opened for a room.
   useEffect(() => {
@@ -110,8 +131,6 @@ export function RoomDetailsModal({
     if (!room) return {}
     return Object.fromEntries(room.calendar.map((day) => [day.date.slice(0, 10), day.fee]))
   }, [roomCalendarDays, room])
-
-  const pricesByDate = useMemo(() => computePriceTiers(nightlyPrices), [nightlyPrices])
 
   // "Sold out" nights (remained_count <= 0) are disabled outright, and picking
   // a range can't stretch over one — see rangeUtils.pickDate's isDayBlocked.
@@ -155,7 +174,29 @@ export function RoomDetailsModal({
               ) : (
                 <div className={styles.gallery}>
                   <div className={styles.galleryMain}>
+                    <button
+                      type="button"
+                      className={styles.navButton}
+                      onClick={() =>
+                        setActiveImageIndex(
+                          (current) => (current - 1 + galleryImages.length) % galleryImages.length,
+                        )
+                      }
+                      aria-label="قبلی"
+                    >
+                      <IconArrowLeft width={24} height={24} />
+                    </button>
                     <img src={galleryImages[activeImageIndex]} alt="" className={styles.galleryMainImage} />
+                    <button
+                      type="button"
+                      className={styles.navButton}
+                      onClick={() =>
+                        setActiveImageIndex((current) => (current + 1) % galleryImages.length)
+                      }
+                      aria-label="بعدی"
+                    >
+                      <IconArrowRight width={24} height={24} />
+                    </button>
                   </div>
                   <div className={styles.thumbStrip}>
                     {galleryImages.map((src, index) => (
@@ -195,7 +236,6 @@ export function RoomDetailsModal({
                 variant="priced"
                 value={range}
                 onChange={setRange}
-                pricesByDate={pricesByDate}
                 unavailableDates={unavailableDates}
                 priceLabelByDate={priceLabelByDate}
                 cursor={cursor}

@@ -88,3 +88,20 @@ export function seededRandom(seed: string): number {
   }
   return (hash >>> 0) / 0xffffffff
 }
+
+/**
+ * Guest aggregate score for a hotel — shared by search (0–1) and detail (0–10) mocks
+ * so the listing card and detail page always show the same number.
+ */
+export function mockHotelScore01(slug: string): number {
+  return Math.round((0.6 + seededRandom(`${slug}-score`) * 0.38) * 100) / 100
+}
+
+/** Same score as {@link mockHotelScore01}, on the 0–10 display scale. */
+export function mockHotelScore10(slug: string): number {
+  return Math.round(mockHotelScore01(slug) * 100) / 10
+}
+
+export function mockHotelReviewCount(slug: string): number {
+  return 40 + Math.floor(seededRandom(`${slug}-reviews`) * 200)
+}

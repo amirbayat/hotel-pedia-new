@@ -16,14 +16,15 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  height: 80px;
+  min-height: 80px;
+  padding-block: 16px;
 }
 
 .fields {
   grid-column: 2;
   justify-self: center;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
 }
 
@@ -36,6 +37,10 @@
   position: relative;
   width: 275px;
   flex-shrink: 0;
+}
+
+.dateFieldWithError .calendarPopover {
+  top: calc(100% - 20px);
 }
 
 .calendarPopover {

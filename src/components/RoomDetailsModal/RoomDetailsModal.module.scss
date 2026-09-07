@@ -89,18 +89,35 @@
 }
 
 .galleryMain {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: 8px;
-  overflow: hidden;
-  background: $color-surface-muted;
 }
 
 .galleryMainImage {
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  min-width: 0;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   display: block;
+  border-radius: 8px;
+  background: $color-surface-muted;
+}
+
+.navButton {
+  flex-shrink: 0;
+  display: flex;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: $color-surface-muted;
+  color: $color-text-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-border-subtle;
+  }
 }
 
 .thumbStrip {

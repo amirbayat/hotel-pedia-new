@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AccountMenu } from '../AccountMenu'
 import { Button } from '../Button'
 import { AuthModal } from '../AuthModal'
@@ -33,7 +34,9 @@ export function Header() {
           )}
         </div>
 
-        <img src={logo} alt="هتل‌پدیا" className={styles.logo} />
+        <Link to="/" aria-label="هتل‌پدیا">
+          <img src={logo} alt="هتل‌پدیا" className={styles.logo} />
+        </Link>
       </div>
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
