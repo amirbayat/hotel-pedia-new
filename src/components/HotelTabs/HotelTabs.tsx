@@ -8,11 +8,14 @@ export interface HotelTab {
 
 export interface HotelTabsProps {
   tabs: HotelTab[]
+  initialActiveId?: string
 }
 
 /** Section nav — matches Figma "Hotel detail" node 654:11557 (tabs render right-to-left). */
-export function HotelTabs({ tabs }: HotelTabsProps) {
-  const [activeId, setActiveId] = useState(tabs[0]?.id)
+export function HotelTabs({ tabs, initialActiveId }: HotelTabsProps) {
+  const [activeId, setActiveId] = useState(
+    initialActiveId && tabs.some((tab) => tab.id === initialActiveId) ? initialActiveId : tabs[0]?.id,
+  )
 
   function handleClick(id: string) {
     setActiveId(id)

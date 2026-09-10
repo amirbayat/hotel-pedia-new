@@ -82,9 +82,28 @@ export function formatJalaliDayMonthRange(range: {
   return `${formatJalaliDayMonth(range.from)} - ${formatJalaliDayMonth(range.to)}`
 }
 
+/** Strips a datetime down to a Gregorian ISO date ("YYYY-MM-DD"). */
+export function isoDateOnly(value: string): string {
+  return value.slice(0, 10)
+}
+
+/**
+ * Number of hotel nights between check-in and check-out.
+ * Checkout is not a night: 10 Sep → 11 Sep is 1 night, not 2 days.
+ */
 export function nightsBetween(from: string, to: string): number {
-  const ms = new Date(to).getTime() - new Date(from).getTime()
-  return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24)))
+  const start = isoDateOnly(from)
+  const end = isoDateOnly(to)
+  const [sy, sm, sd] = start.split('-').map(Number)
+  const [ey, em, ed] = end.split('-').map(Number)
+  const ms = new Date(ey, em - 1, ed).getTime() - new Date(sy, sm - 1, sd).getTime()
+  return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)))
+}
+
+/** True for billed stay nights [startDate, endDate) — checkout is excluded. */
+export function isStayNightDate(date: string, startDate: string, endDate: string): boolean {
+  const day = isoDateOnly(date)
+  return day >= isoDateOnly(startDate) && day < isoDateOnly(endDate)
 }
 
 /** "ورود ۱۶ شهریور - خروج ۱۹ شهریور  ۳ شب" — calendar footer summary. */
@@ -98,6 +117,12 @@ export function formatStaySummary(range: { from: string | null; to: string | nul
 export function todayIso(): string {
   const now = new Date()
   return toIsoDate(now.getFullYear(), now.getMonth() + 1, now.getDate())
+}
+
+export function addDaysIso(iso: string, days: number): string {
+  const [gy, gm, gd] = iso.split('-').map(Number)
+  const date = new Date(gy, gm - 1, gd + days)
+  return toIsoDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
 }
 
 export function todayCursor(): JalaliCursor {

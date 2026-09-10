@@ -178,6 +178,12 @@
   appearance: none;
   background: none;
   pointer-events: none;
+  z-index: 2;
+
+  &:active,
+  &:focus-visible {
+    z-index: 5;
+  }
 
   &::-webkit-slider-thumb {
     appearance: none;
@@ -203,6 +209,14 @@
   &::-webkit-slider-runnable-track {
     background: none;
   }
+}
+
+.rangeInputMax {
+  z-index: 3;
+}
+
+.rangeInputRaised {
+  z-index: 4;
 }
 
 .sliderLegend {

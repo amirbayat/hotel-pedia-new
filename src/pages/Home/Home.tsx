@@ -15,28 +15,31 @@ import type { AdvantageBoxItem } from '../../components/AdvantageBoxes'
 import { Faq } from '../../components/Faq'
 import type { FaqItem } from '../../components/Faq'
 import { Footer } from '../../components/Footer'
+import { withDefaultStayParams } from '../../lib/stayParams'
 import styles from './Home.module.scss'
 
-// Fallback shown until the /api/v1/home response arrives (or if it fails).
 function cityListingHref(cityName: string) {
-  return `/hotels?city=${encodeURIComponent(cityName)}`
+  return withDefaultStayParams(`/hotels?city=${encodeURIComponent(cityName)}`)
 }
 
-// Fallback shown until the /api/v1/home/carousel response arrives (or if it fails).
-const fallbackPromoSlides: PromoSlide[] = [
-  { id: 1, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('تهران') },
-  { id: 2, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: '/hotels/palace-tehran' },
-  { id: 3, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('مشهد') },
-]
+function fallbackPromoSlides(): PromoSlide[] {
+  return [
+    { id: 1, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('تهران') },
+    { id: 2, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: withDefaultStayParams('/hotels/palace-tehran') },
+    { id: 3, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('مشهد') },
+  ]
+}
 
-const fallbackPopularCities: CityCard[] = [
-  { id: 'shiraz', name: 'شهر شیراز', href: cityListingHref('شیراز') },
-  { id: 'isfahan', name: 'شهر اصفهان', href: cityListingHref('اصفهان') },
-  { id: 'kish', name: 'جزیره کیش', href: cityListingHref('کیش'), tall: true },
-  { id: 'mashhad', name: 'شهر مشهد', href: cityListingHref('مشهد'), tall: true },
-  { id: 'tehran', name: 'شهر تهران', href: cityListingHref('تهران') },
-  { id: 'tabriz', name: 'شهر تبریز', href: cityListingHref('تبریز') },
-]
+function fallbackPopularCities(): CityCard[] {
+  return [
+    { id: 'shiraz', name: 'شهر شیراز', href: cityListingHref('شیراز') },
+    { id: 'isfahan', name: 'شهر اصفهان', href: cityListingHref('اصفهان') },
+    { id: 'kish', name: 'جزیره کیش', href: cityListingHref('کیش'), tall: true },
+    { id: 'mashhad', name: 'شهر مشهد', href: cityListingHref('مشهد'), tall: true },
+    { id: 'tehran', name: 'شهر تهران', href: cityListingHref('تهران') },
+    { id: 'tabriz', name: 'شهر تبریز', href: cityListingHref('تبریز') },
+  ]
+}
 
 // Same mock hotel repeated — real data comes from the API later.
 const makeHotels = (cityPrefix: string): HotelListItem[] =>
@@ -76,7 +79,7 @@ function mapApiHotel(hotel: CityHotel): HotelListItem {
     pricePerNight: hotel.price,
     originalPricePerNight: hasDiscount ? hotel.discountPrice : undefined,
     discountPercent: hasDiscount ? Math.round((1 - hotel.price / hotel.discountPrice) * 100) : undefined,
-    href: hotel.detailsUrl,
+    href: withDefaultStayParams(hotel.detailsUrl),
   }
 }
 
@@ -181,7 +184,13 @@ export function Home() {
 
     fetchCarousel(controller.signal)
       .then((slides) => {
-        setPromoSlides(slides.map((slide) => ({ id: slide.id, imageSrc: slide.imageUrl, link: slide.link })))
+        setPromoSlides(
+          slides.map((slide) => ({
+            id: slide.id,
+            imageSrc: slide.imageUrl,
+            link: withDefaultStayParams(slide.link),
+          })),
+        )
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return

@@ -8,7 +8,6 @@
 export interface BookingPassenger {
   firstName: string
   lastName: string
-  nationality: string
   phone: string
 }
 

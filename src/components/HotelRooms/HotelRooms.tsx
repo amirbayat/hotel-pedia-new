@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { HotelRoom } from '../../api/hotelDetail'
 import { getRoomPriceForStay } from '../../api/hotelDetail'
-import { formatJalaliDisplay, toPersianDigits } from '../../lib/date/jalali'
+import { formatJalaliDayMonthRange, toPersianDigits } from '../../lib/date/jalali'
 import { Button } from '../Button'
 import { DateRangeCalendar } from '../DateRangeCalendar'
 import type { DateRange } from '../DateRangeCalendar'
@@ -24,12 +24,6 @@ export interface HotelRoomsProps {
   onSearchAgain?: () => void
   onViewDetails?: (roomId: number) => void
   onReserve?: (roomId: number, roomCount: number) => void
-}
-
-function formatRangeLabel(range: DateRange): string {
-  if (!range.from) return ''
-  if (!range.to) return formatJalaliDisplay(range.from)
-  return `${formatJalaliDisplay(range.to)} - ${formatJalaliDisplay(range.from)}`
 }
 
 function formatPrice(value: number) {
@@ -89,14 +83,16 @@ function RoomCard({
             <>
               <span className={styles.priceLabel}>{`قیمت برای ${toPersianDigits(stayPrice.nights)} شب`}</span>
               <div className={styles.priceBlock}>
-                {stayPrice.discountPercent ? (
-                  <span className={styles.discountBadge}>٪{stayPrice.discountPercent}</span>
-                ) : null}
                 <div className={styles.priceStack}>
                   {stayPrice.originalPrice != null && (
-                    <span className={styles.originalPrice}>
-                      {formatPrice(stayPrice.originalPrice * roomCount)} تومان
-                    </span>
+                    <div className={styles.originalRow}>
+                      <span className={styles.originalPrice}>
+                        {formatPrice(stayPrice.originalPrice * roomCount)} تومان
+                      </span>
+                      {stayPrice.discountPercent ? (
+                        <span className={styles.discountBadge}>٪{stayPrice.discountPercent}</span>
+                      ) : null}
+                    </div>
                   )}
                   <span className={styles.price}>
                     {formatPrice(stayPrice.fee * roomCount)} <span>تومان</span>
@@ -193,11 +189,14 @@ export function HotelRooms({
 
         <div className={styles.dateField} ref={dateFieldRef} onClick={() => setIsCalendarOpen(true)}>
           <Input
+            name="stay-date-range"
+            autoComplete="off"
             placeholder="بازه زمان ورود و خروج را وارد کنید"
             leadingIcon={IconDate}
             trailingIcon={IconArrowDown}
             reverseIcons
-            value={formatRangeLabel(dateRange)}
+            value={formatJalaliDayMonthRange(dateRange)}
+            dir="rtl"
             onFocus={() => setIsCalendarOpen(true)}
             readOnly
           />
@@ -206,10 +205,8 @@ export function HotelRooms({
             <DateRangeCalendar
               className={styles.calendarPopover}
               value={dateRange}
-              onChange={(range) => {
-                onDateRangeChange(range)
-                if (range.from && range.to) setIsCalendarOpen(false)
-              }}
+              onChange={onDateRangeChange}
+              onConfirm={() => setIsCalendarOpen(false)}
             />
           )}
         </div>

@@ -5,7 +5,7 @@ import {
   PERSIAN_WEEKDAY_LABELS,
   toPersianDigits,
 } from '../../lib/date/jalali'
-import { getPreviewRange, isInRange, isOutOfBounds, isRangeEnd, isRangeStart } from './rangeUtils'
+import { getPreviewRange, isInRange, isLastStayNight, isOutOfBounds, isRangeEnd, isRangeStart, isStayNight } from './rangeUtils'
 import type { DateRange, PricesByDate } from './types'
 import styles from './DateRangeCalendar.module.scss'
 
@@ -36,6 +36,11 @@ export interface MonthGridProps {
   onDayHover: (iso: string | null) => void
   /** Hide the month/year heading — used when the parent renders a shared two-month header. */
   hideTitle?: boolean
+  /**
+   * When true, highlight billed nights [from, to) and treat `to` as checkout.
+   * Used by the priced room calendar so a 1-night stay does not select checkout.
+   */
+  nightsOnly?: boolean
 }
 
 export function MonthGrid({
@@ -52,6 +57,7 @@ export function MonthGrid({
   onDayClick,
   onDayHover,
   hideTitle = false,
+  nightsOnly = false,
 }: MonthGridProps) {
   const weeks = useMemo(() => buildMonthMatrix(jalaliYear, jalaliMonth), [jalaliYear, jalaliMonth])
   const previewRange = getPreviewRange(value, hoverIso)
@@ -79,9 +85,17 @@ export function MonthGrid({
 
             const tier = pricesByDate?.[day.iso]
             const priceLabel = priceLabelByDate?.[day.iso]
-            const unavailable = unavailableDates?.has(day.iso) ?? false
-            const disabled = unavailable || isOutOfBounds(day.iso, minDate, maxDate)
-            const selected = isRangeStart(day.iso, value) || isRangeEnd(day.iso, value)
+            const unavailableNight = unavailableDates?.has(day.iso) ?? false
+            const completingRange = nightsOnly && Boolean(value.from && !value.to)
+            const disabled =
+              isOutOfBounds(day.iso, minDate, maxDate) || (unavailableNight && !completingRange)
+            const selected = nightsOnly
+              ? isRangeStart(day.iso, previewRange) || isLastStayNight(day.iso, previewRange)
+              : isRangeStart(day.iso, value) || isRangeEnd(day.iso, value)
+            const inRange = nightsOnly
+              ? isStayNight(day.iso, previewRange) && !selected
+              : isInRange(day.iso, previewRange)
+            const isCheckout = nightsOnly && isRangeEnd(day.iso, previewRange)
             const isHoverPreviewEnd = !value.to && hoverIso === day.iso && day.iso !== value.from
 
             return (
@@ -95,10 +109,10 @@ export function MonthGrid({
                   priceLabel !== undefined && styles.dayWithPrice,
                   day.weekday === FRIDAY_WEEKDAY && styles.friday,
                   tier && TIER_CLASS_NAME[tier],
-                  unavailable && styles.unavailable,
-                  isInRange(day.iso, previewRange) && styles.inRange,
+                  unavailableNight && styles.unavailable,
+                  inRange && styles.inRange,
                   selected && styles.selected,
-                  isHoverPreviewEnd && styles.previewEnd,
+                  (nightsOnly ? isCheckout : isHoverPreviewEnd) && styles.previewEnd,
                   day.iso === todayIso && styles.today,
                 ]
                   .filter(Boolean)

@@ -1,3 +1,5 @@
+import { toIsoDate } from '../lib/date/jalali'
+
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 
 export interface HotelCalendarDay {
@@ -42,15 +44,16 @@ const MOCK_ROOM_DEFS = [
 
 function buildMockCalendarDays(params: HotelCalendarsParams): HotelCalendarDay[] {
   const days: HotelCalendarDay[] = []
-  const start = new Date(params.startDate)
-  const end = new Date(params.endDate)
+  const [sy, sm, sd] = params.startDate.split('-').map(Number)
+  const [ey, em, ed] = params.endDate.split('-').map(Number)
+  const end = new Date(ey, em - 1, ed)
 
   for (const def of MOCK_ROOM_DEFS) {
     const roomId = params.hotelId * 10 + def.offset
-    const cursor = new Date(start)
+    const cursor = new Date(sy, sm - 1, sd)
     let dayIndex = 0
     while (cursor <= end) {
-      const isoDate = cursor.toISOString().slice(0, 10)
+      const isoDate = toIsoDate(cursor.getFullYear(), cursor.getMonth() + 1, cursor.getDate())
       const isWeekend = cursor.getDay() === 4 || cursor.getDay() === 5 // پنجشنبه/جمعه
       const variance = 0.85 + seededRandom(`${roomId}-${isoDate}`) * 0.4
       const fee = Math.round(((def.baseFee * variance * (isWeekend ? 1.25 : 1)) / 10_000)) * 10_000

@@ -104,6 +104,7 @@ export function DateRangeCalendar({
     onDayClick: handleDayClick,
     onDayHover: setHoverIso,
     hideTitle: isPriced,
+    nightsOnly: isPriced,
   }
 
   const nextButton = (

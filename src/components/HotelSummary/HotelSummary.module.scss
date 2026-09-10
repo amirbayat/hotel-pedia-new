@@ -11,7 +11,8 @@
 .mapWrapper {
   position: relative;
   flex-shrink: 0;
-  width: 470px;
+  // Matches HotelGallery thumbnail grid: 3×227px + 2×16px gaps
+  width: 713px;
   height: 292px;
   border-radius: 8px;
   overflow: hidden;

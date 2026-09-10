@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getRoomPriceForStay } from '../../api/hotelDetail'
 import { useHotelDetail } from '../../hooks/useHotelDetail'
 import { useInitHotelOrder } from '../../hooks/useHotelOrder'
@@ -21,6 +21,7 @@ import type { PassengersValue } from '../../components/PassengersField'
 import { RoomDetailsModal } from '../../components/RoomDetailsModal'
 import { IconArrowLeft } from '../../components/icons'
 import type { BookingLocationState } from '../Booking/bookingTypes'
+import { resolveStayDates, withDefaultStayParams } from '../../lib/stayParams'
 import styles from './HotelDetail.module.scss'
 
 const TABS: HotelTab[] = [
@@ -38,17 +39,22 @@ function cityListingHref(cityName: string, searchParams: URLSearchParams) {
     const value = searchParams.get(key)
     if (value) params.set(key, value)
   }
-  return `/hotels?${params}`
+  return withDefaultStayParams(`/hotels?${params}`)
 }
 
 /** Hotel-detail page — see docs/hotel-detail-plan.md. */
 export function HotelDetail() {
   const { slug = '' } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
+  const { hash } = location
   const [searchParams, setSearchParams] = useSearchParams()
+  const hashId = hash.replace(/^#/, '')
 
-  const startDate = searchParams.get('check_in') ?? undefined
-  const endDate = searchParams.get('check_out') ?? undefined
+  const { from: startDate, to: endDate } = resolveStayDates(
+    searchParams.get('check_in'),
+    searchParams.get('check_out'),
+  )
   const adults = Number(searchParams.get('adults') ?? '2')
   const rooms = Number(searchParams.get('rooms') ?? '1')
 
@@ -61,12 +67,23 @@ export function HotelDetail() {
     setSearchParams(next)
   }
 
+  useEffect(() => {
+    if (searchParams.get('check_in') && searchParams.get('check_out')) return
+    const next = new URLSearchParams(searchParams)
+    next.set('check_in', startDate)
+    next.set('check_out', endDate)
+    navigate(
+      { pathname: location.pathname, search: `?${next.toString()}`, hash: location.hash },
+      { replace: true },
+    )
+  }, [searchParams, startDate, endDate, navigate, location.pathname, location.hash])
+
   // "جستجوی مجدد" search bar keeps its own draft state (like SearchCard) rather
   // than writing straight to the URL on every click — a date range needs two
   // clicks to complete (from, then to), and a controlled `value` that's
   // reset to the URL's already-committed range after every keystroke would
   // never let a second click land as anything but a new `from`.
-  const [draftRange, setDraftRange] = useState<DateRange>({ from: startDate ?? null, to: endDate ?? null })
+  const [draftRange, setDraftRange] = useState<DateRange>({ from: startDate, to: endDate })
   const [draftPassengers, setDraftPassengers] = useState<PassengersValue>({ adults, childrenAges: [], rooms })
 
   function handleSearchAgain() {
@@ -82,6 +99,14 @@ export function HotelDetail() {
   }
 
   const { data, isLoading, isError, refetch } = useHotelDetail({ slug, startDate, endDate })
+
+  useEffect(() => {
+    if (isLoading || !data || !hashId) return
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(hashId)?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [data, hashId, isLoading])
 
   // hotel-show has no numeric hotel id (see HotelDetail type) — the listing
   // page forwards its own `hotel.id` as a `hotel_id` query param when linking
@@ -189,7 +214,7 @@ export function HotelDetail() {
               lng={data.location.lng}
             />
 
-            <HotelTabs tabs={TABS} />
+            <HotelTabs tabs={TABS} initialActiveId={hashId} />
 
             <section id="intro" className={styles.section}>
               <HotelAmenities
@@ -235,7 +260,9 @@ export function HotelDetail() {
                 imageSrc: hotel.image,
                 rating: hotel.stars,
                 address: hotel.address,
-                href: `/hotels/${hotel.slug}`,
+                href: withDefaultStayParams(
+                  `/hotels/${hotel.slug}?check_in=${startDate}&check_out=${endDate}`,
+                ),
               }))}
             />
 

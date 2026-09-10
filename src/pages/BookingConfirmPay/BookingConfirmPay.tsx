@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import type { BankGateway } from '../../api/hotelOrders'
 import type { BookingLocationState } from '../Booking/bookingTypes'
@@ -52,6 +52,10 @@ export function BookingConfirmPay() {
   const [error, setError] = useState('')
 
   const payMutation = usePayHotelOrder()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
 
   if (!state || !state.reservedBy || !state.passengers) {
     navigate(`/hotels/${slug}`, { replace: true })
@@ -200,10 +204,12 @@ export function BookingConfirmPay() {
                 <span className={styles.recapLabel}>شماره همراه:</span>
                 <span className={styles.recapValue}>{reservedBy.phone}</span>
               </div>
-              <div className={styles.recapRow}>
-                <span className={styles.recapLabel}>آدرس ایمیل:</span>
-                <span className={styles.recapValue}>{reservedBy.email}</span>
-              </div>
+              {reservedBy.email.trim() ? (
+                <div className={styles.recapRow}>
+                  <span className={styles.recapLabel}>آدرس ایمیل:</span>
+                  <span className={styles.recapValue}>{reservedBy.email}</span>
+                </div>
+              ) : null}
               <div className={styles.recapRow}>
                 <span className={styles.recapLabel}>تعداد شب رزرو شده:</span>
                 <span className={styles.recapValue}>{`${toPersianDigits(room.nights)} شب`}</span>

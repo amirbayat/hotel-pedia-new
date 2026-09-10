@@ -86,26 +86,20 @@ export function HotelCard({
           <div className={styles.priceRow}>
             <span className={styles.priceLabel}>قیمت از شبی</span>
 
-            <div className={styles.priceInfo}>
-              {discountPercent ? (
-                <>
-                  <div className={styles.priceStack}>
-                    {originalPricePerNight && (
-                      <span className={styles.originalPrice}>
-                        {formatPrice(originalPricePerNight)} {currency}
-                      </span>
-                    )}
-                    <span className={styles.priceValue}>
-                      {formatPrice(pricePerNight)} {currency}
-                    </span>
-                  </div>
-                  <span className={styles.discountBadge}>٪{discountPercent}</span>
-                </>
-              ) : (
-                <span className={styles.priceValue}>
-                  {formatPrice(pricePerNight)} {currency}
-                </span>
+            <div className={styles.priceStack}>
+              {originalPricePerNight != null && (
+                <div className={styles.originalRow}>
+                  <span className={styles.originalPrice}>
+                    {formatPrice(originalPricePerNight)} {currency}
+                  </span>
+                  {discountPercent ? (
+                    <span className={styles.discountBadge}>٪{discountPercent}</span>
+                  ) : null}
+                </div>
               )}
+              <span className={styles.priceValue}>
+                {formatPrice(pricePerNight)} {currency}
+              </span>
             </div>
           </div>
         )}

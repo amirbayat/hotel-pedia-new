@@ -180,6 +180,8 @@ export function ListingSearchHeader({
             onClick={() => setIsCalendarOpen(true)}
           >
             <Input
+              name="stay-date-range"
+              autoComplete="off"
               placeholder="بازه زمان ورود و خروج را وارد کنید"
               leadingIcon={IconDate}
               trailingIcon={IconArrowDown}

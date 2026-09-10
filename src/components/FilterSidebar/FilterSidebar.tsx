@@ -9,7 +9,13 @@ import {
   IconStar,
   IconTick,
 } from "../icons";
-import { DEFAULT_PRICE_BOUNDS } from "./filters";
+import {
+  DEFAULT_PRICE_BOUNDS,
+  PRICE_SLIDER_GAP,
+  PRICE_SLIDER_STEP,
+  clampPricesWithGap,
+  sliderPriceBounds,
+} from "./filters";
 import type { HotelListingFilters } from "./filters";
 import styles from "./FilterSidebar.module.scss";
 
@@ -65,12 +71,16 @@ export function FilterSidebar({
   priceBounds = DEFAULT_PRICE_BOUNDS,
   className,
 }: FilterSidebarProps) {
+  const [activeThumb, setActiveThumb] = useState<"min" | "max">("max");
+
   function toggleStar(star: number) {
     const stars = value.stars.includes(star)
       ? value.stars.filter((s) => s !== star)
       : [...value.stars, star];
     onChange({ ...value, stars });
   }
+
+  const bounds = sliderPriceBounds(priceBounds);
 
   function handlePriceInput(key: "minPrice" | "maxPrice", raw: string) {
     const parsed =
@@ -81,17 +91,33 @@ export function FilterSidebar({
     });
   }
 
-  const sliderMin = Math.min(
-    Math.max(value.minPrice ?? priceBounds.min, priceBounds.min),
-    priceBounds.max,
+  function commitPrices(nextMin: number, nextMax: number) {
+    const { min, max } = clampPricesWithGap(nextMin, nextMax, bounds);
+    const minPrice = min === bounds.min && value.minPrice == null ? null : min;
+    const maxPrice = max === bounds.max && value.maxPrice == null ? null : max;
+    if (minPrice === value.minPrice && maxPrice === value.maxPrice) return;
+    onChange({ ...value, minPrice, maxPrice });
+  }
+
+  function handlePriceBlur() {
+    if (value.minPrice == null && value.maxPrice == null) return;
+    commitPrices(value.minPrice ?? bounds.min, value.maxPrice ?? bounds.max);
+  }
+
+  const { min: sliderMin, max: sliderMax } = clampPricesWithGap(
+    value.minPrice ?? bounds.min,
+    value.maxPrice ?? bounds.max,
+    bounds,
   );
-  const sliderMax = Math.min(
-    Math.max(value.maxPrice ?? priceBounds.max, priceBounds.min),
-    priceBounds.max,
-  );
-  const priceSpan = priceBounds.max - priceBounds.min;
-  const minPercent = priceSpan === 0 ? 0 : ((sliderMin - priceBounds.min) / priceSpan) * 100;
-  const maxPercent = priceSpan === 0 ? 100 : ((sliderMax - priceBounds.min) / priceSpan) * 100;
+  const priceSpan = bounds.max - bounds.min;
+  const minPercent = ((sliderMin - bounds.min) / priceSpan) * 100;
+  const maxPercent = ((sliderMax - bounds.min) / priceSpan) * 100;
+  const thumbsClose = maxPercent - minPercent < 8;
+  const stuckAtMax =
+    thumbsClose && sliderMax >= bounds.max && sliderMin > bounds.min;
+  const stuckAtMin =
+    thumbsClose && sliderMin <= bounds.min && sliderMax < bounds.max;
+  const raiseMinThumb = stuckAtMax || (!stuckAtMin && thumbsClose && activeThumb === "min");
 
   return (
     <div className={[styles.sidebar, className].filter(Boolean).join(" ")}>
@@ -169,7 +195,8 @@ export function FilterSidebar({
               onChange={(event) =>
                 handlePriceInput("minPrice", event.target.value)
               }
-              placeholder={priceBounds.min.toLocaleString("en-US")}
+              onBlur={handlePriceBlur}
+              placeholder={bounds.min.toLocaleString("en-US")}
             />
           </div>
           <div className={styles.priceInputGroup}>
@@ -180,12 +207,31 @@ export function FilterSidebar({
               onChange={(event) =>
                 handlePriceInput("maxPrice", event.target.value)
               }
-              placeholder={priceBounds.max.toLocaleString("en-US")}
+              onBlur={handlePriceBlur}
+              placeholder={bounds.max.toLocaleString("en-US")}
             />
           </div>
         </div>
 
-        <div className={styles.sliderWrapper}>
+        <div
+          className={styles.sliderWrapper}
+          onPointerMove={(event) => {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const ratio = (rect.right - event.clientX) / Math.max(rect.width, 1);
+            const pointerValue = bounds.min + ratio * priceSpan;
+            let next: "min" | "max" =
+              Math.abs(pointerValue - sliderMin) <=
+              Math.abs(pointerValue - sliderMax)
+                ? "min"
+                : "max";
+            if (thumbsClose) {
+              if (sliderMax >= bounds.max && sliderMin > bounds.min) next = "min";
+              else if (sliderMin <= bounds.min && sliderMax < bounds.max)
+                next = "max";
+            }
+            if (next !== activeThumb) setActiveThumb(next);
+          }}
+        >
           <div className={styles.sliderTrack} />
           <div
             className={styles.sliderRange}
@@ -196,36 +242,53 @@ export function FilterSidebar({
           />
           <input
             type="range"
-            className={styles.rangeInput}
-            min={priceBounds.min}
-            max={priceBounds.max}
-            step={10_000}
+            className={[
+              styles.rangeInput,
+              raiseMinThumb && styles.rangeInputRaised,
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            min={bounds.min}
+            max={bounds.max}
+            step={PRICE_SLIDER_STEP}
             value={sliderMin}
             onChange={(event) =>
               onChange({
                 ...value,
-                minPrice: Math.min(Number(event.target.value), sliderMax),
+                minPrice: Math.min(
+                  Math.max(Number(event.target.value), bounds.min),
+                  sliderMax - PRICE_SLIDER_GAP,
+                ),
               })
             }
           />
           <input
             type="range"
-            className={styles.rangeInput}
-            min={priceBounds.min}
-            max={priceBounds.max}
-            step={10_000}
+            className={[
+              styles.rangeInput,
+              styles.rangeInputMax,
+              !raiseMinThumb && thumbsClose && styles.rangeInputRaised,
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            min={bounds.min}
+            max={bounds.max}
+            step={PRICE_SLIDER_STEP}
             value={sliderMax}
             onChange={(event) =>
               onChange({
                 ...value,
-                maxPrice: Math.max(Number(event.target.value), sliderMin),
+                maxPrice: Math.max(
+                  Math.min(Number(event.target.value), bounds.max),
+                  sliderMin + PRICE_SLIDER_GAP,
+                ),
               })
             }
           />
         </div>
         <div className={styles.sliderLegend}>
-          <span>از {priceBounds.min.toLocaleString("en-US")} تومان</span>
-          <span>تا {priceBounds.max.toLocaleString("en-US")} تومان</span>
+          <span>از {bounds.min.toLocaleString("en-US")} تومان</span>
+          <span>تا {bounds.max.toLocaleString("en-US")} تومان</span>
         </div>
       </Section>
     </div>

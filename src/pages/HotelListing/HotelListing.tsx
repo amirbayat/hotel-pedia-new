@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import type { Destination } from "../../api/destinations";
 import type { HotelSortBy } from "../../api/hotelSearch";
 import { useInfiniteHotelSearch } from "../../hooks/useHotelSearch";
-import { toPersianDigits } from "../../lib/date/jalali";
+import { nightsBetween, toPersianDigits } from "../../lib/date/jalali";
+import { resolveStayDates } from "../../lib/stayParams";
 import type { DateRange } from "../../components/DateRangeCalendar";
 import { FilterSidebar } from "../../components/FilterSidebar";
 import type { HotelListingFilters } from "../../components/FilterSidebar";
@@ -16,11 +17,6 @@ import type { PassengersValue } from "../../components/PassengersField";
 import styles from "./HotelListing.module.scss";
 
 const DEFAULT_CITY = "تهران";
-
-function daysBetween(from: string, to: string): number {
-  const ms = new Date(to).getTime() - new Date(from).getTime();
-  return Math.max(1, Math.round(ms / (1000 * 60 * 60 * 24)));
-}
 
 function parseStars(raw: string | null): number[] {
   if (!raw) return [];
@@ -37,8 +33,10 @@ export function HotelListing() {
   const [filtersOpen, setFiltersOpen] = useState(true);
 
   const city = searchParams.get("city") ?? DEFAULT_CITY;
-  const checkIn = searchParams.get("check_in");
-  const checkOut = searchParams.get("check_out");
+  const { from: checkIn, to: checkOut } = resolveStayDates(
+    searchParams.get("check_in"),
+    searchParams.get("check_out"),
+  );
   const sortBy =
     (searchParams.get("sort_by") as HotelSortBy | null) ?? "default";
 
@@ -81,8 +79,8 @@ export function HotelListing() {
     hasNextPage,
   } = useInfiniteHotelSearch({
     city,
-    checkIn: checkIn ?? undefined,
-    checkOut: checkOut ?? undefined,
+    checkIn,
+    checkOut,
     sortBy,
     name: filters.name || undefined,
     discountedOnly: filters.discountedOnly || undefined,
@@ -104,6 +102,14 @@ export function HotelListing() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
+  useEffect(() => {
+    if (searchParams.get("check_in") && searchParams.get("check_out")) return;
+    const next = new URLSearchParams(searchParams);
+    next.set("check_in", checkIn);
+    next.set("check_out", checkOut);
+    setSearchParams(next, { replace: true });
+  }, [searchParams, checkIn, checkOut, setSearchParams]);
 
   useEffect(() => {
     const node = loadMoreRef.current;
@@ -205,7 +211,7 @@ export function HotelListing() {
     });
   }
 
-  const nights = checkIn && checkOut ? daysBetween(checkIn, checkOut) : undefined;
+  const nights = checkIn && checkOut ? nightsBetween(checkIn, checkOut) : undefined;
   const occupancySummary = `${toPersianDigits(adults)} بزرگسال - ${toPersianDigits(rooms)} اتاق`;
 
   return (

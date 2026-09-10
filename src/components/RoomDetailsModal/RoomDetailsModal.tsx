@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { HotelRoom, HotelRule } from '../../api/hotelDetail'
-import { getRoomPriceForStay } from '../../api/hotelDetail'
+import { getRoomPriceForStay, getStayPriceFromNightlyMap } from '../../api/hotelDetail'
 import { useHotelCalendars } from '../../hooks/useHotelCalendars'
 import { getAmenityIcon } from '../../lib/amenityIcons'
-import { addMonths, jalaliMonthRangeIso, todayCursor, todayIso, toPersianDigits } from '../../lib/date/jalali'
+import { addMonths, isoDateOnly, jalaliMonthRangeIso, todayCursor, todayIso, toPersianDigits } from '../../lib/date/jalali'
 import type { JalaliCursor } from '../../lib/date/jalali'
 import { Button } from '../Button'
 import { DateRangeCalendar } from '../DateRangeCalendar'
@@ -126,16 +126,16 @@ export function RoomDetailsModal({
 
   const nightlyPrices = useMemo(() => {
     if (roomCalendarDays.length > 0) {
-      return Object.fromEntries(roomCalendarDays.map((day) => [day.date.slice(0, 10), day.sellPrice]))
+      return Object.fromEntries(roomCalendarDays.map((day) => [isoDateOnly(day.date), day.sellPrice]))
     }
     if (!room) return {}
-    return Object.fromEntries(room.calendar.map((day) => [day.date.slice(0, 10), day.fee]))
+    return Object.fromEntries(room.calendar.map((day) => [isoDateOnly(day.date), day.fee]))
   }, [roomCalendarDays, room])
 
-  // "Sold out" nights (remained_count <= 0) are disabled outright, and picking
-  // a range can't stretch over one — see rangeUtils.pickDate's isDayBlocked.
+  // Sold-out nights cannot be check-in, but checkout is not a billed night so
+  // a sold-out day can still be picked as the range end — see pickDate.
   const unavailableDates = useMemo(
-    () => new Set(roomCalendarDays.filter((day) => day.remainedCount <= 0).map((day) => day.date.slice(0, 10))),
+    () => new Set(roomCalendarDays.filter((day) => day.remainedCount <= 0).map((day) => isoDateOnly(day.date))),
     [roomCalendarDays],
   )
 
@@ -149,10 +149,13 @@ export function RoomDetailsModal({
 
   if (!open || !room) return null
 
-  const effectiveStart = range.from ?? startDate
-  const effectiveEnd = range.to ?? endDate
-  const stayPrice =
-    effectiveStart && effectiveEnd ? getRoomPriceForStay(room, effectiveStart, effectiveEnd) : null
+  const hasCompleteRange = Boolean(range.from && range.to)
+  const effectiveStart = hasCompleteRange ? range.from : startDate
+  const effectiveEnd = hasCompleteRange ? range.to : endDate
+  const stayPrice = effectiveStart && effectiveEnd
+    ? (getStayPriceFromNightlyMap(nightlyPrices, effectiveStart, effectiveEnd) ??
+      getRoomPriceForStay(room, effectiveStart, effectiveEnd))
+    : null
   const maxRoomCount = Math.max(1, room.availableCount)
   const roomAmenities = [...room.amenities, ...room.foodServices]
 

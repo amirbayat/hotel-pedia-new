@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../../components/Button'
 import { IconBank, IconCreditCard, IconInformation } from '../../components/icons'
@@ -28,9 +29,14 @@ export function PaymentGateway() {
   const amount = Number(searchParams.get('amount') ?? '0')
   const returnUrl = searchParams.get('return_url') ?? '/'
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
   function finish(status: 'success' | 'failed') {
     const params = new URLSearchParams({ status, order_id: orderId })
     if (status === 'success') params.set('tracking_id', randomTrackingId())
+    if (Number.isFinite(amount)) params.set('amount', String(amount))
     navigate(`${returnUrl}?${params.toString()}`)
   }
 

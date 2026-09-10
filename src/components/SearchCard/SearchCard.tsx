@@ -96,6 +96,8 @@ export function SearchCard() {
         <div className={styles.dateField} ref={dateFieldRef} onClick={() => setIsCalendarOpen(true)}>
           <Input
             label="تاریخ ورود - تاریخ خروج"
+            name="stay-date-range"
+            autoComplete="off"
             placeholder="بازه زمان ورود و خروج را وارد کنید"
             leadingIcon={IconDate}
             trailingIcon={IconArrowDown}

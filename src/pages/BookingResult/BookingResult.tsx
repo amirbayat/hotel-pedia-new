@@ -28,7 +28,18 @@ export function BookingResult() {
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const success = searchParams.get('status') !== 'failed'
-  const trackingId = searchParams.get('tracking_id') ?? searchParams.get('order_id') ?? ''
+  const orderId = searchParams.get('order_id') ?? ''
+  const amount = searchParams.get('amount') ?? '0'
+  const trackingId = searchParams.get('tracking_id') ?? orderId
+
+  function handleRetryPayment() {
+    const params = new URLSearchParams({
+      order_id: orderId,
+      amount,
+      return_url: `/hotels/${slug}/book/result`,
+    })
+    navigate(`/payment/gateway?${params.toString()}`)
+  }
 
   useEffect(() => {
     return () => {
@@ -92,10 +103,7 @@ export function BookingResult() {
               دریافت واچر
             </Button>
           ) : (
-            // No GET-by-order-id endpoint exists yet to rebuild the confirm
-            // page's state after a cross-site redirect, so this can only send
-            // the user back to start the reservation over — see the doc's open questions.
-            <Button variant="primary" onClick={() => navigate(`/hotels/${slug}`)}>
+            <Button variant="primary" onClick={handleRetryPayment}>
               پرداخت مجدد
             </Button>
           )}

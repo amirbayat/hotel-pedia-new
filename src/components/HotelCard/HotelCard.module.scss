@@ -114,28 +114,29 @@ a.card {
   margin-top: auto;
 }
 
-.priceInfo {
-  display: flex;
-  align-items: stretch;
-  gap: 6px;
-}
-
 .priceStack {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 2px;
 }
 
-.discountBadge {
+.originalRow {
   display: flex;
   align-items: center;
-  padding: 0 6px;
+  gap: 4px;
+}
+
+.discountBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
   border-radius: 4px;
   background: $color-badge-discount;
   color: $color-text-inverse;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
+  line-height: 1.4;
 }
 
 .originalPrice {

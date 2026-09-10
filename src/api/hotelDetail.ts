@@ -1,3 +1,4 @@
+import { isoDateOnly, isStayNightDate, nightsBetween, toIsoDate } from '../lib/date/jalali'
 import {
   findMockHotelBySlug,
   mockHotelReviewCount,
@@ -60,11 +61,21 @@ export interface HotelRoom {
   calendar: HotelRoomCalendarDay[]
 }
 
-/** Sums a room's nightly rates over [startDate, endDate) — null if the calendar has no matching nights. */
+/** Sums a room's nightly rates over [startDate, endDate) — checkout is not a billed night. */
 export function getRoomPriceForStay(room: HotelRoom, startDate: string, endDate: string) {
-  const nights = room.calendar.filter((day) => day.date >= startDate && day.date < endDate)
-  if (nights.length === 0) return null
+  const start = isoDateOnly(startDate)
+  const end = isoDateOnly(endDate)
+  const nightCount = nightsBetween(start, end)
+  if (nightCount === 0) return null
 
+  const byDate = new Map<string, HotelRoomCalendarDay>()
+  for (const day of room.calendar) {
+    const date = isoDateOnly(day.date)
+    if (isStayNightDate(date, start, end)) byDate.set(date, day)
+  }
+  if (byDate.size === 0) return null
+
+  const nights = [...byDate.values()]
   const fee = nights.reduce((sum, day) => sum + day.fee, 0)
   const boardPrice = nights.reduce((sum, day) => sum + day.boardPrice, 0)
 
@@ -76,11 +87,31 @@ export function getRoomPriceForStay(room: HotelRoom, startDate: string, endDate:
     hasDiscount && originalPrice ? Math.round((1 - fee / originalPrice) * 100) : undefined
 
   return {
-    nights: nights.length,
+    nights: nightCount,
     fee,
     boardPrice,
     originalPrice,
     discountPercent,
+  }
+}
+
+/** Sums displayed per-night prices over [startDate, endDate) — checkout is excluded. */
+export function getStayPriceFromNightlyMap(
+  pricesByDate: Record<string, number>,
+  startDate: string,
+  endDate: string,
+) {
+  const start = isoDateOnly(startDate)
+  const end = isoDateOnly(endDate)
+  const nightCount = nightsBetween(start, end)
+  if (nightCount === 0) return null
+
+  const nights = Object.entries(pricesByDate).filter(([date]) => isStayNightDate(date, start, end))
+  if (nights.length === 0) return null
+
+  return {
+    nights: nightCount,
+    fee: nights.reduce((sum, [, price]) => sum + price, 0),
   }
 }
 
@@ -136,9 +167,8 @@ function buildMockCalendar(roomId: number, baseFee: number): HotelRoom['calendar
   const days: HotelRoom['calendar'] = []
   const start = new Date()
   for (let i = 0; i < 365; i++) {
-    const date = new Date(start)
-    date.setDate(date.getDate() + i)
-    const isoDate = date.toISOString().slice(0, 10)
+    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)
+    const isoDate = toIsoDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
     const isWeekend = date.getDay() === 4 || date.getDay() === 5 // پنجشنبه/جمعه
     const variance = 0.85 + seededRandom(`${roomId}-${isoDate}`) * 0.4
     const fee = Math.round(((baseFee * variance * (isWeekend ? 1.25 : 1)) / 10_000)) * 10_000

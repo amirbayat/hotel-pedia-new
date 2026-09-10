@@ -66,16 +66,18 @@ export function HotelListCard({
             <div className={styles.priceArea}>
               {price != null && (
                 <div className={styles.priceBlock}>
-                  {discountPercent ? (
-                    <span className={styles.discountBadge}>
-                      ٪{discountPercent}
-                    </span>
-                  ) : null}
                   <div className={styles.priceStack}>
                     {originalPrice != null && (
-                      <span className={styles.originalPrice}>
-                        {formatPrice(originalPrice)} {currency}
-                      </span>
+                      <div className={styles.originalRow}>
+                        <span className={styles.originalPrice}>
+                          {formatPrice(originalPrice)} {currency}
+                        </span>
+                        {discountPercent ? (
+                          <span className={styles.discountBadge}>
+                            ٪{discountPercent}
+                          </span>
+                        ) : null}
+                      </div>
                     )}
                     <span className={styles.priceValue}>
                       {formatPrice(price)} {currency}
