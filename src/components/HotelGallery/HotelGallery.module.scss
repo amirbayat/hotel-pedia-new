@@ -21,6 +21,7 @@
   grid-template-columns: repeat(2, 227px);
   grid-template-rows: repeat(2, 227px);
   gap: 16px;
+  direction: rtl;
 }
 
 .cell {
