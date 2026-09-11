@@ -1,4 +1,4 @@
-import { addDaysIso, toIsoDate } from '../../lib/date/jalali'
+import { toIsoDate } from '../../lib/date/jalali'
 import type { DateRange } from './types'
 
 /**
@@ -28,10 +28,6 @@ export function isInRange(iso: string, range: DateRange): boolean {
 /** Billed nights are [from, to) — checkout is the departure day, not a night. */
 export function isStayNight(iso: string, range: DateRange): boolean {
   return range.from !== null && range.to !== null && iso >= range.from && iso < range.to
-}
-
-export function isLastStayNight(iso: string, range: DateRange): boolean {
-  return isStayNight(iso, range) && addDaysIso(iso, 1) === range.to
 }
 
 export function isOutOfBounds(iso: string, minDate?: string, maxDate?: string): boolean {

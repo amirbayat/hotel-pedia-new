@@ -24,9 +24,9 @@ function cityListingHref(cityName: string) {
 
 function fallbackPromoSlides(): PromoSlide[] {
   return [
-    { id: 1, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('تهران') },
-    { id: 2, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: withDefaultStayParams('/hotels/palace-tehran') },
-    { id: 3, title: 'لورم ایپسوم متن ساختگی با تولید سادگی', link: cityListingHref('مشهد') },
+    { id: 1, title: 'تخفیف ویژه هتل‌های تهران', link: cityListingHref('تهران') },
+    { id: 2, title: 'اقامت لوکس در قلب پایتخت', link: withDefaultStayParams('/hotels/palace-tehran') },
+    { id: 3, title: 'رزرو هتل‌های مشهد با بهترین قیمت', link: cityListingHref('مشهد') },
   ]
 }
 

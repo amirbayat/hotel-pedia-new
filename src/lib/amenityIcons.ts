@@ -50,6 +50,7 @@ const AMENITY_ICON_RULES: Array<{ keywords: string[]; icon: IconComponent }> = [
   { keywords: ['مبلمان'], icon: IconChair },
   { keywords: ['سرویس بهداشتی ایرانی', 'توالت ایرانی'], icon: IconToiletIranian },
   { keywords: ['سرویس بهداشتی فرنگی', 'توالت فرنگی'], icon: IconToiletWestern },
+  { keywords: ['حوله', 'دمپایی'], icon: IconShower },
   { keywords: ['حمام'], icon: IconShower },
   { keywords: ['سشوار'], icon: IconAir },
   { keywords: ['تلویزیون'], icon: IconTvGen },

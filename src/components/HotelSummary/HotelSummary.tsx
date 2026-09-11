@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { NeshanMap } from '../NeshanMap'
+import { getAmenityIcon } from '../../lib/amenityIcons'
 import { IconLocationPin, IconShare, IconStar } from '../icons'
 import styles from './HotelSummary.module.scss'
 
@@ -11,9 +10,10 @@ export interface HotelSummaryProps {
   score?: number
   reviewCount?: number
   address: string
-  lat: number
-  lng: number
+  amenities?: string[]
   tags?: string[]
+  /** Trusted HTML from the hotel-show API's `description` field. */
+  description?: string
 }
 
 /** Best-effort label from a 0-10 score — the API doesn't provide one (same gap as hotelSearch.ts). */
@@ -24,10 +24,17 @@ function ratingLabel(score: number): string {
   return 'متوسط'
 }
 
-/** Title/rating/address block + map preview — matches Figma "Hotel detail" node 620:11104. */
-export function HotelSummary({ name, stars, score, reviewCount, address, lat, lng, tags = [] }: HotelSummaryProps) {
-  const [mapModalOpen, setMapModalOpen] = useState(false)
-
+/** Title, rating, amenities, and address — map preview removed from this block. */
+export function HotelSummary({
+  name,
+  stars,
+  score,
+  reviewCount,
+  address,
+  amenities = [],
+  tags = [],
+  description,
+}: HotelSummaryProps) {
   async function handleShare() {
     const shareData = { title: name, url: window.location.href }
     if (navigator.share) {
@@ -43,68 +50,70 @@ export function HotelSummary({ name, stars, score, reviewCount, address, lat, ln
 
   return (
     <div className={styles.summary}>
-      <div className={styles.mapWrapper}>
-        <NeshanMap lat={lat} lng={lng} interactive={false} className={styles.map} />
-        <button type="button" className={styles.showMapButton} onClick={() => setMapModalOpen(true)}>
-          نمایش روی نقشه
-        </button>
-      </div>
+      <div className={styles.details}>
+        <div className={styles.topRow}>
+          <h1 className={styles.name}>{name}</h1>
+          <button type="button" className={styles.iconButton} onClick={handleShare} aria-label="اشتراک‌گذاری">
+            <IconShare width={24} height={24} />
+          </button>
+        </div>
 
-      <div className={styles.info}>
-        <div className={styles.details}>
-          <div className={styles.topRow}>
-            <h1 className={styles.name}>{name}</h1>
-            <button type="button" className={styles.iconButton} onClick={handleShare} aria-label="اشتراک‌گذاری">
-              <IconShare width={24} height={24} />
-            </button>
+        {description ? (
+          // eslint-disable-next-line react/no-danger
+          <div className={styles.description} dangerouslySetInnerHTML={{ __html: description }} />
+        ) : null}
+
+        {amenities.length > 0 && (
+          <ul className={styles.amenities}>
+            {amenities.map((amenity) => {
+              const Icon = getAmenityIcon(amenity)
+              return (
+                <li key={amenity} className={styles.amenity}>
+                  <Icon width={18} height={18} className={styles.amenityIcon} />
+                  <span>{amenity}</span>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+
+        <div className={styles.ratingRow}>
+          <span className={styles.starsValue}>{stars}</span>
+          <span className={styles.starsLabel}>ستاره</span>
+          <div className={styles.stars}>
+            {Array.from({ length: stars }, (_, i) => (
+              <IconStar key={i} width={24} height={24} className={styles.starFilled} />
+            ))}
+          </div>
+        </div>
+
+        {(score != null || reviewCount != null) && (
+          <div className={styles.userRate}>
+            {score != null && <span className={styles.scoreBadge}>{score.toFixed(1)}</span>}
+            <div className={styles.userRateText}>
+              {score != null && <span className={styles.ratingLabel}>{ratingLabel(score)}</span>}
+              {reviewCount != null && <span className={styles.reviewCount}>{reviewCount.toLocaleString('en-US')} نفر</span>}
+            </div>
+          </div>
+        )}
+
+        <div className={styles.bottom}>
+          <div className={styles.address}>
+            <IconLocationPin width={24} height={24} className={styles.addressIcon} />
+            <span>{address}</span>
           </div>
 
-          <div className={styles.ratingRow}>
-            <span className={styles.starsValue}>{stars}</span>
-            <span className={styles.starsLabel}>ستاره</span>
-            <div className={styles.stars}>
-              {Array.from({ length: stars }, (_, i) => (
-                <IconStar key={i} width={24} height={24} className={styles.starFilled} />
+          {tags.length > 0 && (
+            <div className={styles.tags}>
+              {tags.map((tag) => (
+                <span key={tag} className={styles.tag}>
+                  {tag}
+                </span>
               ))}
             </div>
-          </div>
-
-          {(score != null || reviewCount != null) && (
-            <div className={styles.userRate}>
-              {score != null && <span className={styles.scoreBadge}>{score.toFixed(1)}</span>}
-              <div className={styles.userRateText}>
-                {score != null && <span className={styles.ratingLabel}>{ratingLabel(score)}</span>}
-                {reviewCount != null && <span className={styles.reviewCount}>{reviewCount.toLocaleString('en-US')} نفر</span>}
-              </div>
-            </div>
           )}
-
-          <div className={styles.bottom}>
-            <div className={styles.address}>
-              <span>{address}</span>
-              <IconLocationPin width={24} height={24} className={styles.addressIcon} />
-            </div>
-
-            {tags.length > 0 && (
-              <div className={styles.tags}>
-                {tags.map((tag) => (
-                  <span key={tag} className={styles.tag}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       </div>
-
-      {mapModalOpen && (
-        <div className={styles.mapModalScrim} onClick={() => setMapModalOpen(false)}>
-          <div className={styles.mapModal} onClick={(event) => event.stopPropagation()}>
-            <NeshanMap lat={lat} lng={lng} className={styles.modalMap} />
-          </div>
-        </div>
-      )}
     </div>
   )
 }

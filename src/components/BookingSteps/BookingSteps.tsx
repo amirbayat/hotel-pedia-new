@@ -6,7 +6,7 @@ import styles from './BookingSteps.module.scss'
 export type BookingStepKey = 'hotel' | 'passengers' | 'confirm' | 'payment' | 'voucher'
 
 const STEPS: { key: BookingStepKey; label: string; icon: IconComponent }[] = [
-  { key: 'hotel', label: 'انتخاب هتل', icon: IconCheckCircle },
+  { key: 'hotel', label: 'انتخاب اتاق', icon: IconCheckCircle },
   { key: 'passengers', label: 'مشخصات مسافران', icon: IconConfirmationNumber },
   { key: 'confirm', label: 'تایید اطلاعات', icon: IconCreditCard },
   { key: 'payment', label: 'پرداخت', icon: IconCheckCircle },

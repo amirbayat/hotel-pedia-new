@@ -26,7 +26,7 @@
 
 .track {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   height: 100%;
   transition: transform 0.35s ease;
   will-change: transform;
@@ -89,7 +89,10 @@
 
 .dots {
   display: flex;
+  justify-content: center;
+  width: 100%;
   gap: 8px;
+  direction: rtl;
 }
 
 .dot,

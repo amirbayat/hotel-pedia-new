@@ -35,36 +35,3 @@
     }
   }
 }
-
-.amenitiesBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px 32px;
-  padding: 32px;
-  border: 1px solid $color-border-subtle;
-  border-radius: 8px;
-}
-
-.cell {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 16px;
-}
-
-.cellLabel {
-  font-size: 14px;
-  color: $color-text-primary;
-  white-space: nowrap;
-}
-
-.cellIcon {
-  flex-shrink: 0;
-  color: $color-text-primary;
-}

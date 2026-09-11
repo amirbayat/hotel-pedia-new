@@ -51,8 +51,8 @@ export function HotelListSection({ city, hotels, onShowAll, showAllHref, title, 
   return (
     <section id={id} className={styles.section}>
       <div className={styles.header}>
-        {showAll && <ShowAllControl href={showAllHref} onClick={onShowAll} />}
         <h2 className={styles.title}>{title ?? `محبوب ترین هتل های ${city}`}</h2>
+        {showAll && <ShowAllControl href={showAllHref} onClick={onShowAll} />}
       </div>
 
       <div className={styles.list}>

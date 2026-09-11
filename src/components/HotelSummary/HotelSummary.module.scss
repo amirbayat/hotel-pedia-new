@@ -1,53 +1,15 @@
 @use '../../styles/colors' as *;
 
 .summary {
+  width: 100%;
+}
+
+.details {
   display: flex;
-  gap: 32px;
-  width: 100%;
-}
-
-// --- Map preview + "نمایش روی نقشه" overlay ---------------------------------
-
-.mapWrapper {
-  position: relative;
-  flex-shrink: 0;
-  // Matches HotelGallery thumbnail grid: 3×227px + 2×16px gaps
-  width: 713px;
-  height: 292px;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.map {
-  width: 100%;
-  height: 100%;
-}
-
-.showMapButton {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 256px;
-  height: 48px;
-  border: 1px solid $color-primary-600;
-  border-radius: 8px;
-  background: $color-surface;
-  color: $color-primary-200;
-  font-size: 16px;
-  cursor: pointer;
-
-  &:hover {
-    background: $color-surface-muted;
-  }
-}
-
-// --- Info (details + share) -------------------------------------------------
-
-.info {
-  flex: 1;
-  min-width: 0;
-  padding-block: 16px;
+  flex-direction: column;
+  gap: 16px;
+  direction: rtl;
+  text-align: right;
 }
 
 .topRow {
@@ -72,17 +34,6 @@
   }
 }
 
-.details {
-  flex: 1;
-  min-width: 0;
-  height: 260px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  direction: rtl;
-  text-align: right;
-}
-
 .name {
   flex: 1;
   min-width: 0;
@@ -90,6 +41,20 @@
   font-size: 24px;
   font-weight: 700;
   color: $color-text-primary;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: $color-text-primary;
+
+  p {
+    margin: 0;
+
+    + p {
+      margin-top: 8px;
+    }
+  }
 }
 
 .ratingRow {
@@ -127,7 +92,7 @@
 .userRateText {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .ratingLabel {
@@ -155,10 +120,37 @@
   font-weight: 700;
 }
 
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.amenity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 30px;
+  background: $color-surface-muted;
+  font-size: 13px;
+  font-weight: 500;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.amenityIcon {
+  flex-shrink: 0;
+  color: $color-brand-primary;
+}
+
 .bottom {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 16px;
 }
 
 .address {
@@ -171,6 +163,7 @@
 
 .addressIcon {
   flex-shrink: 0;
+  color: $color-brand-primary;
 }
 
 .tags {
@@ -190,29 +183,4 @@
   font-weight: 700;
   color: $color-text-primary;
   white-space: nowrap;
-}
-
-// --- Full map modal ----------------------------------------------------------
-
-.mapModalScrim {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: $color-overlay-scrim;
-  padding: 32px;
-}
-
-.mapModal {
-  width: min(900px, 100%);
-  height: min(600px, 80vh);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.modalMap {
-  width: 100%;
-  height: 100%;
 }

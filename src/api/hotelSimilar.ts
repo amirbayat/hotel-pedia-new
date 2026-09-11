@@ -1,3 +1,5 @@
+import { mockHotelImageUrl } from './mockHotelImages'
+
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 
 export interface SimilarHotel {
@@ -11,10 +13,10 @@ export interface SimilarHotel {
 }
 
 const MOCK_SIMILAR_HOTELS: Omit<SimilarHotel, 'id'>[] = [
-  { name: 'هتل پارسیان تهران', slug: 'parsian-tehran', stars: 5, address: 'تهران، خیابان آزادی، پلاک ۲۴', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-1/600/400' },
-  { name: 'هتل لاله تهران', slug: 'laleh-tehran', stars: 4, address: 'تهران، خیابان ولیعصر، پلاک ۳۶', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-2/600/400' },
-  { name: 'هتل هما تهران', slug: 'homa-tehran', stars: 4, address: 'تهران، خیابان آزادی، پلاک ۴۸', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-3/600/400' },
-  { name: 'هتل ارم تهران', slug: 'arm-tehran', stars: 3, address: 'تهران، خیابان ولیعصر، پلاک ۶۰', citySlug: 'تهران', image: 'https://picsum.photos/seed/hotelpedia-tehran-4/600/400' },
+  { name: 'هتل پارسیان تهران', slug: 'parsian-tehran', stars: 5, address: 'تهران، خیابان آزادی، پلاک ۲۴', citySlug: 'تهران', image: mockHotelImageUrl('hotelpedia-tehran-1') },
+  { name: 'هتل لاله تهران', slug: 'laleh-tehran', stars: 4, address: 'تهران، خیابان ولیعصر، پلاک ۳۶', citySlug: 'تهران', image: mockHotelImageUrl('hotelpedia-tehran-2') },
+  { name: 'هتل هما تهران', slug: 'homa-tehran', stars: 4, address: 'تهران، خیابان آزادی، پلاک ۴۸', citySlug: 'تهران', image: mockHotelImageUrl('hotelpedia-tehran-3') },
+  { name: 'هتل ارم تهران', slug: 'arm-tehran', stars: 3, address: 'تهران، خیابان ولیعصر، پلاک ۶۰', citySlug: 'تهران', image: mockHotelImageUrl('hotelpedia-tehran-4') },
 ]
 
 /**

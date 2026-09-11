@@ -15,7 +15,7 @@ export interface HomeHeaderProps {
  */
 export function HomeHeader({
   title = 'از میان هزاران هتل و اقامتگاه اتاق  مورد نظرت رو انتخاب کن.',
-  subtitle = 'لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ',
+  subtitle = 'مقصد و تاریخ سفرت را انتخاب کن، قیمت‌ها را مقایسه کن و اتاق مناسب را در چند دقیقه رزرو کن.',
   imageSrc = defaultHeroImage,
 }: HomeHeaderProps) {
   return (

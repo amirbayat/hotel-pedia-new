@@ -1,4 +1,5 @@
 import { MOCK_CITIES, hotelsForCity, seededRandom } from './mockCityData'
+import { mockHotelImageUrl } from './mockHotelImages'
 
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 
@@ -216,7 +217,7 @@ export async function fetchCitiesHotels(signal?: AbortSignal): Promise<CityHotel
       return {
         id: hotel.id,
         name: hotel.name,
-        imageUrl: `https://picsum.photos/seed/${hotel.imageSeed}/600/400`,
+        imageUrl: mockHotelImageUrl(hotel.imageSeed),
         stars: hotel.stars,
         tags: hotel.tags,
         address: hotel.address,

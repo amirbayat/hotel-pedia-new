@@ -6,7 +6,6 @@ import { useInitHotelOrder } from '../../hooks/useHotelOrder'
 import { useSimilarHotels } from '../../hooks/useSimilarHotels'
 import { Footer } from '../../components/Footer'
 import type { DateRange } from '../../components/DateRangeCalendar'
-import { HotelAmenities } from '../../components/HotelAmenities'
 import { HotelDetailHeader } from '../../components/HotelDetailHeader'
 import { HotelFaq } from '../../components/HotelFaq'
 import { HotelGallery } from '../../components/HotelGallery'
@@ -25,7 +24,6 @@ import { resolveStayDates, withDefaultStayParams } from '../../lib/stayParams'
 import styles from './HotelDetail.module.scss'
 
 const TABS: HotelTab[] = [
-  { id: 'intro', label: 'معرفی و امکانات' },
   { id: 'rooms', label: 'اتاق‌ها' },
   { id: 'similar', label: 'هتل‌های مشابه' },
   { id: 'rules', label: 'قوانین و مقررات هتل' },
@@ -58,13 +56,13 @@ export function HotelDetail() {
   const adults = Number(searchParams.get('adults') ?? '2')
   const rooms = Number(searchParams.get('rooms') ?? '1')
 
-  function updateParams(patch: Record<string, string | null>) {
+  function updateParams(patch: Record<string, string | null>, options?: { preventScrollReset?: boolean }) {
     const next = new URLSearchParams(searchParams)
     for (const [key, value] of Object.entries(patch)) {
       if (value === null) next.delete(key)
       else next.set(key, value)
     }
-    setSearchParams(next)
+    setSearchParams(next, { preventScrollReset: options?.preventScrollReset })
   }
 
   useEffect(() => {
@@ -74,7 +72,7 @@ export function HotelDetail() {
     next.set('check_out', endDate)
     navigate(
       { pathname: location.pathname, search: `?${next.toString()}`, hash: location.hash },
-      { replace: true },
+      { replace: true, preventScrollReset: true },
     )
   }, [searchParams, startDate, endDate, navigate, location.pathname, location.hash])
 
@@ -95,7 +93,10 @@ export function HotelDetail() {
       patch.check_in = draftRange.from
       patch.check_out = draftRange.to
     }
-    updateParams(patch)
+    updateParams(patch, { preventScrollReset: true })
+    window.requestAnimationFrame(() => {
+      document.getElementById('rooms')?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    })
   }
 
   const { data, isLoading, isError, refetch } = useHotelDetail({ slug, startDate, endDate })
@@ -210,19 +211,11 @@ export function HotelDetail() {
               score={data.rating.total || undefined}
               reviewCount={data.rating.totalCount || undefined}
               address={data.address}
-              lat={data.location.lat}
-              lng={data.location.lng}
+              amenities={data.amenities.map((amenity) => amenity.name)}
+              description={data.description}
             />
 
             <HotelTabs tabs={TABS} initialActiveId={hashId} />
-
-            <section id="intro" className={styles.section}>
-              <HotelAmenities
-                hotelName={data.name}
-                description={data.description}
-                amenities={data.amenities.map((amenity) => amenity.name)}
-              />
-            </section>
 
             <section id="rooms" className={styles.section}>
               {reserveError && <p className={styles.reserveError}>{reserveError}</p>}

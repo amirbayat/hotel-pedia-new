@@ -1,5 +1,6 @@
 import { hotelsForCity, mockHotelScore01, seededRandom } from './mockCityData'
 import type { MockHotel } from './mockCityData'
+import { mockHotelImageUrl } from './mockHotelImages'
 
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 
@@ -82,7 +83,7 @@ function buildMockHotelItem(hotel: MockHotel, checkIn?: string): HotelSearchItem
     roomFee,
     roomBoardPrice,
     roomName: hotel.roomName,
-    imageUrl: `https://picsum.photos/seed/${hotel.imageSeed}/600/400`,
+    imageUrl: mockHotelImageUrl(hotel.imageSeed),
     isAvailable,
     isPinned: hotel.isPinned,
     minSellPrice: roomFee,
@@ -167,9 +168,11 @@ export async function searchHotels(params: HotelSearchParams, signal?: AbortSign
   const baseHotels = hotelsForCity(params.city).map((hotel) => buildMockHotelItem(hotel, params.checkIn))
   const filteredWithoutPrice = applySearchFilters(baseHotels, params, { skipPrice: true })
   const priceBounds = computePriceBounds(filteredWithoutPrice)
-  const allHotels = applySearchFilters(filteredWithoutPrice, params).sort(
-    MOCK_SORTERS[params.sortBy] ?? MOCK_SORTERS.default,
-  )
+  const sorter = MOCK_SORTERS[params.sortBy] ?? MOCK_SORTERS.default
+  const allHotels = applySearchFilters(filteredWithoutPrice, params).sort((a, b) => {
+    if (a.isAvailable !== b.isAvailable) return a.isAvailable ? -1 : 1
+    return sorter(a, b)
+  })
 
   const page = params.page && params.page > 0 ? params.page : 1
   const start = (page - 1) * MOCK_PAGE_SIZE

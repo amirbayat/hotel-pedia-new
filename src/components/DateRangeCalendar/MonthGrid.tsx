@@ -5,7 +5,7 @@ import {
   PERSIAN_WEEKDAY_LABELS,
   toPersianDigits,
 } from '../../lib/date/jalali'
-import { getPreviewRange, isInRange, isLastStayNight, isOutOfBounds, isRangeEnd, isRangeStart, isStayNight } from './rangeUtils'
+import { getPreviewRange, isInRange, isOutOfBounds, isRangeEnd, isRangeStart, isStayNight } from './rangeUtils'
 import type { DateRange, PricesByDate } from './types'
 import styles from './DateRangeCalendar.module.scss'
 
@@ -21,7 +21,7 @@ export interface MonthGridProps {
   jalaliYear: number
   jalaliMonth: number
   todayIso: string
-  /** The committed selection — only these two dates get the solid "selected" pill. */
+  /** The committed selection — start (and, unless `nightsOnly`, end) get the solid "selected" pill. */
   value: DateRange
   /** Day currently under the pointer, used to preview the range before `to` is picked. */
   hoverIso: string | null
@@ -90,7 +90,7 @@ export function MonthGrid({
             const disabled =
               isOutOfBounds(day.iso, minDate, maxDate) || (unavailableNight && !completingRange)
             const selected = nightsOnly
-              ? isRangeStart(day.iso, previewRange) || isLastStayNight(day.iso, previewRange)
+              ? isRangeStart(day.iso, previewRange)
               : isRangeStart(day.iso, value) || isRangeEnd(day.iso, value)
             const inRange = nightsOnly
               ? isStayNight(day.iso, previewRange) && !selected

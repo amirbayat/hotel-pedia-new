@@ -231,6 +231,32 @@
   }
 }
 
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.amenity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 30px;
+  background: $color-surface-muted;
+  font-size: 12px;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.amenityIcon {
+  flex-shrink: 0;
+  color: $color-brand-primary;
+}
+
 .detailsRow {
   display: flex;
   align-items: center;

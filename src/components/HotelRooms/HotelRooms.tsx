@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { HotelRoom } from '../../api/hotelDetail'
 import { getRoomPriceForStay } from '../../api/hotelDetail'
+import { getAmenityIcon } from '../../lib/amenityIcons'
 import { formatJalaliDayMonthRange, toPersianDigits } from '../../lib/date/jalali'
 import { Button } from '../Button'
 import { DateRangeCalendar } from '../DateRangeCalendar'
@@ -8,7 +9,7 @@ import type { DateRange } from '../DateRangeCalendar'
 import { Input } from '../Input'
 import { PassengersField } from '../PassengersField'
 import type { PassengersValue } from '../PassengersField'
-import { IconArrowDown, IconDate, IconInformation, IconLocalCafe, IconPeople, IconPlus } from '../icons'
+import { IconArrowDown, IconDate, IconInformation, IconPeople, IconPlus } from '../icons'
 import styles from './HotelRooms.module.scss'
 
 export interface HotelRoomsProps {
@@ -129,11 +130,18 @@ function RoomCard({
           </span>
           <IconPeople width={24} height={24} />
         </div>
-        {room.foodServices.length > 0 && (
-          <div className={styles.row}>
-            <span>{room.foodServices.join('، ')}</span>
-            <IconLocalCafe width={24} height={24} />
-          </div>
+        {room.amenities.length > 0 && (
+          <ul className={styles.amenities}>
+            {room.amenities.map((amenity) => {
+              const Icon = getAmenityIcon(amenity)
+              return (
+                <li key={amenity} className={styles.amenity}>
+                  <Icon width={16} height={16} className={styles.amenityIcon} />
+                  <span>{amenity}</span>
+                </li>
+              )
+            })}
+          </ul>
         )}
         <button type="button" className={styles.detailsRow} onClick={() => onViewDetails?.(room.id)}>
           <IconInformation width={24} height={24} />

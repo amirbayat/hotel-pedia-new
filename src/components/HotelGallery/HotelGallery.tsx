@@ -45,8 +45,8 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
     return <div className={styles.emptyState} />
   }
 
-  const gridImages = images.slice(0, 6)
-  const heroImage = images[6] ?? images[0]
+  const heroImage = images[0]
+  const gridImages = images.slice(1, 5)
 
   function showPrev() {
     setLightboxIndex((current) => (current === null ? null : (current - 1 + images.length) % images.length))
@@ -60,9 +60,14 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
     <div className={styles.gallery}>
       <div className={styles.grid}>
         {gridImages.map((src, index) => (
-          <button type="button" key={src + index} className={styles.cell} onClick={() => setLightboxIndex(index)}>
+          <button
+            type="button"
+            key={src + index}
+            className={styles.cell}
+            onClick={() => setLightboxIndex(index + 1)}
+          >
             <img src={src} alt="" className={styles.cellImage} />
-            {index === 3 && (
+            {index === gridImages.length - 1 && (
               <span className={styles.showAllOverlay}>
                 <IconPhoto width={20} height={20} />
                 نمایش همه
@@ -72,7 +77,7 @@ export function HotelGallery({ images, hotelName }: HotelGalleryProps) {
         ))}
       </div>
 
-      <button type="button" className={styles.hero} onClick={() => setLightboxIndex(6 < images.length ? 6 : 0)}>
+      <button type="button" className={styles.hero} onClick={() => setLightboxIndex(0)}>
         <img src={heroImage} alt="" className={styles.heroImage} />
       </button>
 

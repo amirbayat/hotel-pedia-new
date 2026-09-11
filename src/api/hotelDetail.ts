@@ -6,6 +6,7 @@ import {
   seededRandom,
   type MockHotel,
 } from './mockCityData'
+import { mockHotelGallery } from './mockHotelImages'
 
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
 
@@ -228,8 +229,8 @@ function buildMockHotel(hotel: MockHotel): HotelDetail {
     checkIn: '14:00',
     checkOut: '12:00',
     description: `${hotel.name} در ${hotel.cityName} با امکانات رفاهی کامل آماده پذیرایی از مسافران است.`,
-    images: Array.from({ length: 6 }, (_, index) => ({
-      path: `https://picsum.photos/seed/${hotel.imageSeed}-${index}/1200/800`,
+    images: mockHotelGallery(hotel.imageSeed).map((path, index) => ({
+      path,
       orderColumn: index,
     })),
     amenities: ['اینترنت بی‌سیم رایگان', 'استخر', 'پارکینگ', 'رستوران', 'باشگاه بدن‌سازی', 'اتاق کنفرانس'].map((name) => ({ name })),

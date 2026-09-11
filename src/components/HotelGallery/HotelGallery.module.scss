@@ -18,7 +18,7 @@
 .grid {
   flex-shrink: 0;
   display: grid;
-  grid-template-columns: repeat(3, 227px);
+  grid-template-columns: repeat(2, 227px);
   grid-template-rows: repeat(2, 227px);
   gap: 16px;
 }

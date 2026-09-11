@@ -88,8 +88,9 @@ export function PromoCarousel({ slides, intervalMs = 5000 }: PromoCarouselProps)
     const dx = dragPxRef.current
 
     if (didDragRef.current) {
-      if (dx < -threshold) goTo(safeIndex + 1)
-      else if (dx > threshold) goTo(safeIndex - 1)
+      // RTL dots: first is rightmost, so dragging right advances (active moves left).
+      if (dx > threshold) goTo(safeIndex + 1)
+      else if (dx < -threshold) goTo(safeIndex - 1)
     }
 
     dragPxRef.current = 0
@@ -155,7 +156,9 @@ export function PromoCarousel({ slides, intervalMs = 5000 }: PromoCarouselProps)
     didDragRef.current = false
   }
 
-  const offsetX = -(safeIndex * width) + dragPx
+  // Track is row-reversed: next slide sits to the left. Dragging right follows
+  // the finger and reveals it. Dots stay RTL (first right, last left).
+  const offsetX = safeIndex * width + dragPx
 
   return (
     <div className={styles.wrapper}>
@@ -226,7 +229,7 @@ export function PromoCarousel({ slides, intervalMs = 5000 }: PromoCarouselProps)
       </div>
 
       {slides.length > 1 && (
-        <div className={styles.dots} dir="rtl">
+        <div className={styles.dots}>
           {slides.map((s, i) => (
             <button
               key={s.id}
