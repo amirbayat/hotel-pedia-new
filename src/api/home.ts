@@ -1,4 +1,5 @@
 import { MOCK_CITIES, hotelsForCity, seededRandom } from './mockCityData'
+import { MOCK_CITY_IMAGES, MOCK_PROMO_IMAGES } from './mockHomeImages'
 import { mockHotelImageUrl } from './mockHotelImages'
 
 const PANEL_BASE_URL = 'https://panel.hotelpedia.ir'
@@ -79,10 +80,10 @@ export async function fetchHome(signal?: AbortSignal): Promise<HomeData> {
   await new Promise((resolve) => setTimeout(resolve, 200))
 
   return {
-    popularCities: MOCK_CITIES.map((city, index) => ({
+    popularCities: MOCK_CITIES.map((city) => ({
       name: city.name,
       province: city.province,
-      imageSrc: `https://picsum.photos/seed/hotelpedia-city-${index}/600/800`,
+      imageSrc: MOCK_CITY_IMAGES[city.name] ?? MOCK_CITY_IMAGES[MOCK_CITIES[0].name],
     })),
     faqs: MOCK_HOME_FAQS,
     seoTexts: MOCK_HOME_SEO_TEXTS,
@@ -127,27 +128,22 @@ export interface CarouselSlide {
   link: string
 }
 
-// Mix of city listing + hotel detail links so carousel clicks exercise both routes.
+// Mix of hotel + city banners from Snapptrip so carousel clicks exercise both routes.
 const MOCK_CAROUSEL_SLIDES: CarouselSlide[] = [
   {
     id: 1,
-    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-0/1200/400',
-    link: `/hotels?city=${encodeURIComponent(MOCK_CITIES[0].name)}`,
+    imageUrl: MOCK_PROMO_IMAGES.espinas,
+    link: `/hotels/${hotelsForCity('تهران')[0].slug}`,
   },
   {
     id: 2,
-    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-1/1200/400',
-    link: `/hotels/${hotelsForCity(MOCK_CITIES[0].name)[0].slug}`,
+    imageUrl: MOCK_PROMO_IMAGES.mashhad,
+    link: `/hotels?city=${encodeURIComponent('مشهد')}`,
   },
   {
     id: 3,
-    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-2/1200/400',
-    link: `/hotels?city=${encodeURIComponent(MOCK_CITIES[1].name)}`,
-  },
-  {
-    id: 4,
-    imageUrl: 'https://picsum.photos/seed/hotelpedia-promo-3/1200/400',
-    link: `/hotels/${hotelsForCity(MOCK_CITIES[1].name)[0].slug}`,
+    imageUrl: MOCK_PROMO_IMAGES.kish,
+    link: `/hotels?city=${encodeURIComponent('کیش')}`,
   },
 ]
 

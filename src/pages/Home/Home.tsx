@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchCarousel, fetchCitiesHotels, fetchHome } from '../../api/home'
 import type { CityHotel } from '../../api/home'
+import { MOCK_CITY_IMAGES, MOCK_PROMO_IMAGES } from '../../api/mockHomeImages'
 import { Header } from '../../components/Header'
 import { HomeHeader } from '../../components/HomeHeader'
 import { SearchCard } from '../../components/SearchCard'
@@ -24,20 +25,20 @@ function cityListingHref(cityName: string) {
 
 function fallbackPromoSlides(): PromoSlide[] {
   return [
-    { id: 1, title: 'تخفیف ویژه هتل‌های تهران', link: cityListingHref('تهران') },
-    { id: 2, title: 'اقامت لوکس در قلب پایتخت', link: withDefaultStayParams('/hotels/palace-tehran') },
-    { id: 3, title: 'رزرو هتل‌های مشهد با بهترین قیمت', link: cityListingHref('مشهد') },
+    { id: 1, imageSrc: MOCK_PROMO_IMAGES.espinas, link: withDefaultStayParams('/hotels/palace-tehran') },
+    { id: 2, imageSrc: MOCK_PROMO_IMAGES.mashhad, link: cityListingHref('مشهد') },
+    { id: 3, imageSrc: MOCK_PROMO_IMAGES.kish, link: cityListingHref('کیش') },
   ]
 }
 
 function fallbackPopularCities(): CityCard[] {
   return [
-    { id: 'shiraz', name: 'شهر شیراز', href: cityListingHref('شیراز') },
-    { id: 'isfahan', name: 'شهر اصفهان', href: cityListingHref('اصفهان') },
-    { id: 'kish', name: 'جزیره کیش', href: cityListingHref('کیش'), tall: true },
-    { id: 'mashhad', name: 'شهر مشهد', href: cityListingHref('مشهد'), tall: true },
-    { id: 'tehran', name: 'شهر تهران', href: cityListingHref('تهران') },
-    { id: 'tabriz', name: 'شهر تبریز', href: cityListingHref('تبریز') },
+    { id: 'shiraz', name: 'شهر شیراز', imageSrc: MOCK_CITY_IMAGES['شیراز'], href: cityListingHref('شیراز') },
+    { id: 'isfahan', name: 'شهر اصفهان', imageSrc: MOCK_CITY_IMAGES['اصفهان'], href: cityListingHref('اصفهان') },
+    { id: 'kish', name: 'جزیره کیش', imageSrc: MOCK_CITY_IMAGES['کیش'], href: cityListingHref('کیش'), tall: true },
+    { id: 'mashhad', name: 'شهر مشهد', imageSrc: MOCK_CITY_IMAGES['مشهد'], href: cityListingHref('مشهد'), tall: true },
+    { id: 'tehran', name: 'شهر تهران', imageSrc: MOCK_CITY_IMAGES['تهران'], href: cityListingHref('تهران') },
+    { id: 'tabriz', name: 'شهر تبریز', imageSrc: MOCK_CITY_IMAGES['تبریز'], href: cityListingHref('تبریز') },
   ]
 }
 

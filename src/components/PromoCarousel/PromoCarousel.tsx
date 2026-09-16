@@ -180,11 +180,11 @@ export function PromoCarousel({ slides, intervalMs = 5000 }: PromoCarouselProps)
             const content = (
               <>
                 {slide.imageSrc ? (
-                  <img src={slide.imageSrc} alt="" className={styles.image} draggable={false} />
+                  <img src={slide.imageSrc} alt={slide.title ?? ''} className={styles.image} draggable={false} />
                 ) : (
                   <div className={styles.placeholder} />
                 )}
-                <div className={styles.overlay} />
+                {(slide.title || !slide.imageSrc) && <div className={styles.overlay} />}
                 {slide.title && <p className={styles.title}>{slide.title}</p>}
               </>
             )
