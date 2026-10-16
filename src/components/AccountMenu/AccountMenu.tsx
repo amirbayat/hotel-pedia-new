@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { IconComponent } from '../icons/types'
-import { IconFavorits, IconLogout, IconPeople, IconPerson, IconReceipt, IconSettingsAccount, IconWallet } from '../icons'
+import { IconLogout, IconPerson, IconSettingsAccount, IconWallet } from '../icons'
 import styles from './AccountMenu.module.scss'
 
 export interface AccountMenuUser {
@@ -18,9 +18,6 @@ export interface AccountMenuItem {
 const DEFAULT_ITEMS: AccountMenuItem[] = [
   { id: 'account', label: 'حساب کاربری', icon: IconSettingsAccount },
   { id: 'wallet', label: 'کیف پول', icon: IconWallet },
-  { id: 'vouchers', label: 'واچرهای من', icon: IconReceipt },
-  { id: 'travelers', label: 'لیست مسافران', icon: IconPeople },
-  { id: 'favorites', label: 'لیست علاقه‌مندی‌ها', icon: IconFavorits },
 ]
 
 export interface AccountMenuProps {

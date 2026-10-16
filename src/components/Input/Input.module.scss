@@ -18,6 +18,10 @@
   text-align: right;
 }
 
+.labelMuted {
+  color: $color-neutral-500;
+}
+
 .container {
   display: flex;
   align-items: center;
@@ -52,6 +56,18 @@
     border-color: $color-border-subtle;
   }
 
+  &.muted {
+    background: $color-surface-muted;
+    border-color: $color-border-subtle;
+
+    &:hover,
+    &:focus-within {
+      border-width: 1px;
+      border-color: $color-border-subtle;
+      padding: 0 16px;
+    }
+  }
+
   &.reverse {
     flex-direction: row-reverse;
   }
@@ -83,11 +99,15 @@
       color: $color-text-muted;
     }
   }
+
+  .muted & {
+    color: $color-neutral-500;
+  }
 }
 
 .icon {
   flex-shrink: 0;
-  color: $color-text-muted;
+  color: var(--input-icon-color, #{$color-text-muted});
 }
 
 .iconButton {

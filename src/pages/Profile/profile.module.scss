@@ -1,0 +1,383 @@
+@use '../../styles/colors' as *;
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0 32px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+
+  label {
+    color: $color-neutral-500;
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.cardTitle {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: $color-text-primary;
+  text-align: right;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  padding-inline-start: 16px;
+  padding-inline-end: 8px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 30px;
+  background: $color-surface;
+  color: $color-text-primary;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.7;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-surface-muted;
+  }
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 32px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.verified {
+  --input-icon-color: #{$color-success-accent};
+}
+
+.ltrField input {
+  direction: ltr;
+  text-align: right;
+}
+
+.shebaBox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid $color-border-default;
+  border-radius: 8px;
+  background: $color-surface;
+
+  &:focus-within {
+    border-width: 2px;
+    padding: 0 15px;
+    border-color: $color-border-focus;
+  }
+}
+
+.shebaReadOnly {
+  background: $color-surface-muted;
+  border-color: $color-border-subtle;
+
+  &:focus-within {
+    border-width: 1px;
+    padding: 0 16px;
+    border-color: $color-border-subtle;
+  }
+}
+
+.shebaInput {
+  flex: 1;
+  min-width: 0;
+  height: 27px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: $color-text-primary;
+  direction: ltr;
+  text-align: right;
+}
+
+.shebaReadOnly .shebaInput {
+  color: $color-neutral-500;
+}
+
+.ir {
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: $color-neutral-500;
+  letter-spacing: 0.02em;
+}
+
+.shebaLabel {
+  padding: 0 16px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: $color-neutral-500;
+  text-align: right;
+}
+
+.selectLabel {
+  padding: 0 16px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: $color-neutral-500;
+  text-align: right;
+}
+
+.selectBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  border: 1px solid $color-border-default;
+  border-radius: 8px;
+  background: $color-surface;
+
+  &:focus-within {
+    border-width: 2px;
+    border-color: $color-border-focus;
+  }
+}
+
+.select {
+  width: 100%;
+  height: 100%;
+  padding: 0 16px 0 40px;
+  border: none;
+  outline: none;
+  background: transparent;
+  appearance: none;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: $color-text-primary;
+  text-align: right;
+  cursor: pointer;
+}
+
+.placeholder {
+  color: $color-text-muted;
+  font-weight: 400;
+}
+
+.selectIcon {
+  position: absolute;
+  left: 12px;
+  color: $color-text-muted;
+  pointer-events: none;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.confirmButton {
+  min-width: 128px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 32px;
+}
+
+.dateField {
+  position: relative;
+}
+
+.dateButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid $color-border-default;
+  border-radius: 8px;
+  background: $color-surface;
+  color: $color-text-muted;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  cursor: pointer;
+  text-align: right;
+
+  &:hover {
+    border-color: $color-border-hover;
+  }
+}
+
+.dateValue {
+  flex: 1;
+  color: $color-text-primary;
+  font-weight: 700;
+}
+
+.datePlaceholder {
+  flex: 1;
+}
+
+.dateIcon {
+  flex-shrink: 0;
+  color: $color-text-muted;
+}
+
+.popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  padding: 8px;
+  border-radius: 12px;
+  background: $color-surface;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  padding: 0 32px;
+}
+
+.tableHead,
+.tableRow {
+  display: grid;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.reservationsGrid {
+  grid-template-columns: 120px minmax(160px, 1.6fr) 110px 90px minmax(280px, 1.4fr);
+}
+
+.walletGrid {
+  grid-template-columns: 120px 100px 110px minmax(120px, 0.8fr) minmax(160px, 1.2fr);
+}
+
+.tableHead {
+  height: 47px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: $color-surface-muted;
+  color: $color-neutral-500;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.tableRow {
+  min-height: 64px;
+  padding: 4px 8px;
+  color: $color-text-primary;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.statusCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.statusLabel {
+  white-space: nowrap;
+}
+
+.statusButton {
+  min-width: 132px;
+  margin-inline-start: auto;
+}
+
+.awaiting {
+  color: $color-brand-cta;
+  font-weight: 700;
+}
+
+.paid {
+  color: $color-success-accent;
+  font-weight: 700;
+}
+
+.expired {
+  color: $color-error-text-strong;
+  font-weight: 700;
+}
+
+.refunded {
+  color: $color-text-muted;
+  font-weight: 400;
+}
+
+.empty {
+  padding: 24px 8px;
+  color: $color-text-muted;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 16px;
+  border: 1px solid $color-border-subtle;
+  border-radius: 8px;
+  background: $color-surface;
+}
+
+.balanceAmount {
+  margin: 0;
+  color: $color-success-text;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.balanceUnit {
+  margin-inline-start: 4px;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.deposit {
+  color: $color-success-text;
+}

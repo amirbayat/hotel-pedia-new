@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AccountMenu } from '../AccountMenu'
 import { Button } from '../Button'
 import { AuthModal } from '../AuthModal'
@@ -14,6 +14,7 @@ import styles from './Header.module.scss'
  */
 export function Header() {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [authOpen, setAuthOpen] = useState(false)
 
   return (
@@ -21,7 +22,14 @@ export function Header() {
       <div className={styles.inner}>
         <div className={styles.actions}>
           {user ? (
-            <AccountMenu user={user} onLogout={logout} />
+            <AccountMenu
+              user={user}
+              onLogout={logout}
+              onSelectItem={(id) => {
+                if (id === 'account') navigate('/profile')
+                if (id === 'wallet') navigate('/profile/wallet')
+              }}
+            />
           ) : (
             <Button
               variant="secondary"
