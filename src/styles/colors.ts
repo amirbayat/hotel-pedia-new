@@ -36,6 +36,7 @@ export const colorScale = {
   // Green scale (Figma vars "G-100"/"G-800") — seen on the booking-flow step
   // indicator (done state) and the successful-booking result page.
   green100: "#697e1c",
+  green200: "#96b428", // G-200 — verified phone, paid reservation status
   green800: "#eaf0d4",
 
   // Seen on the discount badge (hotel cards), not bound to a Figma variable
@@ -89,6 +90,7 @@ export const colors = {
   // Feedback
   textError: colorScale.error200,
   successText: colorScale.green100,
+  successAccent: colorScale.green200,
   successBg: colorScale.green800,
   errorTextStrong: colorScale.error300,
   errorBg: colorScale.error900,

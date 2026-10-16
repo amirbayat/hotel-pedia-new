@@ -20,6 +20,11 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   reverseIcons?: boolean
   /** Keeps space below the field for hint/error text so surrounding layouts don't shift. */
   reserveHintSpace?: boolean
+  /**
+   * Gray display treatment (muted fill, no focus ring). Independent of `readOnly`:
+   * picker fields stay read-only so they can't be typed into, but still look clickable.
+   */
+  muted?: boolean
 }
 
 /**
@@ -40,6 +45,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     reverseIcons,
     reserveHintSpace,
     disabled,
+    readOnly,
+    muted,
     className,
     id,
     ...rest
@@ -53,18 +60,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   return (
     <div className={[styles.wrapper, className].filter(Boolean).join(' ')}>
       {label && (
-        <label htmlFor={inputId} className={styles.label}>
+        <label htmlFor={inputId} className={[styles.label, muted && styles.labelMuted].filter(Boolean).join(' ')}>
           {label}
         </label>
       )}
 
       <div
-        className={[styles.container, error && styles.error, disabled && styles.disabled, reverseIcons && styles.reverse]
+        className={[
+          styles.container,
+          error && styles.error,
+          disabled && styles.disabled,
+          muted && styles.muted,
+          reverseIcons && styles.reverse,
+        ]
           .filter(Boolean)
           .join(' ')}
       >
         {LeadingIcon && <LeadingIcon className={styles.icon} width={24} height={24} aria-hidden />}
-        <input id={inputId} ref={ref} disabled={disabled} className={styles.input} {...rest} />
+        <input id={inputId} ref={ref} disabled={disabled} readOnly={readOnly} className={styles.input} {...rest} />
         {TrailingIcon &&
           (onTrailingIconClick ? (
             <button

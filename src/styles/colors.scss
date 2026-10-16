@@ -36,6 +36,7 @@ $color-error-900: #f7e5e5;
 // Green scale (Figma vars "G-100"/"G-800") — seen on the booking-flow step
 // indicator (done state) and the successful-booking result page.
 $color-green-100: #697e1c;
+$color-green-200: #96b428; // G-200 — verified phone, paid reservation status
 $color-green-800: #eaf0d4;
 
 // Seen on the discount badge (hotel cards), not bound to a Figma variable in
@@ -89,6 +90,7 @@ $color-border-error: $color-error-200;
 // Feedback
 $color-text-error: $color-error-200;
 $color-success-text: $color-green-100;
+$color-success-accent: $color-green-200;
 $color-success-bg: $color-green-800;
 $color-error-text-strong: $color-error-300;
 $color-error-bg: $color-error-900;

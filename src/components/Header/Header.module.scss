@@ -2,6 +2,8 @@
 @use '../../styles/layout' as layout;
 
 .header {
+  position: relative;
+  z-index: 40;
   width: 100%;
   background: $color-surface;
 }

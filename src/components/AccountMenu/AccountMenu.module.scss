@@ -24,7 +24,11 @@
 
 .panel {
   position: absolute;
-  inset-inline-start: 0;
+  // Physical left, not inline-start: this panel is direction: rtl, and
+  // inline-start would anchor it to the right of the trigger and spill off
+  // the left edge of the viewport (the account button sits on the left).
+  left: 0;
+  right: auto;
   top: calc(100% + 8px);
   z-index: 20;
   width: 320px;
