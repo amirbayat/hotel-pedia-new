@@ -92,6 +92,26 @@
   }
 }
 
+.shebaError {
+  border-width: 2px;
+  border-color: $color-border-error;
+  padding: 0 15px;
+
+  &:focus-within {
+    border-color: $color-border-error;
+  }
+}
+
+.fieldError {
+  margin: 4px 0 0;
+  padding: 0 16px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: $color-text-error;
+  text-align: right;
+}
+
 .shebaReadOnly {
   background: $color-surface-muted;
   border-color: $color-border-subtle;
