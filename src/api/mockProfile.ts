@@ -63,11 +63,11 @@ export const MOCK_PROFILE: ProfileAccount = {
   phoneVerified: true,
   firstName: 'نیما',
   lastName: 'رشتیان',
-  nationalId: '0077634222',
+  nationalId: '0077634225',
   gender: 'male',
-  cardNumber: '6219861043218765',
+  cardNumber: '6219861043218766',
   accountNumber: '87655443323146',
-  sheba: '746538502634528',
+  sheba: '429600000001003242000012',
 }
 
 const RESERVATION_STATUSES: ReservationStatus[] = [
